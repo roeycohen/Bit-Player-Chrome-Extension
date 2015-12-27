@@ -31,9 +31,6 @@ window.onload = function ()
 
 	e.torrent.on("ready", function ()
 	{
-		console.error('here');
-		console.log(e.torrent.files);
-
 		var video_index = e.best_file(e.torrent.files);
 		if (0 > video_index)
 			$('#error').text('dang!');
@@ -43,7 +40,6 @@ window.onload = function ()
 			t.listen(0, function ()
 			{
 				e.torrent.httpPort = t.address().port; //save port for later use
-				console.log("listening on", t.address());
 
 				var src = "http://localhost:" + e.torrent.httpPort + "/" + video_index + "/" + e.torrent.files[video_index].name;
 				$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
