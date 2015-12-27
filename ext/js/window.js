@@ -1,24 +1,56 @@
-var myTorrent = 'magnet:?xt=urn:btih:dede096ae7dd90aa868dde218a2626f00a6ae610&dn=Arrow+S02E17+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//var myTorrent = 'magnet:?xt=urn:btih:dede096ae7dd90aa868dde218a2626f00a6ae610&dn=Arrow+S02E17+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 
 window.onload = function ()
 {
 	var e = {};
+
+	e.best_file = function (files)
+	{
+		var biggest_file = 1;
+		var best_match_index = -1;
+		$.each(files, function (i, f)
+		{
+			var extension = f.path.substr((~-f.path.lastIndexOf(".") >>> 0) + 2);
+			if ($.inArray(extension, ['mp4', 'avi', 'mkv']) > -1 && f.length > biggest_file)
+				best_match_index = i;
+		});
+		return best_match_index;
+	};
+
 	e.torrent = torrent.TorrentStream(myTorrent, {
-		verify: !1,
+		verify: false,
 		storage: torrent.MemoryStorage,
 		connections: 50,
 		uploads: 10,
-		dht: !0,
-		tracker: !0
+		dht: true,
+		tracker: true
 	});
 
-	e.torrent.listen(6666);
+	//e.torrent.listen(6666);
 
 	e.torrent.on("ready", function ()
 	{
 		console.error('here');
 		console.log(e.torrent.files);
-		console.log(e.torrent.files[0].path);
+
+		var video_index = e.best_file(e.torrent.files);
+		if (0 > video_index)
+			$('#error').text('dang!');
+		else
+		{
+			var t = torrent.HttpServer(e.torrent);
+			t.listen(0, function ()
+			{
+				e.torrent.httpPort = t.address().port; //save port for later use
+				console.log("listening on", t.address());
+
+				var src = "http://localhost:" + e.torrent.httpPort + "/" + video_index + "/" + e.torrent.files[video_index].name;
+				$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
+				$('video').attr('type', 'video/mp4').attr('src', src);
+			});
+		}
+
 	});
 };
 
@@ -164,8 +196,9 @@ app.factory("Promise", ["$q", function (t)
 				{
 					e.torrent.files.forEach(function (t, e)
 					{
-						t.index = e
+						t.index = e //conntect between original array and tree
 					});
+ 					//duplicate and sort by path
 					var n = e.torrent.files.slice().sort(function (t, e)
 					{
 						return t.path > e.path ? 1 : t.path == e.path ? 0 : -1
@@ -176,8 +209,12 @@ app.factory("Promise", ["$q", function (t)
 				})
 			})
 		}))
-	}, e.selected_node = {}, e.expanded_nodes = [], e.is_video_file = function (t)
+	},
+	e.selected_node = {},
+	e.expanded_nodes = [],
+	e.is_video_file = function (t)
 	{
+		//looks for a file which is atleast 10MB size.
 		return t && t.length > 1e7
 	}, e.tree_options = {dirSelectable: !1}, n(function ()
 	{
