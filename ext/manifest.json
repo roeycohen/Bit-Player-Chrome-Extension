@@ -2,7 +2,7 @@
    "app": {
       "background": {
          "persistent": false,
-         "scripts": [ "scripts/bg.js" ]
+         "scripts": [ "js/bg.js" ]
       }
    },
    "description": "lala",
