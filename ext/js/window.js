@@ -18,6 +18,16 @@ window.onload = function ()
 		return best_match_index;
 	};
 
+	e.formatBytes = function(bytes)
+	{
+		if (isNaN(bytes) || bytes == 0)
+			return '0';
+
+		var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+		return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+	};
+
 	e.torrent = torrent.TorrentStream(myTorrent, {
 		verify: false,
 		storage: torrent.MemoryStorage,
@@ -31,11 +41,23 @@ window.onload = function ()
 
 	e.torrent.on("ready", function ()
 	{
+
+
 		var video_index = e.best_file(e.torrent.files);
 		if (0 > video_index)
 			$('#error').text('dang!');
 		else
 		{
+			setInterval(function(){
+				$('#meta').text(
+					'Download speed:' + e.formatBytes(e.torrent.swarm.downloadSpeed()) +
+					', downloaded:' + e.formatBytes(e.torrent.swarm.downloaded) + '/' + e.formatBytes(e.torrent.files[video_index].length) +
+						//', Upload speed:' + e.formatBytes(e.torrent.swarm.uploadSpeed()) +
+						//', uploaded:' + e.formatBytes(e.torrent.swarm.uploaded) +
+					', peers:' + e.torrent.swarm.connections.length
+				);
+			}, 500);
+
 			var t = torrent.HttpServer(e.torrent);
 			t.listen(0, function ()
 			{
