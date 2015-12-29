@@ -1,5 +1,141 @@
 ;
+//see: https://www.npmjs.com/package/opensubtitles
+//[{"MatchedBy":"moviehash","IDSubMovieFile":"12900881","MovieHash":"2476dfc7cc376dd0","MovieByteSize":"130751619","MovieTimeMS":"0","IDSubtitleFile":"1954952199","SubFileName":"the.big.bang.theory.907.hdtv.repack-lol-heb.srt","SubActualCD":"1","SubSize":"35428","SubHash":"365f806e62e155f90c7b4c4c6c44ed77","SubLastTS":"00:18:23","IDSubtitle":"6370906","UserID":"0","SubLanguageID":"heb","SubFormat":"srt","SubSumCD":"1","SubAuthorComment":"","SubAddDate":"2015-11-07 06:42:37","SubBad":"1","SubRating":"1.0","SubDownloadsCnt":"4702","MovieReleaseName":" the.big.bang.theory.907.hdtv.repack-lol","MovieFPS":"25.000","IDMovie":"382489","IDMovieImdb":"5073156","MovieName":"\"The Big Bang Theory\" The Spock Resonance","MovieNameEng":"","MovieYear":"2015","MovieImdbRating":"8.3","SubFeatured":"0","UserNickName":"","ISO639":"he","LanguageName":"Hebrew","SubComments":"1","SubHearingImpaired":"0","UserRank":"","SeriesSeason":"9","SeriesEpisode":"7","MovieKind":"episode","SubHD":"1","SeriesIMDBParent":"898266","SubEncoding":"UTF-8","SubDownloadLink":"http://dl.opensubtitles.org/en/download/file/src-api/vrf-19d70c5f/sid-ovfnue73tmttg0hsarpq2c8ui6/1954952199.gz","ZipDownloadLink":"http://dl.opensubtitles.org/en/download/sub/src-api/vrf-f5490bb8/sid-ovfnue73tmttg0hsarpq2c8ui6/6370906","SubtitlesLink":"http://www.opensubtitles.org/en/subtitles/6370906/sid-ovfnue73tmttg0hsarpq2c8ui6/the-big-bang-theory-the-spock-resonance-he"},{"MatchedBy":"moviehash","IDSubMovieFile":"12909231","MovieHash":"2476dfc7cc376dd0","MovieByteSize":"130751619","MovieTimeMS":"0","IDSubtitleFile":"1954495642","SubFileName":"The.Big.Bang.Theory.S08E10.Heb.srt","SubActualCD":"1","SubSize":"26605","SubHash":"ce5d6da9d5b94e2ed0efb966dcc8faa3","SubLastTS":"00:19:04","IDSubtitle":"5917132","UserID":"0","SubLanguageID":"heb","SubFormat":"srt","SubSumCD":"1","SubAuthorComment":"","SubAddDate":"2014-12-04 17:11:21","SubBad":"0","SubRating":"0.0","SubDownloadsCnt":"11562","MovieReleaseName":" The.Big.Bang.Theory.S08E10","MovieFPS":"0.000","IDMovie":"186019","IDMovieImdb":"3823250","MovieName":"\"The Big Bang Theory\" The Champagne Reflection","MovieNameEng":"","MovieYear":"2014","MovieImdbRating":"6.7","SubFeatured":"0","UserNickName":"","ISO639":"he","LanguageName":"Hebrew","SubComments":"0","SubHearingImpaired":"0","UserRank":"","SeriesSeason":"8","SeriesEpisode":"10","MovieKind":"episode","SubHD":"0","SeriesIMDBParent":"898266","SubEncoding":"CP1255","SubDownloadLink":"http://dl.opensubtitles.org/en/download/file/src-api/vrf-19d70c5a/sid-ovfnue73tmttg0hsarpq2c8ui6/1954495642.gz","ZipDownloadLink":"http://dl.opensubtitles.org/en/download/sub/src-api/vrf-f54e0bb5/sid-ovfnue73tmttg0hsarpq2c8ui6/5917132","SubtitlesLink":"http://www.opensubtitles.org/en/subtitles/5917132/sid-ovfnue73tmttg0hsarpq2c8ui6/the-big-bang-theory-the-champagne-reflection-he"},{"MatchedBy":"moviehash","IDSubMovieFile":"12937582","MovieHash":"2476dfc7cc376dd0","MovieByteSize":"130751619","MovieTimeMS":"0","IDSubtitleFile":"1954960712","SubFileName":"The.Big.Bang.Theory.S09E07.720p.HDTV.X264-DIMENSION-heb.srt","SubActualCD":"1","SubSize":"19742","SubHash":"0073f137a7bc7d5a93cff2a8514e03c5","SubLastTS":"00:18:11","IDSubtitle":"6379218","UserID":"0","SubLanguageID":"heb","SubFormat":"srt","SubSumCD":"1","SubAuthorComment":"","SubAddDate":"2015-11-12 23:51:19","SubBad":"0","SubRating":"0.0","SubDownloadsCnt":"599","MovieReleaseName":" The.Big.Bang.Theory.S09E07.720p.HDTV.X264-DIMENSION","MovieFPS":"0.000","IDMovie":"382490","IDMovieImdb":"5090816","MovieName":"\"The Big Bang Theory\" The Helium Insufficiency","MovieNameEng":"","MovieYear":"2015","MovieImdbRating":"7.3","SubFeatured":"0","UserNickName":"","ISO639":"he","LanguageName":"Hebrew","SubComments":"0","SubHearingImpaired":"0","UserRank":"","SeriesSeason":"9","SeriesEpisode":"6","MovieKind":"episode","SubHD":"1","SeriesIMDBParent":"898266","SubEncoding":"CP1255","SubDownloadLink":"http://dl.opensubtitles.org/en/download/file/src-api/vrf-19cf0c55/sid-ovfnue73tmttg0hsarpq2c8ui6/1954960712.gz","ZipDownloadLink":"http://dl.opensubtitles.org/en/download/sub/src-api/vrf-f55c0bbd/sid-ovfnue73tmttg0hsarpq2c8ui6/6379218","SubtitlesLink":"http://www.opensubtitles.org/en/subtitles/6379218/sid-ovfnue73tmttg0hsarpq2c8ui6/the-big-bang-theory-the-helium-insufficiency-he"}]
+
+var buffer = torrent.buffer;
+var Long = torrent.long;
+
 var subs = {
+
+	//the original opensubtitles lib works only on regular files
+	copyBuffer: function (e)
+	{
+		var t = new buffer.Buffer(e.length);
+		e.copy(t);
+		return t;
+	},
+	getStreamBuffer: function (e)
+	{
+		return new Promise(function (resolve, reject)
+		{
+			var r = [], o = 0;
+			e.on("data", function (data)
+			{
+				r.push(subs.copyBuffer(data));
+				o += data.length;
+			});
+			e.on("end", function ()
+			{
+				e.destroy();
+				resolve(buffer.Buffer.concat(r, o))
+			});
+			e.on("error", reject);
+		})
+	},
+	computeFileHash: function (e)
+	{
+		var stream_start = e.createReadStream({start: 0, end: 65535});
+		var steam_end = e.createReadStream({start: e.length - 65536, end: e.length - 1});
+
+		return Promise.all([subs.getStreamBuffer(stream_start), subs.getStreamBuffer(steam_end)]).then(function (t)
+		{
+			return subs.computeHash(e.length, t[0], t[1])
+		})
+	},
+
+	// ============================================================================
+
+	//see: https://github.com/ka2er/node-opensubtitles-api/blob/master/lib/opensubtitles.js, checksumReady method.
+	//this implementation is so much more elegant than the original at opensubtitles
+	computeHash: function (stream_length, start_section, end_section)
+	{
+		function sumHex64bits(n1, n2)
+		{
+			for (var n = 0; n < n2.length; n += 8)
+				n1 = n1.add(Long.fromString(Array.prototype.reverse.call(n2.slice(n, n + 8)).toString("hex"), true, 16));
+			return n1;
+		}
+
+		var o = Long.fromString(stream_length.toString(), true);
+		o = sumHex64bits(o, start_section);
+		o = sumHex64bits(o, end_section);
+		return ("0000000000000000" + o.toString(16)).substr(-16);
+	},
+
+	get_opensubtitles: function (torrent_file, options)
+	{
+		options = options || {};
+		var lng = options && options.lang || "heb";
+		return new Promise(function (resolve, reject)
+		{
+			function os_login(err, data)
+			{
+				if (err)
+					return reject(err);
+
+				var auth_token = data.token;
+				subs.computeFileHash(torrent_file).then(function (hash)
+				{
+					os.api.SearchSubtitles(function (err, data)
+					{
+						if (err)
+							return reject(err);
+
+						var srts = data.data && data.data.filter(function (e)
+							{
+								return "srt" == e.SubFormat
+							});
+
+						if (srts && srts.length)
+						{
+							os.api.DownloadSubtitles(function (err, data)
+							{
+								if (err)
+									return reject(err);
+
+								console.log('DownloadSubtitles', data);
+								/*gzipped_subs = new buffer.Buffer(data.data[0].data, "base64");
+								var u = new stream.Readable;
+								u.push(gzipped_subs), u.push(null);
+								var i = u.pipe(zlib.createGunzip());
+								a = [];
+								s = 0;
+								i.on("data", function (e)
+								{
+									a.push(e), s += e.length
+								});
+								i.on("end", function ()
+								{
+									var e = buffer.Buffer.concat(a, s), t = e.toString();
+									if ("pol" == lng && t.indexOf("�") >= 0)
+									{
+										var o = encoding.convert(e, "utf8", "cp1250").toString();
+										o.indexOf("�") < 0 && (t = o)
+									}
+									resolve(t)
+								});
+								i.on("error", reject);*/
+
+							}, auth_token, [srts[0].IDSubtitleFile]);
+						}
+						else
+						{
+							reject({
+								token: auth_token,
+								moviehash: hash,
+								subfilename: torrent_file
+							});
+						}
+					}, auth_token, [{moviehash: hash, sublanguageid: lng}]);
+				}, reject);
+			}
+
+			if (options.subtitles)
+				resolve(options.subtitles);
+			else
+				os.api.LogIn(os_login, "emrk", "qwerty", "pol", os.ua);
+		});
+	},
 
 	// cached results for torrent.opensubs.get_lang_ids()
 	lang_ids: [

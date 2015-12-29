@@ -2,11 +2,12 @@
 //var myTorrent = 'magnet:?xt=urn:btih:dede096ae7dd90aa868dde218a2626f00a6ae610&dn=Arrow+S02E17+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 
+console.log(torrent);
+
 app = {
 	torrent: null,
 	start: function ()
 	{
-		console.log(subs.lang_ids);
 		app.torrent = torrent.TorrentStream(myTorrent, {
 			verify: false,
 			storage: torrent.MemoryStorage,
@@ -21,28 +22,33 @@ app = {
 		this.torrent.on("ready", function ()
 		{
 			var video_index = app.best_file(app.torrent.files);
-			console.error('here', video_index);
 			if (0 > video_index)
 				$('#error').text('dang!');
 			else
 			{
+				var torrent_file = app.torrent.files[video_index];
+console.log(torrent_file);
 				setInterval(function ()
 				{
 					$('#meta').text(
 						'Download speed:' + app.formatBytes(app.torrent.swarm.downloadSpeed()) +
-						', downloaded:' + app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(app.torrent.files[video_index].length) +
+						', downloaded:' + app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) +
 							//', Upload speed:' + app.formatBytes(app.torrent.swarm.uploadSpeed()) +
 							//', uploaded:' + app.formatBytes(app.torrent.swarm.uploaded) +
 						', peers:' + app.torrent.swarm.connections.length
 					);
 				}, 500);
 
+				subs.get_opensubtitles(torrent_file).then(function(data){
+					console.log('get_opensubtitles', data);
+				});
+
 				var t = torrent.HttpServer(app.torrent);
 				t.listen(0, function ()
 				{
 					app.torrent.httpPort = t.address().port; //save port for later use
 
-					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + app.torrent.files[video_index].name;
+					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
 					$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
 					$('video').attr('type', 'video/mp4').attr('src', src);
 				});
