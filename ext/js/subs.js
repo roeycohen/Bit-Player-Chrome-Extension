@@ -4,6 +4,8 @@
 
 var buffer = torrent.buffer;
 var Long = torrent.long;
+var stream = torrent.stream;
+var zlib = torrent.zlib;
 
 var subs = {
 
@@ -62,78 +64,110 @@ var subs = {
 		return ("0000000000000000" + o.toString(16)).substr(-16);
 	},
 
-	get_opensubtitles: function (torrent_file, options)
+	os_auth: function ()
 	{
-		options = options || {};
-		var lng = options && options.lang || "heb";
 		return new Promise(function (resolve, reject)
 		{
-			function os_login(err, data)
+			os.api.LogIn(function (err, data)
 			{
 				if (err)
 					return reject(err);
 
-				var auth_token = data.token;
-				subs.computeFileHash(torrent_file).then(function (hash)
+				resolve(data.token);
+			}, "emrk", "qwerty", "pol", os.ua);
+		});
+	},
+
+	os_available_subs: function (auth_token, torrent_file, lng)
+	{
+		return new Promise(function (resolve, reject)
+		{
+			subs.computeFileHash(torrent_file).then(function (hash)
+			{
+				os.api.SearchSubtitles(function (err, data)
 				{
-					os.api.SearchSubtitles(function (err, data)
-					{
-						if (err)
-							return reject(err);
+					if (err)
+						return reject(err);
 
-						var srts = data.data && data.data.filter(function (e)
-							{
-								return "srt" == e.SubFormat
-							});
-
-						if (srts && srts.length)
+					var srts = data.data && data.data.filter(function (e)
 						{
-							os.api.DownloadSubtitles(function (err, data)
-							{
-								if (err)
-									return reject(err);
+							return "srt" == e.SubFormat
+						});
 
-								console.log('DownloadSubtitles', data);
-								/*gzipped_subs = new buffer.Buffer(data.data[0].data, "base64");
-								var u = new stream.Readable;
-								u.push(gzipped_subs), u.push(null);
-								var i = u.pipe(zlib.createGunzip());
-								a = [];
-								s = 0;
-								i.on("data", function (e)
-								{
-									a.push(e), s += e.length
-								});
-								i.on("end", function ()
-								{
-									var e = buffer.Buffer.concat(a, s), t = e.toString();
-									if ("pol" == lng && t.indexOf("�") >= 0)
-									{
-										var o = encoding.convert(e, "utf8", "cp1250").toString();
-										o.indexOf("�") < 0 && (t = o)
-									}
-									resolve(t)
-								});
-								i.on("error", reject);*/
+					resolve(srts);
+				}, auth_token, [{moviehash: hash, sublanguageid: lng}]);
+			}, reject);
+		});
+	},
 
-							}, auth_token, [srts[0].IDSubtitleFile]);
-						}
-						else
-						{
-							reject({
-								token: auth_token,
-								moviehash: hash,
-								subfilename: torrent_file
-							});
-						}
-					}, auth_token, [{moviehash: hash, sublanguageid: lng}]);
-				}, reject);
-			}
+	os_download_sub: function (auth_token, sub_files_ids)
+	{
+		return new Promise(function (resolve, reject)
+		{
+			os.api.DownloadSubtitles(function (err, data)
+			{
+				if (err)
+					return reject(err);
 
-			if (options.subtitles)
-				resolve(options.subtitles);
-			else
-				os.api.LogIn(os_login, "emrk", "qwerty", "pol", os.ua);
+				console.log('DownloadSubtitles', data);
+				/*gzipped_subs = new buffer.Buffer(data.data[0].data, "base64");
+				 var u = new stream.Readable;
+				 u.push(gzipped_subs), u.push(null);
+				 var i = u.pipe(zlib.createGunzip());
+				 a = [];
+				 s = 0;
+				 i.on("data", function (e)
+				 {
+				 a.push(e), s += e.length
+				 });
+				 i.on("end", function ()
+				 {
+				 var e = buffer.Buffer.concat(a, s), t = e.toString();
+				 if ("pol" == lng && t.indexOf("�") >= 0)
+				 {
+				 var o = encoding.convert(e, "utf8", "cp1250").toString();
+				 o.indexOf("�") < 0 && (t = o)
+				 }
+				 resolve(t)
+				 });
+				 i.on("error", reject);*/
+
+				resolve(data);
+
+			}, auth_token, sub_files_ids);
+		});
+	},
+
+	extract_gzip: function(subfile_zip)
+	{
+		return new Promise(function (resolve, reject)
+		{
+			var gzipped_subs = new buffer.Buffer(subfile_zip, "base64");
+			var u = new stream.Readable;
+			u.push(gzipped_subs);
+			u.push(null);
+			var i = u.pipe(zlib.createGunzip());
+			var output_sections = [];
+			var output_length = 0;
+			i.on("data", function (e)
+			{
+				output_sections.push(e);
+				output_length += e.length;
+				console.log(output_length);
+			});
+			i.on("end", function ()
+			{
+				var output = buffer.Buffer.concat(output_sections, output_length);
+				var t = output.toString();
+				//if ("pol" == lng && t.indexOf("�") >= 0)
+				//{
+				//	var o = encoding.convert(output, "utf8", "cp1250").toString();
+				//	if (o.indexOf("�") < 0)
+				//		t = o;
+				//}
+				resolve(t);
+			});
+			i.on("error", reject);
 		});
 	},
 

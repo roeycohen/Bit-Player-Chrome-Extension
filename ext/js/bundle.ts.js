@@ -46,7 +46,9 @@
 			t.exports.opensubs = e("./opensubs"),
 			//exporting modules manually:
 			t.exports.buffer = e("buffer"),
-			t.exports.long = e("long")
+			t.exports.long = e("long"),
+			t.exports.stream = e("stream"),
+			t.exports.zlib = e("zlib")
 		},
 			{
 				"./opensubs": 439,
@@ -55,7 +57,9 @@
 				"torrent-stream": 338,
 				//exporting modules manually:
 				"buffer": 128,
-				"long": 319
+				"long": 319,
+				"stream": 295,
+				zlib: 127
 			}
 		],
 		//=============================================================================================
@@ -64,6 +68,18 @@
 			http = e("http"), t.exports.lookup = function (e, n, r)
 			{
 				if ("function" == typeof n && !r)return t.exports.lookup(e, null, n);
+				//=============================================================================================
+				// api.statdns.com service is no longer active - for now using a static table
+				switch (e)
+				{
+					case 'router.bittorrent.com':
+						return r(null, '67.215.246.10', 4);
+					case 'router.utorrent.com':
+						return r(null, '82.221.103.244', 4);
+					case 'dht.transmissionbt.com':
+						return r(null, '91.121.59.153', 4); //212.129.33.50
+				}
+				//=============================================================================================
 				var i = {protocol: "http:", host: "api.statdns.com", path: "/" + e + "/a"};
 				http.request(i, function (e)
 				{
