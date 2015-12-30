@@ -110,29 +110,11 @@ var subs = {
 					return reject(err);
 
 				console.log('DownloadSubtitles', data);
-				/*gzipped_subs = new buffer.Buffer(data.data[0].data, "base64");
-				 var u = new stream.Readable;
-				 u.push(gzipped_subs), u.push(null);
-				 var i = u.pipe(zlib.createGunzip());
-				 a = [];
-				 s = 0;
-				 i.on("data", function (e)
-				 {
-				 a.push(e), s += e.length
-				 });
-				 i.on("end", function ()
-				 {
-				 var e = buffer.Buffer.concat(a, s), t = e.toString();
-				 if ("pol" == lng && t.indexOf("�") >= 0)
-				 {
-				 var o = encoding.convert(e, "utf8", "cp1250").toString();
-				 o.indexOf("�") < 0 && (t = o)
-				 }
-				 resolve(t)
-				 });
-				 i.on("error", reject);*/
 
-				resolve(data);
+				subs.extract_gzip(data.data[0].data).then(function(srt)
+				{
+					resolve(srt);
+				}, reject);
 
 			}, auth_token, sub_files_ids);
 		});
