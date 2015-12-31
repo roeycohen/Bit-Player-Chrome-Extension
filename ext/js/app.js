@@ -8,6 +8,19 @@ app = {
 	torrent: null,
 	start: function ()
 	{
+		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
+
+		$('#plus').click(function ()
+		{
+			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
+			cue_style.setProperty('font-size', (cur_size + 0.1) + 'em', null);
+		});
+		$('#minus').click(function ()
+		{
+			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
+			cue_style.setProperty('font-size', (cur_size - 0.1) + 'em', null);
+		});
+		return;
 		subs.os_auth().then(function (token)
 		{
 			subs.os_download_sub(token, ['1954952199']).then(function (data)
