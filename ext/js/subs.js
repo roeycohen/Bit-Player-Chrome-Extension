@@ -109,9 +109,13 @@ var subs = {
 				if (err)
 					return reject(err);
 
+				//console.error(data.data, data.status);
+				//	if (!data.data)
+				//		return reject(data);
+
 				console.log('DownloadSubtitles', data);
 
-				subs.extract_gzip(data.data[0].data).then(function(srt)
+				subs.extract_gzip(data.data[0].data).then(function (srt)
 				{
 					resolve(srt);
 				}, reject);
@@ -120,7 +124,7 @@ var subs = {
 		});
 	},
 
-	extract_gzip: function(subfile_zip)
+	extract_gzip: function (subfile_zip)
 	{
 		return new Promise(function (resolve, reject)
 		{
@@ -151,6 +155,66 @@ var subs = {
 			});
 			i.on("error", reject);
 		});
+	},
+
+	set_srt: function (video, srt)
+	{
+		var track = video.addTextTrack("subtitles", "English", "en");
+		track.mode = "showing";
+
+		var cues = subs.parse_srt(srt, true);
+		for (var ci in cues)
+		{
+			var cue = cues[ci];
+			//https://w3c.github.io/webvtt/
+			var vttCue = new VTTCue(cue.startTime / 1000, cue.endTime / 1000, cue.text);
+			//vttCue.line = 15; //0 - 10
+			track.addCue(vttCue);
+		}
+	},
+
+	//based on: https://github.com/bazh/subtitles-parser/blob/master/index.js
+	parse_srt: function (srt, ms)
+	{
+		var useMs = ms ? true : false;
+
+		srt = srt.replace(/\r/g, '');
+		var time_regex = /(\d+)\n(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/g;
+		srt = srt.split(time_regex);
+		srt.shift();
+
+		var items = [];
+		for (var i = 0; i < srt.length; i += 4)
+		{
+			items.push({
+				id: srt[i].trim(),
+				startTime: useMs ? subs.timeMs(srt[i + 1].trim()) : srt[i + 1].trim(),
+				endTime: useMs ? subs.timeMs(srt[i + 2].trim()) : srt[i + 2].trim(),
+				text: srt[i + 3].trim()
+			});
+		}
+
+		return items;
+	},
+
+	timeMs: function (val)
+	{
+		var regex = /(\d+):(\d{2}):(\d{2}),(\d{3})/;
+		var parts = regex.exec(val);
+
+		if (parts === null)
+		{
+			return 0;
+		}
+
+		for (var i = 1; i < 5; i++)
+		{
+			parts[i] = parseInt(parts[i], 10);
+			if (isNaN(parts[i])) parts[i] = 0;
+		}
+
+		// hours + minutes + seconds + ms
+		return parts[1] * 3600000 + parts[2] * 60000 + parts[3] * 1000 + parts[4];
 	},
 
 	// cached results for torrent.opensubs.get_lang_ids()

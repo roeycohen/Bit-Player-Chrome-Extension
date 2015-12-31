@@ -2,7 +2,7 @@
 //var myTorrent = 'magnet:?xt=urn:btih:dede096ae7dd90aa868dde218a2626f00a6ae610&dn=Arrow+S02E17+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 
-console.log(torrent);
+//console.log(torrent);
 
 app = {
 	torrent: null,
@@ -20,15 +20,17 @@ app = {
 			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
 			cue_style.setProperty('font-size', (cur_size - 0.1) + 'em', null);
 		});
-		return;
-		subs.os_auth().then(function (token)
-		{
-			subs.os_download_sub(token, ['1954952199']).then(function (data)
-			{
-				console.log(data); //now convert to vtt
-			});
-		});
-		return;
+
+		//subs.os_auth().then(function (token)
+		//{
+		//	subs.os_download_sub(token, ['1954952199']).then(function (data)
+		//	{
+		//		var video = document.getElementById("video");
+		//		subs.set_srt(video, data);
+		//	});
+		//}, app.error);
+		//
+		//return;
 		app.torrent = torrent.TorrentStream(myTorrent, {
 			verify: false,
 			storage: torrent.MemoryStorage,
@@ -66,31 +68,28 @@ app = {
 					console.log('token', token);
 					subs.os_available_subs(token, torrent_file, 'heb').then(function (srts)
 					{
-						app.error('hi');
 						console.log('srts', srts);
 						if (srts.length)
 						{
 							console.log('IDSubtitleFile', srts[0].IDSubtitleFile); //"1954952199"
 							subs.os_download_sub(token, [srts[0].IDSubtitleFile]).then(function (data)
 							{
-								console.log('downloaded data', data);
-							});
+								var video = document.getElementById("video");
+								subs.set_srt(video, data);
+							}, app.error);
 						}
 					})
 				});
-				//subs.get_opensubtitles(torrent_file).then(function(data){
-				//	console.log('get_opensubtitles', data);
-				//});
 
-				//var t = torrent.HttpServer(app.torrent);
-				//t.listen(0, function ()
-				//{
-				//	app.torrent.httpPort = t.address().port; //save port for later use
-				//
-				//	var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
-				//	$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
-				//	$('video').attr('type', 'video/mp4').attr('src', src);
-				//});
+				var t = torrent.HttpServer(app.torrent);
+				t.listen(0, function ()
+				{
+					app.torrent.httpPort = t.address().port; //save port for later use
+
+					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
+					$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
+					$('video').attr('type', 'video/mp4').attr('src', src);
+				});
 			}
 		});
 	},
@@ -121,7 +120,7 @@ app = {
 				type: "basic",
 				title: "Subtitles",
 				iconUrl: "../images/icon64.png",
-				message: error
+				message: $.type(error) === "string" ? error : JSON.stringify(error)
 			},
 			function () // The callback is required before Chrome 42.
 			{
