@@ -1,0 +1,41 @@
+{
+  "name": "popcorn_player",
+  "version": "1.0.0",
+  "description": "video torrents player with subtitles support",
+  "main": "bundle.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js",
+    "browserify": "browserify bundle.js -o ext/js/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roeycohen/Popcorn-Player-Chrome-extension.git"
+  },
+  "keywords": [
+    "pocorn",
+    "player",
+    "chrome",
+    "extension"
+  ],
+  "author": "Roey Cohen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roeycohen/Popcorn-Player-Chrome-extension/issues"
+  },
+  "homepage": "https://github.com/roeycohen/Popcorn-Player-Chrome-extension#readme",
+  "dependencies": {
+    "browser-process-hrtime": "^0.1.2",
+    "buffer": "^3.6.0",
+    "long": "^3.0.1",
+    "opensubtitles": "0.0.3",
+    "path": "^0.12.7",
+    "stream": "0.0.2",
+    "torrent-memory-storage": "^1.0.0",
+    "torrent-stream": "^1.0.0"
+  },
+  "devDependencies": {
+    "browserify": "^10.2.4",
+    "watchify": "^3.2.3"
+  }
+}
