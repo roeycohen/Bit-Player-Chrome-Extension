@@ -15,44 +15,6 @@
         }
     </style>
     <style>
-        /*
-        .videogular-container {
-            width: 100%;
-            height: 450px;
-            margin: auto;
-            overflow: hidden;
-        }
-
-        @media (min-width: 900px) {
-            .videogular-container {
-                width: 100%;
-                height: 100%;
-            }
-        }
-
-        videogular div.settings-button {
-            display: table-cell;
-            width: 40px;
-            vertical-align: middle;
-            text-align: center;
-            cursor: pointer;
-            color: white;
-        }
-
-        videogular div.stats {
-            display: table-cell;
-            width: 100px;
-            vertical-align: middle;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .settings_dialog {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-        }
-        */
         body {
             margin: 0;
             font-size: 14px;
@@ -70,12 +32,14 @@
     <script src="../js/app.js"></script>
     <script src="../js/window.js"></script>
 </head>
-<body class="hmm">
+<body>
+
 <div>
     <div id="error"></div>
     <div id="note"></div>
     <div id="meta"></div>
 </div>
+
 <div id="plus">+</div>
 <div id="minus">-</div>
 <video id="video" controls muted>
@@ -85,75 +49,6 @@
     <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
 </video>
 
-<!--<div class="container-fluid" ng-show="!torrent">
-  <div class="row" ng-show="!torrent" style="margin-top:100px">
-      <div class="col-sm-10 col-sm-offset-1">
-          <input ng-model="magnet_url" placeholder="Magnet URL" style="width:100%">
-          <p>
-              Install <a href="https://chrome.google.com/webstore/detail/torrentstream-helper/ebaaacomjclfgnkmaeaneljmfgkofphc" target="_blank">Torrent Stream Helper</a> extension and stream torrent movies with right click on magnet URLs!
-          </p>
-      </div>
-  </div>
-</div>
-<div class="videogular-container" ng-show="torrent">
-  <videogular vg-theme="config.theme.url" vg-auto-play="config.autoPlay" vg-update-state="onUpdateState($state)" vg-update-time="onUpdateTime($currentTime, $duration)">
-      <vg-media vg-src="config.sources" vg-tracks="config.tracks">
-      </vg-media>
-      <vg-controls vg-autohide="config.plugins.controls.autoHide" vg-autohide-time="config.plugins.controls.autoHideTime">
-          <vg-play-pause-button></vg-play-pause-button>
-          <vg-time-display>{{ currentTime | date:'H:mm:ss':'UTC' }}</vg-time-display>
-          <vg-scrub-bar>
-              <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
-          </vg-scrub-bar>
-          <vg-time-display>{{ totalTime | date:'H:mm:ss':'UTC' }}</vg-time-display>
-          <div class='stats iconButton'>P:&nbsp;{{torrent.swarm.wires.length}} D:&nbsp;{{torrent.swarm.downloaded/1024/1024|number:1}}</div>
-          <div class='settings-button' ng-click="toggle_settings_dialog()"><span class="glyphicon glyphicon-wrench"></span></div>
-          <vg-volume>
-              <vg-mute-button></vg-mute-button>
-              <vg-volume-bar></vg-volume-bar>
-          </vg-volume>
-          <vg-fullscreen-button></vg-fullscreen-button>
-      </vg-controls>
-      <div class="container-fluid">
-          <div class="row settings_dialog" tabindex="0" ng-show="settings_dialog_visible" style="outline: none" ng-keypress="onSettingsDialogKeyPress($event)">
-              <div class="col-sm-offset-1 col-sm-2" style="background: rgba(255,255,255,0.9); height: 350px; padding-top: 1em; padding-right: 0px"> &lt;!&ndash; required for floating &ndash;&gt;
-                  &lt;!&ndash; Nav tabs &ndash;&gt;
-                  <ul class="nav nav-tabs tabs-left">
-                    <li class="active"><a href="#files" data-toggle="tab">Files</a></li>
-                    <li><a href="#subtitles" data-toggle="tab">Subtitles</a></li>
-                  </ul>
-              </div>
-              <div class="col-sm-8" style="background: rgba(255, 255, 255, 1.0); height: 350px; padding-top: 1em; overflow-y: scroll">
-                  &lt;!&ndash; Tab panes &ndash;&gt;
-                  <div class="tab-content">
-                    <div class="tab-pane active" id="files">
-                      <treecontrol class="tree-classic" tree-model="tree" options="tree_options" order-by="name" selected-node="input_file" expanded-nodes="expanded_nodes">
-                        {{node.name}} <a ng-show="0 && torrent.httpPort && is_video_file(node)" href="http://localhost:{{torrent.httpPort}}/{{node.index}}" ng-click="play_video_file(node); $event.preventDefault()" target="_blank">play</a>
-                      </treecontrol>
-                    </div>
-                    <div class="tab-pane" id="subtitles">
-                        <div class="row" ng-show="0">
-                            <div class="col-sm-offset-2 col-sm-4"><input type="checkbox" ng-model="options.subtitles"> enabled</div>
-                        </div>
-                        <div class="row">
-                            <label class="col-sm-2">Language</label>
-                            <angucomplete-alt class="col-sm-4"
-                                placeholder="Search languages"
-                                pause="100"
-                                selected-object="setSubLang"
-                                local-data="subLanguages"
-                                search-fields="LanguageName,SubLanguageID"
-                                title-field="SubLanguageID"
-                                minlength="1"
-                                initial-value="{{options.subLang}}"
-                                inputclass="form-control form-control-small" />
-                        </div>
-                    </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </videogular>
-</div>-->
+
 </body>
 </html>
