@@ -1,36 +1,39 @@
 ;
-//var myTorrent = 'magnet:?xt=urn:btih:dede096ae7dd90aa868dde218a2626f00a6ae610&dn=Arrow+S02E17+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//var myTorrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 
 //console.log(torrent);
 
 app = {
 	torrent: null,
+	video: null,
+	$video: null,
+	$ctrls: null,
 	start: function ()
 	{
-		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
+		app.video = document.getElementById("video");
+		app.$video = $(app.video);
+		app.$ctrls = $('#controls');
+		app.controls();
 
-		$('#plus').click(function ()
+		subs.os_auth().then(function (token)
 		{
-			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
-			cue_style.setProperty('font-size', (cur_size + 0.1) + 'em', null);
-		});
-		$('#minus').click(function ()
-		{
-			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
-			cue_style.setProperty('font-size', (cur_size - 0.1) + 'em', null);
-		});
+			os.api.SearchSubtitles(function (err, data)
+			{
+				if (err)
+					this.error(err);
 
-		//subs.os_auth().then(function (token)
-		//{
-		//	subs.os_download_sub(token, ['1954952199']).then(function (data)
-		//	{
-		//		var video = document.getElementById("video");
-		//		subs.set_srt(video, data);
-		//	});
-		//}, app.error);
-		//
-		//return;
+				var srts = data.data && data.data.filter(function (e)
+					{
+						return "srt" == e.SubFormat
+					});
+
+				app.controls_fill_sub(srts);
+			}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb'}]); //1954197964
+		}, app.error);
+
+		return;
+
 		app.torrent = torrent.TorrentStream(myTorrent, {
 			verify: false,
 			storage: torrent.MemoryStorage,
@@ -54,12 +57,9 @@ app = {
 				console.log('torrent_file', torrent_file);
 				setInterval(function ()
 				{
-					$('#meta').text(
-						'Download speed:' + app.formatBytes(app.torrent.swarm.downloadSpeed()) +
-						', downloaded:' + app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) +
-							//', Upload speed:' + app.formatBytes(app.torrent.swarm.uploadSpeed()) +
-							//', uploaded:' + app.formatBytes(app.torrent.swarm.uploaded) +
-						', peers:' + app.torrent.swarm.connections.length
+					$('#status').text(
+						app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
+						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100 ) + '%)'
 					);
 				}, 500);
 
@@ -74,12 +74,11 @@ app = {
 							console.log('IDSubtitleFile', srts[0].IDSubtitleFile); //"1954952199"
 							subs.os_download_sub(token, [srts[0].IDSubtitleFile]).then(function (data)
 							{
-								var video = document.getElementById("video");
-								subs.set_srt(video, data);
+								subs.set_srt(app.video, data);
 							}, app.error);
 						}
-					})
-				});
+					}, app.error)
+				}, app.error);
 
 				var t = torrent.HttpServer(app.torrent);
 				t.listen(0, function ()
@@ -87,8 +86,8 @@ app = {
 					app.torrent.httpPort = t.address().port; //save port for later use
 
 					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
-					$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
-					$('video').attr('type', 'video/mp4').attr('src', src);
+					//$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
+					app.$video.attr('type', 'video/mp4').attr('src', src);
 				});
 			}
 		});
@@ -116,6 +115,8 @@ app = {
 	},
 	error: function (error)
 	{
+		console.log('error method: ', error);
+
 		chrome.notifications.create("subtitles", {
 				type: "basic",
 				title: "Subtitles",
@@ -126,5 +127,75 @@ app = {
 			{
 			}
 		);
+	},
+	controls: function ()
+	{
+
+		var hideControlsTimeout = null;
+		app.$video.click(function ()
+		{
+			app.video.paused ? app.video.play() : video.pause();
+		});
+
+		app.$video.on('playing play', function ()
+		{
+			$('#status').css('opacity', 0);
+			hideControlsTimeout && clearTimeout(hideControlsTimeout);
+			hideControlsTimeout = window.setTimeout(function ()
+			{
+				app.$ctrls.hide();
+			}, 3000);
+		});
+		app.$video.on('waiting pause', function ()
+		{
+			$('#status').css('opacity', 1);
+			hideControlsTimeout && clearTimeout(hideControlsTimeout);
+			app.$ctrls.show();
+		});
+
+		app.$video.on('mousemove', function ()
+		{
+			hideControlsTimeout && clearTimeout(hideControlsTimeout);
+			app.$ctrls.show();
+
+			if (!app.video.paused)
+				hideControlsTimeout = window.setTimeout(function ()
+				{
+					app.$ctrls.hide();
+				}, 3000);
+		});
+
+		//subtitles size
+		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
+		app.$ctrls.find('#plus').click(function ()
+		{
+			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
+			cue_style.setProperty('font-size', (cur_size + 0.1) + 'em', null);
+		});
+		app.$ctrls.find('#minus').click(function ()
+		{
+			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
+			cue_style.setProperty('font-size', (cur_size - 0.1) + 'em', null);
+		});
+		app.$ctrls.find('#sub_select .context_menu').on('click', 'li', function()
+		{
+			var $li = $(this);
+			$li.siblings().removeClass('active');
+			$li.addClass('active');
+
+			subs.set_srt(app.video, $li.data('sub_id'));
+		});
+	},
+	controls_fill_sub: function(srts)
+	{
+		var $cm = app.$ctrls.find('#sub_select .context_menu');
+		$cm.html('<li class="active"><i>Off</i></li>');
+		$.each(srts, function(i, srt){
+			if (i === 0)
+				document.title = srt.MovieName + ' - Popcorn Player';
+			$cm.append(
+				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')' + ' ' + srt.IDSubtitleFile).data('sub_id', srt.IDSubtitleFile)
+			);
+		});
 	}
 };

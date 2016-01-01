@@ -8,6 +8,8 @@ var stream = torrent.stream;
 var zlib = torrent.zlib;
 
 var subs = {
+	auth_token: false,
+	tracks: {},
 
 	//the original opensubtitles lib works only on regular files
 	copyBuffer: function (e)
@@ -68,12 +70,16 @@ var subs = {
 	{
 		return new Promise(function (resolve, reject)
 		{
+			if (subs.auth_token)
+				return resolve(subs.auth_token);
+
 			os.api.LogIn(function (err, data)
 			{
 				if (err)
 					return reject(err);
 
-				resolve(data.token);
+				subs.auth_token = data.token;
+				resolve(subs.auth_token);
 			}, "emrk", "qwerty", "pol", os.ua);
 		});
 	},
@@ -84,6 +90,7 @@ var subs = {
 		{
 			subs.computeFileHash(torrent_file).then(function (hash)
 			{
+				console.log('hash', hash);
 				os.api.SearchSubtitles(function (err, data)
 				{
 					if (err)
@@ -104,19 +111,23 @@ var subs = {
 	{
 		return new Promise(function (resolve, reject)
 		{
+			//test:
+			//var srt = $.get('../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt');
+			//resolve(srt);
+
 			os.api.DownloadSubtitles(function (err, data)
 			{
 				if (err)
 					return reject(err);
 
-				//console.error(data.data, data.status);
-				//	if (!data.data)
-				//		return reject(data);
+				if (!data.data)
+					return reject('Open subtitles error: ' + data.status);
 
 				console.log('DownloadSubtitles', data);
 
 				subs.extract_gzip(data.data[0].data).then(function (srt)
 				{
+					subs.cache[sub_files_ids] = srt;
 					resolve(srt);
 				}, reject);
 
@@ -157,20 +168,31 @@ var subs = {
 		});
 	},
 
-	set_srt: function (video, srt)
+	set_srt: function (video, sub_id)
 	{
-		var track = video.addTextTrack("subtitles", "English", "en");
-		track.mode = "showing";
-
-		var cues = subs.parse_srt(srt, true);
-		for (var ci in cues)
+		if (sub_id)
 		{
-			var cue = cues[ci];
-			//https://w3c.github.io/webvtt/
-			var vttCue = new VTTCue(cue.startTime / 1000, cue.endTime / 1000, cue.text);
-			//vttCue.line = 15; //0 - 10
-			track.addCue(vttCue);
+			if (!subs.tracks['_' + sub_id])
+			{
+				var track = subs.tracks['_' + sub_id] = video.addTextTrack("subtitles", "English", "en");
+				subs.os_download_sub(subs.auth_token, [sub_id]).then(function (srt)
+				{
+					var cues = subs.parse_srt(srt, true);
+					for (ci in cues)
+					{
+						var cue = cues[ci];
+						//https://w3c.github.io/webvtt/
+						var vttCue = new VTTCue(cue.startTime / 1000, cue.endTime / 1000, cue.text);
+						//vttCue.line = 15; //0 - 10
+						track.addCue(vttCue);
+					}
+				}, app.error);
+			}
 		}
+		$.each(subs.tracks, function(i)
+		{
+			this.mode = i == ('_' + sub_id) ? 'showing' : 'hidden';
+		});
 	},
 
 	//based on: https://github.com/bazh/subtitles-parser/blob/master/index.js

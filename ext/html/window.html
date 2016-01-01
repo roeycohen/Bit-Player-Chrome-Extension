@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title></title>
     <style id="subs_style">
         ::cue {
             /*http://www.w3.org/TR/2011/WD-html5-20110525/rendering.html#the-::cue-pseudo-element*/
@@ -17,15 +16,80 @@
     <style>
         body {
             margin: 0;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         video {
             width: 100%;
             height: 90%;
+            position: relative;
+        }
+
+        #controls, #status {
+            position: absolute;
+            right: 5px;
+            bottom: 40px;
+            z-index: 2147483647;
+        }
+
+        #status {
+            bottom: auto;
+            top: 5px;
+            color: white;
+            border-radius: 4px;
+            background-color: #101010;
+            padding: 5px;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #status:empty {
+            display: none
+        }
+
+        .button {
+            color: white;
+            display: inline-block;
+            background-color: #101010;
+            font-weight: 900;
+            cursor: default;
+            padding: 7px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .button .context_menu {
+            display: none;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            background-color: #101010;
+            bottom: 100%;
+            right: 0;
+            border: 1px solid #555555;
+            border-radius: 4px 4px 0 4px;
+            font-weight: 300;
+            white-space: nowrap;
+        }
+
+        .button:hover .context_menu {
+            display: block;
+        }
+
+        .button .context_menu li {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .button .context_menu li:hover, .button .context_menu li.active {
+            background-color: #434343;
+        }
+
+        .button .context_menu li + li {
+            border-top: 1px solid #555555;
         }
     </style>
-
+    <link rel="stylesheet" href="../css/icons/style.css">
     <script src="../js/libs/jquery.min.js"></script>
     <script src="../js/bundle.ts.js"></script>
     <script src="../js/subs.js"></script>
@@ -34,21 +98,24 @@
 </head>
 <body>
 
-<div>
-    <div id="error"></div>
-    <div id="note"></div>
-    <div id="meta"></div>
+<video id="video" controls <!--muted-->>
+<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>
+<!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
+<!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
+<!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
+</video>
+<div id="controls">
+    <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
+    <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
+    <div class="button" id="sub_select">
+        <span class="icon-bubble"></span>
+        <ul class="context_menu">
+
+        </ul>
+    </div>
 </div>
 
-<div id="plus">+</div>
-<div id="minus">-</div>
-<video id="video" controls muted>
-    <!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
-    <!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
-    <!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
-    <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
-</video>
-
+<div id="status"></div>
 
 </body>
 </html>
