@@ -1,4 +1,4 @@
-# Popcorn-Player-Chrome-extension
+# Popcorn Player Chrome Extension
 
 Chrome extension for playing video torrents.
 
