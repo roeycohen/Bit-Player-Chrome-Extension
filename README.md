@@ -17,7 +17,7 @@ Chrome extension for playing video torrents.
   - [ ] Mouse hiding on playing.
 - [ ] Subtitles:
   - [x] Change subtitles font size.
-  - [ ] Fix encoding issues.
+  - [x] Fix encoding issues.
   - [ ] Allow user to choose subtitles language.
   - [ ] Subtitles sync.
   - [ ] Integrate more subtitles vendors.

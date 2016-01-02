@@ -47,6 +47,7 @@
 			//exporting modules manually:
 			t.exports.buffer = e("buffer"),
 			t.exports.long = e("long"),
+			t.exports.encoding = e("encoding"),
 			t.exports.stream = e("stream"),
 			t.exports.zlib = e("zlib")
 		},
@@ -58,8 +59,9 @@
 				//exporting modules manually:
 				"buffer": 128,
 				"long": 319,
+				"encoding": 3,
 				"stream": 295,
-				zlib: 127
+				"zlib": 127
 			}
 		],
 		//=============================================================================================

@@ -1,12 +1,13 @@
 ;
-//var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-//ahhor 18: var myTorrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//big bang (hash: 2476dfc7cc376dd0)
+var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//arrow 18: var myTorrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //sicario
 //var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //arrow 19
 //var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-//tarzan
-var myTorrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
+//tarzan (hash: 62a191d72edb3cd0)
+//var myTorrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
 //console.log(torrent);
 
 app = {
@@ -74,7 +75,7 @@ app = {
 				{
 					subs.os_available_subs(token, torrent_file, 'heb').then(function (srts)
 					{
-						if (srts.length > 0 )
+						if (srts.length > 0)
 							app.controls_fill_sub(srts);
 						else
 							app.error('subtitiles not found');
@@ -145,7 +146,8 @@ app = {
 		});
 
 		//keyboard
-		$(document).on('keypress', function(e){
+		$(document).on('keypress', function (e)
+		{
 			if (app.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
 				return;
 
@@ -198,25 +200,26 @@ app = {
 			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
 			cue_style.setProperty('font-size', (cur_size - 0.1) + 'em', null);
 		});
-		app.$ctrls.find('#sub_select .context_menu').on('click', 'li', function()
+		app.$ctrls.find('#sub_select .context_menu').on('click', 'li', function ()
 		{
 			var $li = $(this);
 			$li.siblings().removeClass('active');
 			$li.addClass('active');
 
-			subs.set_srt(app.video, $li.data('sub_id'));
+			subs.set_srt(app.video, $li.data('sub_id'), $li.data('encoding'));
 		});
 	},
-	controls_fill_sub: function(srts)
+	controls_fill_sub: function (srts)
 	{
 		var $sub_select = app.$ctrls.find('#sub_select').show();
 		var $cm = $sub_select.find('.context_menu');
 		$cm.html('<li class="active"><i>Off</i></li>');
-		$.each(srts, function(i, srt){
+		$.each(srts, function (i, srt)
+		{
 			if (i === 0)
 				document.title = srt.MovieName + ' - Popcorn Player';
 			$cm.append(
-				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data('sub_id', srt.IDSubtitleFile)
+				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({sub_id: srt.IDSubtitleFile, encoding: srt.SubEncoding})
 			);
 		});
 	}

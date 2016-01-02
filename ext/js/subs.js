@@ -107,7 +107,7 @@ var subs = {
 		});
 	},
 
-	os_download_sub: function (auth_token, sub_files_ids)
+	os_download_sub: function (auth_token, sub_files_id, org_encoding)
 	{
 		return new Promise(function (resolve, reject)
 		{
@@ -128,11 +128,11 @@ var subs = {
 					resolve(srt);
 				}, reject);
 
-			}, auth_token, sub_files_ids);
+			}, auth_token, [sub_files_id]);
 		});
 	},
 
-	extract_gzip: function (subfile_zip)
+	extract_gzip: function (subfile_zip, org_encoding)
 	{
 		return new Promise(function (resolve, reject)
 		{
@@ -152,26 +152,23 @@ var subs = {
 			{
 				var output = buffer.Buffer.concat(output_sections, output_length);
 				var t = output.toString();
-				//if ("pol" == lng && t.indexOf("�") >= 0)
-				//{
-				//	var o = encoding.convert(output, "utf8", "cp1250").toString();
-				//	if (o.indexOf("�") < 0)
-				//		t = o;
-				//}
+				if (org_encoding != 'UTF-8')
+					t = torrent.encoding.convert(output, "utf8", org_encoding).toString();
+				
 				resolve(t);
 			});
 			i.on("error", reject);
 		});
 	},
 
-	set_srt: function (video, sub_id)
+	set_srt: function (video, sub_id, org_encoding)
 	{
 		if (sub_id)
 		{
 			if (!subs.tracks['_' + sub_id])
 			{
 				var track = subs.tracks['_' + sub_id] = video.addTextTrack("subtitles", "English", "en");
-				subs.os_download_sub(subs.auth_token, [sub_id]).then(function (srt)
+				subs.os_download_sub(subs.auth_token, sub_id, org_encoding).then(function (srt)
 				{
 					var cues = subs.parse_srt(srt, true);
 					for (ci in cues)
