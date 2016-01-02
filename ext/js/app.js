@@ -167,6 +167,7 @@ app = {
 			hideControlsTimeout = window.setTimeout(function ()
 			{
 				app.$ctrls.hide();
+				app.$video.css({cursor: 'none'});
 			}, 3000);
 		});
 		app.$video.on('waiting pause', function ()
@@ -180,11 +181,13 @@ app = {
 		{
 			hideControlsTimeout && clearTimeout(hideControlsTimeout);
 			app.$ctrls.show();
+			app.$video.css({cursor: 'default'});
 
 			if (!app.video.paused)
 				hideControlsTimeout = window.setTimeout(function ()
 				{
 					app.$ctrls.hide();
+					app.$video.css({cursor: 'none'});
 				}, 3000);
 		});
 
