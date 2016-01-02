@@ -1,6 +1,11 @@
 ;
-var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-//var myTorrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//var myTorrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//ahhor 18: var myTorrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//sicario
+//var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//arrow 19
+var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+
 
 //console.log(torrent);
 
@@ -16,23 +21,23 @@ app = {
 		app.$ctrls = $('#controls');
 		app.controls();
 
-		subs.os_auth().then(function (token)
-		{
-			os.api.SearchSubtitles(function (err, data)
-			{
-				if (err)
-					this.error(err);
-
-				var srts = data.data && data.data.filter(function (e)
-					{
-						return "srt" == e.SubFormat
-					});
-
-				app.controls_fill_sub(srts);
-			}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb'}]); //1954197964
-		}, app.error);
-
-		return;
+		//subs.os_auth().then(function (token)
+		//{
+		//	os.api.SearchSubtitles(function (err, data)
+		//	{
+		//		if (err)
+		//			this.error(err);
+		//
+		//		var srts = data.data && data.data.filter(function (e)
+		//			{
+		//				return "srt" == e.SubFormat
+		//			});
+		//
+		//		app.controls_fill_sub(srts);
+		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb'}]); //1954197964
+		//}, app.error);
+		//
+		//return;
 
 		app.torrent = torrent.TorrentStream(myTorrent, {
 			verify: false,
@@ -65,18 +70,12 @@ app = {
 
 				subs.os_auth().then(function (token)
 				{
-					console.log('token', token);
 					subs.os_available_subs(token, torrent_file, 'heb').then(function (srts)
 					{
-						console.log('srts', srts);
-						if (srts.length)
-						{
-							console.log('IDSubtitleFile', srts[0].IDSubtitleFile); //"1954952199"
-							subs.os_download_sub(token, [srts[0].IDSubtitleFile]).then(function (data)
-							{
-								subs.set_srt(app.video, data);
-							}, app.error);
-						}
+						if (srts.length > 0 )
+							app.controls_fill_sub(srts);
+						else
+							app.error('subtitiles not found');
 					}, app.error)
 				}, app.error);
 
@@ -100,7 +99,10 @@ app = {
 		{
 			var extension = f.path.substr((~-f.path.lastIndexOf(".") >>> 0) + 2);
 			if ($.inArray(extension, ['mp4', 'avi', 'mkv']) > -1 && f.length > biggest_file)
+			{
+				biggest_file = f.length;
 				best_match_index = i;
+			}
 		});
 		return best_match_index;
 	},
@@ -188,13 +190,14 @@ app = {
 	},
 	controls_fill_sub: function(srts)
 	{
-		var $cm = app.$ctrls.find('#sub_select .context_menu');
+		var $sub_select = app.$ctrls.find('#sub_select').show();
+		var $cm = $sub_select.find('.context_menu');
 		$cm.html('<li class="active"><i>Off</i></li>');
 		$.each(srts, function(i, srt){
 			if (i === 0)
 				document.title = srt.MovieName + ' - Popcorn Player';
 			$cm.append(
-				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')' + ' ' + srt.IDSubtitleFile).data('sub_id', srt.IDSubtitleFile)
+				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data('sub_id', srt.IDSubtitleFile)
 			);
 		});
 	}

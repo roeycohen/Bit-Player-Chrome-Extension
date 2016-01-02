@@ -80,7 +80,7 @@ var subs = {
 
 				subs.auth_token = data.token;
 				resolve(subs.auth_token);
-			}, "emrk", "qwerty", "pol", os.ua);
+			}, "", "", "en", os.ua);
 		});
 	},
 
@@ -90,7 +90,6 @@ var subs = {
 		{
 			subs.computeFileHash(torrent_file).then(function (hash)
 			{
-				console.log('hash', hash);
 				os.api.SearchSubtitles(function (err, data)
 				{
 					if (err)
@@ -123,11 +122,8 @@ var subs = {
 				if (!data.data)
 					return reject('Open subtitles error: ' + data.status);
 
-				console.log('DownloadSubtitles', data);
-
 				subs.extract_gzip(data.data[0].data).then(function (srt)
 				{
-					subs.cache[sub_files_ids] = srt;
 					resolve(srt);
 				}, reject);
 
@@ -150,7 +146,6 @@ var subs = {
 			{
 				output_sections.push(e);
 				output_length += e.length;
-				console.log(output_length);
 			});
 			i.on("end", function ()
 			{
