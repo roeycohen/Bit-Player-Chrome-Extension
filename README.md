@@ -12,8 +12,12 @@ Chrome extension for playing video torrents.
   - [ ] Create or integrate a better video player/controls.
   - [ ] Integrate a player that will support more video file types(??)
   - [ ] Test the plugin with large video files - currently the video is stored in memory and i'm not sure it will work with large files.
+  - [ ] Keyboard shortcuts.
+  - [ ] Mouse hiding on playing.
 - [ ] Subtitles:
-  - [x] Change subtitles font size.  
+  - [x] Change subtitles font size.
+  - [ ] Fix encoding issues.
+  - [ ] Allow user to choose subtitles language.
   - [ ] Subtitles sync.
   - [ ] Integrate more subtitles vendors.
   - [ ] Subtitles manual search.
@@ -21,4 +25,5 @@ Chrome extension for playing video torrents.
   - [ ] Save user's settings to persistance storage (subtitles size, language and etc).
   - [ ] Save user's list of watched videos so that he can choose new ones.
 - [ ] Add plugins support (Kodi style).
+- [ ] Allow user to save the downloaded video file to disk.
 
