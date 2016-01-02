@@ -123,7 +123,7 @@ var subs = {
 				if (!data.data)
 					return reject('Open subtitles error: ' + data.status);
 
-				subs.extract_gzip(data.data[0].data).then(function (srt)
+				subs.extract_gzip(data.data[0].data, org_encoding).then(function (srt)
 				{
 					resolve(srt);
 				}, reject);
@@ -152,7 +152,7 @@ var subs = {
 			{
 				var output = buffer.Buffer.concat(output_sections, output_length);
 				var t = output.toString();
-				if (org_encoding != 'UTF-8')
+				if (org_encoding && org_encoding != 'UTF-8')
 					t = torrent.encoding.convert(output, "utf8", org_encoding).toString();
 				
 				resolve(t);
