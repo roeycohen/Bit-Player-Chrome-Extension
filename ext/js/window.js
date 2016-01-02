@@ -1,7 +1,18 @@
 ;
 window.onload = function ()
 {
-	app.start();
+	var options = {};
+	(location.href.split("?")[1] || "").split("&").map(function (t)
+	{
+		return t.split("=")
+	}).forEach(function (t)
+	{
+		options[t[0]] = decodeURIComponent(t[1])
+	});
+
+	chrome.storage.local.debug = options.debug;
+
+	app.start(options.url);
 };
 
 /*

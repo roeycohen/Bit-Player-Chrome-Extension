@@ -1,0 +1,25 @@
+{
+  "version": "0.5.0",
+  "manifest_version": 2,
+  "minimum_chrome_version": "31",
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "js/bg.js"
+    ]
+  },
+  "name": "Popcorn Player Launcher",
+  "short_name": "Popcorn Player Launcher",
+  "description": "Adds context menu for magnet/torrent links",
+  "icons": {
+    "128": "images/icon128.png",
+    "48": "images/icon48.png",
+    "64": "images/icon64.png",
+    "16": "images/icon16.png"
+  },
+  "permissions": [
+    "contextMenus",
+    "notifications"
+  ],
+  "update_url": "https://clients2.google.com/service/update2/crx"
+}

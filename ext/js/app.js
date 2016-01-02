@@ -4,9 +4,9 @@
 //sicario
 //var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //arrow 19
-var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-
-
+//var myTorrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//tarzan
+var myTorrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
 //console.log(torrent);
 
 app = {
@@ -14,8 +14,10 @@ app = {
 	video: null,
 	$video: null,
 	$ctrls: null,
-	start: function ()
+	start: function (torrent_url)
 	{
+		torrent_url = torrent_url || myTorrent;
+
 		app.video = document.getElementById("video");
 		app.$video = $(app.video);
 		app.$ctrls = $('#controls');
@@ -39,7 +41,7 @@ app = {
 		//
 		//return;
 
-		app.torrent = torrent.TorrentStream(myTorrent, {
+		app.torrent = torrent.TorrentStream(torrent_url, {
 			verify: false,
 			storage: torrent.MemoryStorage,
 			connections: 50,
@@ -132,11 +134,28 @@ app = {
 	},
 	controls: function ()
 	{
-
 		var hideControlsTimeout = null;
+
+		//mouse play/pause
 		app.$video.click(function ()
 		{
+			if (app.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+				return;
 			app.video.paused ? app.video.play() : video.pause();
+		});
+
+		//keyboard
+		$(document).on('keypress', function(e){
+			if (app.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+				return;
+
+			switch (e.keyCode)
+			{
+				case 32: //space
+					app.video.paused ? app.video.play() : video.pause();
+					break;
+				//todo: add more options (forward rewind and etc).
+			}
 		});
 
 		app.$video.on('playing play', function ()
@@ -167,7 +186,7 @@ app = {
 				}, 3000);
 		});
 
-		//subtitles size
+		//subtitles
 		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
 		app.$ctrls.find('#plus').click(function ()
 		{

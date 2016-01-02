@@ -1,34 +1,48 @@
 {
-   "app": {
-      "background": {
-         "persistent": false,
-         "scripts": [ "js/bg.js" ]
-      }
-   },
-   "description": "lala",
-   "icons": {
-      "128": "images/icon128.png",
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "64": "images/icon64.png"
-   },
-   "manifest_version": 2,
-   "name": "Popcorn Player",
-   "permissions": [ "storage", "contextMenus", "notifications", "fullscreen", "http://*/" ],
-   "short_name": "Popcorn Player",
-   "sockets": {
-      "tcp": {
-         "connect": "*"
-      },
-      "tcpServer": {
-         "listen": "*"
-      },
-      "udp": {
-         "bind": "*",
-         "multicastMembership": "",
-         "send": "*"
-      }
-   },
-   "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "0.0.0.7"
+  "version": "0.1.0",
+  "manifest_version": 2,
+  "minimum_chrome_version": "31",
+  "app": {
+    "background": {
+      "persistent": false,
+      "scripts": [
+        "js/bg.js"
+      ]
+    }
+  },
+  "name": "Popcorn Player",
+  "short_name": "Popcorn Player",
+  "description": "lala",
+  "externally_connectable": {
+    "ids": [
+      "bgljfjnanadgclhfmkndglfpfolkncdj"
+    ]
+  },
+  "icons": {
+    "128": "images/icon128.png",
+    "48": "images/icon48.png",
+    "64": "images/icon64.png",
+    "16": "images/icon16.png"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "notifications",
+    "fullscreen",
+    "http://*/"
+  ],
+  "sockets": {
+    "tcp": {
+      "connect": "*"
+    },
+    "tcpServer": {
+      "listen": "*"
+    },
+    "udp": {
+      "bind": "*",
+      "multicastMembership": "",
+      "send": "*"
+    }
+  },
+  "update_url": "https://clients2.google.com/service/update2/crx"
 }

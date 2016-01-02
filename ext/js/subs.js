@@ -90,6 +90,7 @@ var subs = {
 		{
 			subs.computeFileHash(torrent_file).then(function (hash)
 			{
+				console.log('video hash: ' + hash);
 				os.api.SearchSubtitles(function (err, data)
 				{
 					if (err)
