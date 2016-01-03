@@ -114,7 +114,7 @@ function get_opensubtitles(e, t)
 			}, reject);
 		}
 
-		return t.subtitles ? resolve(t.subtitles) : (console.log("logging in to opensubtitles"), void os.api.LogIn(u, "emrk", "qwerty", "pol", os.ua))
+		return t.subtitles ? resolve(t.subtitles) : (console.log("logging in to opensubtitles"), void os.api.LogIn(u, "", "", "pol", os.ua))
 	})
 }
 var OS = require("opensubtitles");
