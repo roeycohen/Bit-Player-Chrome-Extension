@@ -15,6 +15,7 @@ Chrome extension for playing video torrents.
   - [ ] Integrate a player that will support more video file types(??)
   - [ ] Keyboard shortcuts.
   - [x] Mouse hiding on playing.
+  - [ ] Add chromecast support.
 - [ ] Subtitles:
   - [x] Change subtitles font size.
   - [x] Fix encoding issues.
