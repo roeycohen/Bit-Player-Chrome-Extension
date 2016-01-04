@@ -25,7 +25,9 @@ Chrome extension for playing video torrents.
   - [ ] Subtitles manual search.
   - [ ] Custom subtitles.
 - [ ] Storage:
-  - [ ] Save user's settings to persistance storage (subtitles size, language and etc).
+  - [ ] Save user's settings to persistance storage.
+    - [x] subtitles size.
+    - [ ] subtitles language and if on or off.
   - [ ] Save user's list of watched videos so that he can choose new ones.
 - [ ] Add plugins support (Kodi style).
 - [ ] Integrate with a website like myepisodes.com.

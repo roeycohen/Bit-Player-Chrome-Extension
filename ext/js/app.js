@@ -196,15 +196,26 @@ app = {
 
 		//subtitles
 		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		app.$ctrls.find('#plus').click(function ()
+		var set_font_size = function(increase)
 		{
 			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
-			cue_style.setProperty('font-size', (cur_size + 0.1) + 'em', null);
+			var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
+			cue_style.setProperty('font-size', new_size, null);
+			chrome.storage.local.set({subtitles_size: new_size});
+		};
+
+		chrome.storage.local.get('subtitles_size', function(data){
+			if ('subtitles_size' in data)
+				cue_style.setProperty('font-size', data['subtitles_size'], null);
+		});
+
+		app.$ctrls.find('#plus').click(function ()
+		{
+			set_font_size(true);
 		});
 		app.$ctrls.find('#minus').click(function ()
 		{
-			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
-			cue_style.setProperty('font-size', (cur_size - 0.1) + 'em', null);
+			set_font_size(false);
 		});
 		app.$ctrls.find('#sub_select .context_menu').on('click', 'li', function ()
 		{
