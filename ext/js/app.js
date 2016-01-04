@@ -24,6 +24,11 @@ app = {
 		app.$ctrls = $('#controls');
 		app.controls();
 
+		$(window).resize(function(){
+			app.$video.css('width', $(window).width());
+			app.$video.css('height', $(window).height());
+		}).trigger('resize');
+
 		//subs.os_auth().then(function (token)
 		//{
 		//	os.api.SearchSubtitles(function (err, data)
@@ -67,7 +72,8 @@ app = {
 				{
 					$('#status').text(
 						app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
-						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100 ) + '%)'
+						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100 ) + '%), ' +
+						app.torrent.swarm.connections.length + ' peers'
 					);
 				}, 500);
 
@@ -112,9 +118,9 @@ app = {
 	formatBytes: function (bytes)
 	{
 		if (isNaN(bytes) || bytes == 0)
-			return '0';
+			return '0 B';
 
-		var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+		var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
 		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
 		return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 	},
@@ -133,10 +139,33 @@ app = {
 			}
 		);
 	},
+	hideControlsTimeout: null,
+	toggle_controls: function(on)
+	{
+		if (true === on)
+		{
+			$('#status').css('opacity', 1);
+			app.$ctrls.show();
+			app.$video.css({cursor: 'default'});
+
+			app.hideControlsTimeout && clearTimeout(app.hideControlsTimeout);
+			if (!app.video.paused)
+			{
+				app.hideControlsTimeout = window.setTimeout(function ()
+				{
+					app.toggle_controls(false);
+				}, 3000);
+			}
+		}
+		else
+		{
+			$('#status').css('opacity', 0);
+			app.$ctrls.hide();
+			app.$video.css({cursor: 'none'});
+		}
+	},
 	controls: function ()
 	{
-		var hideControlsTimeout = null;
-
 		//mouse play/pause
 		app.$video.click(function ()
 		{
@@ -160,35 +189,9 @@ app = {
 			}
 		});
 
-		app.$video.on('playing play', function ()
+		app.$video.on('playing play waiting pause mousemove', function ()
 		{
-			$('#status').css('opacity', 0);
-			hideControlsTimeout && clearTimeout(hideControlsTimeout);
-			hideControlsTimeout = window.setTimeout(function ()
-			{
-				app.$ctrls.hide();
-				app.$video.css({cursor: 'none'});
-			}, 3000);
-		});
-		app.$video.on('waiting pause', function ()
-		{
-			$('#status').css('opacity', 1);
-			hideControlsTimeout && clearTimeout(hideControlsTimeout);
-			app.$ctrls.show();
-		});
-
-		app.$video.on('mousemove', function ()
-		{
-			hideControlsTimeout && clearTimeout(hideControlsTimeout);
-			app.$ctrls.show();
-			app.$video.css({cursor: 'default'});
-
-			if (!app.video.paused)
-				hideControlsTimeout = window.setTimeout(function ()
-				{
-					app.$ctrls.hide();
-					app.$video.css({cursor: 'none'});
-				}, 3000);
+			app.toggle_controls(true);
 		});
 
 		//subtitles
@@ -222,7 +225,10 @@ app = {
 			if (i === 0)
 				document.title = srt.MovieName + ' - Popcorn Player';
 			$cm.append(
-				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({sub_id: srt.IDSubtitleFile, encoding: srt.SubEncoding})
+				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
+					sub_id: srt.IDSubtitleFile,
+					encoding: srt.SubEncoding
+				})
 			);
 		});
 	}
