@@ -57,7 +57,7 @@ app = {
 		});
 
 		//this.torrent.listen(6666);
-		console.log('fetching torrent...');
+		$('#load_status').text('Fetching torrent data...');
 		this.torrent.on("ready", function ()
 		{
 			console.log('torrent ready');
@@ -66,15 +66,16 @@ app = {
 				$('#error').text('dang!');
 			else
 			{
+				$('#load_status').text('Downloading...');
+
 				var torrent_file = app.torrent.files[video_index];
 				console.log('torrent_file', torrent_file);
 				setInterval(function ()
 				{
-					$('#status').text(
-						app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
+					var status_text = app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
 						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100 ) + '%), ' +
-						app.torrent.swarm.connections.length + ' peers'
-					);
+						app.torrent.swarm.connections.length + ' peers';
+					$('#download_status, #status').text(status_text);
 				}, 500);
 
 				subs.os_auth().then(function (token)
@@ -166,6 +167,11 @@ app = {
 	},
 	controls: function ()
 	{
+		app.video.oncanplay=function(){
+			$('#loader').slideUp();
+			$('#player').slideDown();
+		};
+
 		//mouse play/pause
 		app.$video.click(function ()
 		{

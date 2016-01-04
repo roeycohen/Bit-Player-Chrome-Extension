@@ -2,6 +2,21 @@ body {
   margin: 0;
   font-size: 15px;
 }
+#loader {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  padding-top: 30px;
+  color: white;
+  text-align: center;
+}
+#loader #load_status {
+  font-family: fantasy;
+  font-size: 30px;
+}
+#loader #download_status {
+  font-size: 15px;
+}
 #controls,
 #status {
   position: absolute;

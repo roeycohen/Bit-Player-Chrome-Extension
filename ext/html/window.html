@@ -13,10 +13,8 @@
             text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
         }
     </style>
-    <style>
-
-    </style>
     <link rel="stylesheet" href="../css/icons/style.css">
+    <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/main.css">
     <script src="../js/libs/jquery.min.js"></script>
     <script src="../js/bundle.ts.js"></script>
@@ -26,24 +24,37 @@
 </head>
 <body>
 
-<video id="video" controls <!--muted-->>
-<!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
-<!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
-<!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
-<!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
-</video>
-<div id="controls">
-    <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
-    <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
-    <div class="button" id="sub_select" style="display:none;">
-        <span class="icon-bubble"></span>
-        <ul class="context_menu">
-
-        </ul>
+<div id="loader">
+    <div class="sk-folding-cube">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
     </div>
+    <div id="load_status">Please wait...</div>
+    <div id="download_status"></div>
 </div>
 
-<div id="status"></div>
+<div id="player" style="display:none;">
+    <video id="video" controls <!--muted-->>
+    <!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
+    <!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
+    <!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
+    <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
+    </video>
+    <div id="controls">
+        <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
+        <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
+        <div class="button" id="sub_select" style="display:none;">
+            <span class="icon-bubble"></span>
+            <ul class="context_menu">
+
+            </ul>
+        </div>
+    </div>
+
+    <div id="status"></div>
+</div>
 
 </body>
 </html>
