@@ -3,12 +3,33 @@ body {
 	font-size: 15px;
 }
 
+#welcome {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	input {
+		margin-top: -10%;
+		font-size: 25px;
+		text-align: center;
+		width: 80%;
+		padding: 10px;
+	}
+}
+
 #loader {
 	position: absolute;
 	height: 100%;
 	width: 100%;
-	padding-top: 30px;
-
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	> div{
+		margin-top: -10%;
+	}
 	color: white;
 	text-align: center;
 	#load_status {

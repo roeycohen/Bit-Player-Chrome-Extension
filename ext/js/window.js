@@ -12,7 +12,7 @@ window.onload = function ()
 
 	chrome.storage.local.debug = options.debug;
 
-	app.start(options.url);
+	app.entry(options.url);
 };
 
 /*

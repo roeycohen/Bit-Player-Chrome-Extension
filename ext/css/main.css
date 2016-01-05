@@ -2,13 +2,33 @@ body {
   margin: 0;
   font-size: 15px;
 }
+#welcome {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#welcome input {
+  margin-top: -10%;
+  font-size: 25px;
+  text-align: center;
+  width: 80%;
+  padding: 10px;
+}
 #loader {
   position: absolute;
   height: 100%;
   width: 100%;
-  padding-top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: white;
   text-align: center;
+}
+#loader > div {
+  margin-top: -10%;
 }
 #loader #load_status {
   font-family: fantasy;

@@ -24,15 +24,21 @@
 </head>
 <body>
 
-<div id="loader">
-    <div class="sk-folding-cube">
-        <div class="sk-cube1 sk-cube"></div>
-        <div class="sk-cube2 sk-cube"></div>
-        <div class="sk-cube4 sk-cube"></div>
-        <div class="sk-cube3 sk-cube"></div>
+<div id="welcome">
+    <input type="text" placeholder="PASTE A MAGNET LINK URL HERE"/>
+</div>
+
+<div id="loader" style="display:none;">
+    <div>
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+        <div id="load_status">Please wait...</div>
+        <div id="download_status"></div>
     </div>
-    <div id="load_status">Please wait...</div>
-    <div id="download_status"></div>
 </div>
 
 <div id="player" style="display:none;">

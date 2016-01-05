@@ -41,7 +41,8 @@ chrome.runtime.onInstalled.addListener(function ()
 		id: "contextMenu",
 		title: "Play with Popcorn Player",
 		contexts: ["link"],
-		targetUrlPatterns: ["magnet:*",
+		targetUrlPatterns: [
+			"magnet:*",
 			"*://*/*.torrent",
 			"*://*/*.torrent?*",
 			"*://*/*.torrent#*"
