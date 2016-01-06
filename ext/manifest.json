@@ -29,6 +29,7 @@
     "contextMenus",
     "notifications",
     "fullscreen",
+    "<all_urls>",
     "http://*/"
   ],
   "sockets": {

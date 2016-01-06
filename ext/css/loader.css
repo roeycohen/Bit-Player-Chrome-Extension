@@ -1,3 +1,4 @@
+/*
 @keyframes background_colors_animate {
     0% {
         background-color: #1ABC9C;
@@ -18,12 +19,12 @@
         background-color: #FFCB65;
     }
 }
-
+*/
 #loader {
-    background-color: #1ABC9C;
-    animation-name: background_colors_animate;
-    animation-duration: 20s;
-    animation-iteration-count: infinite;
+    /*background-color: #1ABC9C;*/
+    /*animation-name: background_colors_animate;*/
+    /*animation-duration: 20s;*/
+    /*animation-iteration-count: infinite;*/
 }
 
 /*http://cssload.net*/

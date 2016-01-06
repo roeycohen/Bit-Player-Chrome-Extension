@@ -18,6 +18,8 @@ app = {
 	$ctrls: null,
 	entry: function (torrent_url)
 	{
+		background.entry();
+
 		torrent_url = torrent_url || test_torrent;
 
 		app.video = document.getElementById("video");
@@ -34,7 +36,7 @@ app = {
 		if (torrent_url)
 			app.start_video(torrent_url);
 	},
-	start_video: function(torrent_url)
+	start_video: function (torrent_url)
 	{
 		$('#welcome').hide();
 		$('#loader').show();
@@ -150,7 +152,7 @@ app = {
 		);
 	},
 	hideControlsTimeout: null,
-	toggle_controls: function(on)
+	toggle_controls: function (on)
 	{
 		if (true === on)
 		{
@@ -176,7 +178,7 @@ app = {
 	},
 	controls: function ()
 	{
-		$('#welcome input').on('change keyup keydown', function()
+		$('#welcome input').on('change keyup keydown', function ()
 		{
 			var url = $(this).val();
 			if (url.match(/^magnet:*/))
@@ -184,7 +186,9 @@ app = {
 			else
 				$(this).val('');
 		});
-		app.video.oncanplay=function(){
+		app.video.oncanplay = function ()
+		{
+			background.stop();
 			$('#loader').slideUp();
 			$('#player').slideDown();
 		};
@@ -219,7 +223,7 @@ app = {
 
 		//subtitles
 		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		var set_font_size = function(increase)
+		var set_font_size = function (increase)
 		{
 			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
 			var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
@@ -227,7 +231,8 @@ app = {
 			chrome.storage.local.set({subtitles_size: new_size});
 		};
 
-		chrome.storage.local.get('subtitles_size', function(data){
+		chrome.storage.local.get('subtitles_size', function (data)
+		{
 			if ('subtitles_size' in data)
 				cue_style.setProperty('font-size', data['subtitles_size'], null);
 		});

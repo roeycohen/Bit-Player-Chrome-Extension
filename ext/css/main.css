@@ -1,3 +1,8 @@
+.full_size {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
 body {
   margin: 0;
   font-size: 15px;
@@ -36,6 +41,52 @@ body {
 }
 #loader #download_status {
   font-size: 15px;
+}
+@keyframes background_img {
+  0% {
+    background-size: 100%;
+  }
+  50% {
+    background-size: 150%;
+  }
+  100% {
+    background-size: 100%;
+  }
+}
+#background {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+#background:after {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  content: '';
+  background-color: rgba(0, 0, 0, 0.8);
+}
+#background table {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-spacing: 0;
+}
+#background table tr {
+  height: 50%;
+}
+#background table td {
+  background-position: left 0;
+  height: 33.33333%;
+  background-size: 100%;
+  animation-name: background_img;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+#background table td[pnum="0"],
+#background table td[pnum="2"],
+#background table td[pnum="4"] {
+  background-position: right 0;
 }
 #controls,
 #status {
