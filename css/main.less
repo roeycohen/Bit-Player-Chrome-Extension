@@ -43,6 +43,28 @@ body {
 	}
 }
 
+
+@keyframes background_colors_animate {
+    0% {
+        background-color: #1ABC9C;
+    }
+    17% {
+        background-color: #D35400;
+    }
+    33% {
+        background-color: #2C3E50;
+    }
+    50% {
+        background-color: #2980B9;
+    }
+    66% {
+        background-color: #7F8C8D;
+    }
+    83% {
+        background-color: #FFCB65;
+    }
+}
+
 @keyframes background_img {
 	0% {
 		background-size: 100%;
@@ -57,6 +79,11 @@ body {
 
 #background {
 	.full_size();
+	background-color: #1ABC9C;
+	animation-name: background_colors_animate;
+	animation-duration: 20s;
+	animation-iteration-count: infinite;
+
 	&:after{
 		.full_size();
 		content:'';
