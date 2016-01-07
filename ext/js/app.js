@@ -41,6 +41,9 @@ app = {
 		$('#welcome').hide();
 		$('#loader').show();
 
+		//background.stop();
+		//$('#loader').slideUp();
+		//$('#player').slideDown();
 		//subs.os_auth().then(function (token)
 		//{
 		//	os.api.SearchSubtitles(function (err, data)
@@ -54,9 +57,9 @@ app = {
 		//			});
 		//
 		//		app.controls_fill_sub(srts);
-		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb'}]); //1954197964
+		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb,eng'}]); //1954197964
 		//}, app.error);
-		//
+		//return;
 
 		app.torrent = torrent.TorrentStream(torrent_url, {
 			verify: false,
@@ -91,7 +94,7 @@ app = {
 
 				subs.os_auth().then(function (token)
 				{
-					subs.os_available_subs(token, torrent_file, 'heb').then(function (srts)
+					subs.os_available_subs(token, torrent_file, 'heb,eng').then(function (srts)
 					{
 						if (srts.length > 0)
 							app.controls_fill_sub(srts);
@@ -251,24 +254,36 @@ app = {
 			$li.siblings().removeClass('active');
 			$li.addClass('active');
 
-			subs.set_srt(app.video, $li.data('sub_id'), $li.data('encoding'));
+			var sub_data = $li.data();
+			chrome.storage.local.set({prefered_sub_lang: sub_data.language || null}); //assuming the user will always use the same subtitles language...
+			subs.set_srt(app.video, sub_data.sub_id, sub_data.encoding);
 		});
 	},
 	controls_fill_sub: function (srts)
 	{
-		var $sub_select = app.$ctrls.find('#sub_select').show();
-		var $cm = $sub_select.find('.context_menu');
-		$cm.html('<li class="active"><i>Off</i></li>');
-		$.each(srts, function (i, srt)
+		chrome.storage.local.get(['prefered_sub_lang'], function(data)
 		{
-			if (i === 0)
-				document.title = srt.MovieName + ' - Popcorn Player';
-			$cm.append(
-				$('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
+			var $srt_li_to_load = null;
+			var $sub_select = app.$ctrls.find('#sub_select').show();
+			var $cm = $sub_select.find('.context_menu');
+			$cm.html('<li class="active"><i>Off</i></li>');
+			$.each(srts, function (i, srt)
+			{
+				if (i === 0)
+					document.title = srt.MovieName + ' - Popcorn Player';
+
+				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
 					sub_id: srt.IDSubtitleFile,
+					language: srt.SubLanguageID,
 					encoding: srt.SubEncoding
-				})
-			);
-		});
+				});
+
+				$cm.append($li);
+
+				if (!$srt_li_to_load && data.prefered_sub_lang === srt.SubLanguageID)
+					$srt_li_to_load = $li;
+			});
+			$srt_li_to_load && $srt_li_to_load.trigger('click');
+		})
 	}
 };
