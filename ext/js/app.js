@@ -42,7 +42,7 @@ app = {
 		$('#loader').show();
 
 		//background.stop();
-		//$('#loader').slideUp();
+		//$('#loader, #help_link').slideUp();
 		//$('#player').slideDown();
 		//subs.os_auth().then(function (token)
 		//{
@@ -192,7 +192,7 @@ app = {
 		app.video.oncanplay = function ()
 		{
 			background.stop();
-			$('#loader').slideUp();
+			$('#loader, #help_link').slideUp();
 			$('#player').slideDown();
 		};
 
@@ -205,7 +205,7 @@ app = {
 		});
 
 		//keyboard
-		$(document).on('keypress', function (e)
+		$(document).on('keydown', function (e)
 		{
 			if (app.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
 				return;
@@ -215,7 +215,18 @@ app = {
 				case 32: //space
 					app.video.paused ? app.video.play() : video.pause();
 					break;
-				//todo: add more options (forward rewind and etc).
+				case 39: //right arrow
+					app.video.currentTime += 10;
+					break;
+				case 37: //left arrow
+					app.video.currentTime -= 10;
+					break;
+				case 38: //up arrow
+					app.video.currentTime += 60;
+					break;
+				case 40: //down arrow
+					app.video.currentTime -= 60;
+					break;
 			}
 		});
 

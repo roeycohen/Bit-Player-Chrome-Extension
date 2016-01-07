@@ -42,6 +42,16 @@ body {
 #loader #download_status {
   font-size: 15px;
 }
+#help_link {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+#help_link a {
+  color: #bfbfbf;
+}
 @keyframes background_colors_animate {
   0% {
     background-color: #1ABC9C;

@@ -13,7 +13,7 @@ Chrome extension for playing video torrents.
 - [ ] Player:
   - [ ] Create or integrate a better video player/controls.
   - [ ] Integrate a player that will support more video file types(??)
-  - [ ] Keyboard shortcuts.
+  - [x] Keyboard shortcuts (space: play/pause, left/right: 10 secs skip, up/down: 1 minute skip). 
   - [x] Mouse hiding on playing.
   - [ ] Add chromecast support.
 - [ ] Subtitles:
@@ -27,7 +27,7 @@ Chrome extension for playing video torrents.
 - [ ] Storage:
   - [ ] Save user's settings to persistance storage.
     - [x] subtitles size.
-    - [ ] subtitles language and if on or off.
+    - [x] subtitles language and if on or off.
   - [ ] Save user's list of watched videos so that he can choose new ones.
 - [ ] Add plugins support (Kodi style).
 - [ ] Integrate with a website like myepisodes.com.
