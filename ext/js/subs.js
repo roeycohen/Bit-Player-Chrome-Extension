@@ -111,9 +111,6 @@ var subs = {
 	{
 		return new Promise(function (resolve, reject)
 		{
-			//test:
-			//var srt = $.get('../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt');
-			//resolve(srt);
 
 			os.api.DownloadSubtitles(function (err, data)
 			{
@@ -171,9 +168,19 @@ var subs = {
 				subs.os_download_sub(subs.auth_token, sub_id, org_encoding).then(function (srt)
 				{
 					var cues = subs.parse_srt(srt, true);
+					var punctuation = /^[.,!?:]*/;
 					for (ci in cues)
 					{
 						var cue = cues[ci];
+
+						//fix rtl common rtl problem, where the punctuations marks are at the beginning instead at the end.
+						cue.text = cue.text.split("\n").map(function(l){
+							var p = punctuation.exec(l)[0];
+							if (p)
+								l = l.replace(punctuation, '') + p;
+							return l;
+						}).join("\n");
+
 						//https://w3c.github.io/webvtt/
 						var vttCue = new VTTCue(cue.startTime / 1000, cue.endTime / 1000, cue.text);
 						//vttCue.line = 15; //0 - 10
