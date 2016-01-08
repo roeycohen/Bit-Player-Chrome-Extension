@@ -282,6 +282,7 @@ app = {
 			{
 				app.$ctrls.find('#sub_select .context_menu li').removeClass('active').filter('.manual').addClass('active');
 				subs.set_srt(app.video, 'manual', null, e.target.files[0]);
+				e.target.value = ''; //make sure the change event will trigger if the user chooses the previous file again
 			}
 		});
 	},
