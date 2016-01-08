@@ -170,12 +170,22 @@ var subs = {
 				track = subs.tracks['manual'] = video.addTextTrack("subtitles", "English", "en");
 
 				var fileReader = new FileReader();
+				var secRead = false; //second read flag
 				fileReader.onload = function (event) {
 					var srt = event.target.result;
-					//srt = torrent.encoding.convert(srt, "utf8").toString();
-					subs.srt_to_track(srt, track);
+
+					if (!secRead)
+					{
+						secRead = true;
+						var enc_data = bundle2.jschardet.detect(srt); //requires readAsBinaryString in order to detect the current encoding
+						fileReader.readAsText(srt_file, enc_data.encoding); //now read with the right encoding
+					}
+					else
+					{
+						subs.srt_to_track(srt, track);
+					}
 				};
-				fileReader.readAsText(srt_file);
+				fileReader.readAsBinaryString(srt_file); //this option will be deprecated in the future (should consider a better way to detect encoding)
 			}
 			else
 			{

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "test",
     "start": "node server.js",
-    "browserify": "browserify bundle.js -o ext/js/bundle.js"
+    "browserify": "browserify bundle.js -o ext/js/bundle.js",
+    "bundle2": "browserify bundle2.js -o ext/js/bundle2.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   "dependencies": {
     "browser-process-hrtime": "^0.1.2",
     "buffer": "^3.6.0",
+    "jschardet": "^1.4.1",
     "long": "^3.0.1",
     "opensubtitles": "0.0.3",
     "path": "^0.12.7",
