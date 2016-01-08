@@ -111,7 +111,6 @@ var subs = {
 	{
 		return new Promise(function (resolve, reject)
 		{
-
 			os.api.DownloadSubtitles(function (err, data)
 			{
 				if (err)
@@ -158,41 +157,68 @@ var subs = {
 		});
 	},
 
-	set_srt: function (video, sub_id, org_encoding)
+	set_srt: function (video, sub_id, org_encoding, srt_file)
 	{
 		if (sub_id)
 		{
-			if (!subs.tracks['_' + sub_id])
+			var track = null;
+			if (sub_id === 'manual')
 			{
-				var track = subs.tracks['_' + sub_id] = video.addTextTrack("subtitles", "English", "en");
-				subs.os_download_sub(subs.auth_token, sub_id, org_encoding).then(function (srt)
+				if (subs.tracks['manual'])
+					subs.tracks['manual'].mode = 'hidden';
+
+				track = subs.tracks['manual'] = video.addTextTrack("subtitles", "English", "en");
+
+				var fileReader = new FileReader();
+				fileReader.onload = function (event) {
+					var srt = event.target.result;
+					//srt = torrent.encoding.convert(srt, "utf8").toString();
+					subs.srt_to_track(srt, track);
+				};
+				fileReader.readAsText(srt_file);
+			}
+			else
+			{
+				var os_org_id = sub_id;
+				sub_id = '_' + sub_id;
+				if (!subs.tracks[sub_id])
 				{
-					var cues = subs.parse_srt(srt, true);
-					var punctuation = /^[.,!?:]*/;
-					for (ci in cues)
+					track = subs.tracks[sub_id] = video.addTextTrack("subtitles", "English", "en");
+					subs.os_download_sub(subs.auth_token, os_org_id, org_encoding).then(function (srt)
 					{
-						var cue = cues[ci];
-
-						//fix rtl common rtl problem, where the punctuations marks are at the beginning instead at the end.
-						cue.text = cue.text.split("\n").map(function(l){
-							var p = punctuation.exec(l)[0];
-							if (p)
-								l = l.replace(punctuation, '') + p;
-							return l;
-						}).join("\n");
-
-						//https://w3c.github.io/webvtt/
-						var vttCue = new VTTCue(cue.startTime / 1000, cue.endTime / 1000, cue.text);
-						//vttCue.line = 15; //0 - 10
-						track.addCue(vttCue);
-					}
-				}, app.error);
+						subs.srt_to_track(srt, track);
+					}, app.error);
+				}
 			}
 		}
-		$.each(subs.tracks, function(i)
+
+		$.each(subs.tracks, function(i, track)
 		{
-			this.mode = i == ('_' + sub_id) ? 'showing' : 'hidden';
+			track.mode = i == (sub_id) ? 'showing' : 'hidden';
 		});
+	},
+
+	srt_to_track: function(srt, track)
+	{
+		var cues = subs.parse_srt(srt, true);
+		var punctuation = /^[.,!?:]*/;
+		for (var ci in cues)
+		{
+			var cue = cues[ci];
+
+			//fix rtl common rtl problem, where the punctuations marks are at the beginning instead at the end.
+			cue.text = cue.text.split("\n").map(function(l){
+				var p = punctuation.exec(l)[0];
+				if (p)
+					l = l.replace(punctuation, '') + p;
+				return l;
+			}).join("\n");
+
+			//https://w3c.github.io/webvtt/
+			var vttCue = new VTTCue(cue.startTime / 1000, cue.endTime / 1000, cue.text);
+			//vttCue.line = 15; //0 - 10
+			track.addCue(vttCue);
+		}
 	},
 
 	//based on: https://github.com/bazh/subtitles-parser/blob/master/index.js

@@ -69,11 +69,13 @@
     <div id="controls">
         <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
         <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
-        <div class="button" id="sub_select" style="display:none;">
+        <div class="button" id="sub_select">
             <span class="icon-bubble"></span>
             <ul class="context_menu">
-
+                <li class="active"><i>Off</i></li>
+                <li class="manual">From file...</li>
             </ul>
+            <input type="file" accept=".srt" style="display:none;"/>
         </div>
     </div>
 

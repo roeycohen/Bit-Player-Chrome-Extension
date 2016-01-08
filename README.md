@@ -23,7 +23,7 @@ Chrome extension for playing video torrents.
   - [ ] Subtitles sync.
   - [ ] Integrate more subtitles vendors.
   - [ ] Subtitles manual search.
-  - [ ] Custom subtitles.
+  - [x] Load subtitles from file.
 - [ ] Storage:
   - [ ] Save user's settings to persistance storage.
     - [x] subtitles size.

@@ -262,12 +262,27 @@ app = {
 		app.$ctrls.find('#sub_select .context_menu').on('click', 'li', function ()
 		{
 			var $li = $(this);
-			$li.siblings().removeClass('active');
-			$li.addClass('active');
+			if ($li.hasClass('manual'))
+			{
+				$(':file').trigger('click');
+			}
+			else
+			{
+				$li.siblings().removeClass('active');
+				$li.addClass('active');
 
-			var sub_data = $li.data();
-			chrome.storage.local.set({prefered_sub_lang: sub_data.language || null}); //assuming the user will always use the same subtitles language...
-			subs.set_srt(app.video, sub_data.sub_id, sub_data.encoding);
+				var sub_data = $li.data();
+				chrome.storage.local.set({prefered_sub_lang: sub_data.language || null}); //assuming the user will always use the same subtitles language...
+				subs.set_srt(app.video, sub_data.sub_id, sub_data.encoding);
+			}
+		});
+		$(':file').change(function(e){
+
+			if (e.target.files[0])
+			{
+				app.$ctrls.find('#sub_select .context_menu li').removeClass('active').filter('.manual').addClass('active');
+				subs.set_srt(app.video, 'manual', null, e.target.files[0]);
+			}
 		});
 	},
 	controls_fill_sub: function (srts)
@@ -275,9 +290,7 @@ app = {
 		chrome.storage.local.get(['prefered_sub_lang'], function(data)
 		{
 			var $srt_li_to_load = null;
-			var $sub_select = app.$ctrls.find('#sub_select').show();
-			var $cm = $sub_select.find('.context_menu');
-			$cm.html('<li class="active"><i>Off</i></li>');
+			var $cm = app.$ctrls.find('#sub_select').find('.context_menu');
 			$.each(srts, function (i, srt)
 			{
 				if (i === 0)
