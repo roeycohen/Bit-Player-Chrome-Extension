@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.4.9",
   "manifest_version": 2,
   "minimum_chrome_version": "31",
   "app": {
@@ -12,7 +12,7 @@
   },
   "name": "Popcorn Player",
   "short_name": "Popcorn Player",
-  "description": "lala",
+  "description": "Streaming video player for torrents",
   "externally_connectable": {
     "ids": [
       "bgljfjnanadgclhfmkndglfpfolkncdj"
