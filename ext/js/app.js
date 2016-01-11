@@ -87,9 +87,9 @@ app = {
 				setInterval(function ()
 				{
 					var status_text = app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
-						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100 ) + '%), ' +
+						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.min(100, Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100) ) + '%), ' +
 						app.torrent.swarm.connections.length + ' peers';
-					$('#download_status, #status').text(status_text);
+					$('.download_status').text(status_text);
 				}, 500);
 
 				subs.os_auth().then(function (token)
@@ -107,7 +107,7 @@ app = {
 				t.listen(0, function ()
 				{
 					app.torrent.httpPort = t.address().port; //save port for later use
-
+					$('#status a').attr('href', "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name);
 					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
 					//$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
 					app.$video.attr('type', 'video/mp4').attr('src', src);

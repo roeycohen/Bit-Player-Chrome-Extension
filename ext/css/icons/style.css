@@ -1,9 +1,9 @@
 @font-face {
     font-family: 'icomoon';
     src:
-        url('fonts/icomoon.ttf?m7is90') format('truetype'),
-        url('fonts/icomoon.woff?m7is90') format('woff'),
-        url('fonts/icomoon.svg?m7is90#icomoon') format('svg');
+        url('fonts/icomoon.ttf?pirg43') format('truetype'),
+        url('fonts/icomoon.woff?pirg43') format('woff'),
+        url('fonts/icomoon.svg?pirg43#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -23,6 +23,9 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-floppy-disk:before {
+    content: "\e903";
+}
 .icon-bubble:before {
     content: "\e900";
 }
