@@ -25723,6 +25723,9 @@
 					if (!c || f >= e.files.length)return n.statusCode = 404, n.end();
 					var u = e.files[f];
 					if (c[1])return u.subtitles ? (subtitles = "WEBVTT\n" + u.subtitles.replace(/(\d\d:\d\d)\,(\d\d\d)/g, "$1.$2"), n.setHeader("Content-Type", "text/vtt"), n.end(subtitles)) : (n.statusCode = 404, n.end());
+					//=============================================================================================
+					n.setHeader("Content-Disposition", "attachment");
+					//=============================================================================================
 					n.setHeader("Accept-Ranges", "bytes"), n.setHeader("Content-Type", o.lookup(u.name)), n.statusCode = 200, n.setHeader("transferMode.dlna.org", "Streaming"), n.setHeader("contentFeatures.dlna.org", "DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000");
 					var d;
 					if (t.headers.range ? (n.statusCode = 206, d = a(u.length, t.headers.range)[0], r("range %s", JSON.stringify(d)), n.setHeader("Content-Range", "bytes " + d.start + "-" + d.end + "/" + u.length), n.setHeader("Content-Length", d.end - d.start + 1)) : n.setHeader("Content-Length", u.length), console.log(t.method, i, d), "HEAD" === t.method)return n.end();

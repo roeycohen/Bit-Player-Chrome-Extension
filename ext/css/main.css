@@ -39,7 +39,7 @@ body {
   font-family: fantasy;
   font-size: 30px;
 }
-#loader #download_status {
+#loader .download_status {
   font-size: 15px;
 }
 #help_link {
@@ -143,8 +143,8 @@ body {
   padding: 5px;
   transition: opacity 1s ease-in-out;
 }
-#status:empty {
-  display: none;
+#status a {
+  color: #d7d7d7;
 }
 /*https://gist.github.com/afabbro/3759334*/
 video::-webkit-media-controls-toggle-closed-captions-button {
