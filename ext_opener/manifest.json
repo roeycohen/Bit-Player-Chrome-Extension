@@ -8,8 +8,8 @@
       "js/bg.js"
     ]
   },
-  "name": "Popcorn Player Launcher",
-  "short_name": "Popcorn Player Launcher",
+  "name": "Bit Player Launcher",
+  "short_name": "Bit Player Launcher",
   "description": "Adds context menu for magnet/torrent links",
   "icons": {
     "128": "images/icon128.png",

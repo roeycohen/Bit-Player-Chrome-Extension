@@ -295,7 +295,7 @@ app = {
 			$.each(srts, function (i, srt)
 			{
 				if (i === 0)
-					document.title = srt.MovieName + ' - Popcorn Player';
+					document.title = srt.MovieName + ' - Bit Player';
 
 				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
 					sub_id: srt.IDSubtitleFile,

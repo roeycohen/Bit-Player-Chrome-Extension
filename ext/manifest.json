@@ -10,9 +10,9 @@
       ]
     }
   },
-  "name": "Popcorn Player",
-  "short_name": "Popcorn Player",
-  "description": "Streaming video player for torrents",
+  "name": "Bit Player",
+  "short_name": "Bit Player",
+  "description": "Tiny video player for streaming torrents",
   "externally_connectable": {
     "ids": [
       "bgljfjnanadgclhfmkndglfpfolkncdj"

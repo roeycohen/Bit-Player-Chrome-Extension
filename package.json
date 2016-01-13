@@ -1,5 +1,5 @@
 {
-  "name": "popcorn_player",
+  "name": "bit_player",
   "version": "1.0.0",
   "description": "video torrents player with subtitles support",
   "main": "bundle.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/roeycohen/Popcorn-Player-Chrome-extension.git"
+    "url": "git+https://github.com/roeycohen/Bit-Player-Chrome-Extension.git"
   },
   "keywords": [
     "pocorn",
@@ -22,9 +22,9 @@
   "author": "Roey Cohen",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/roeycohen/Popcorn-Player-Chrome-extension/issues"
+    "url": "https://github.com/roeycohen/Bit-Player-Chrome-Extension/issues"
   },
-  "homepage": "https://github.com/roeycohen/Popcorn-Player-Chrome-extension#readme",
+  "homepage": "https://github.com/roeycohen/Bit-Player-Chrome-Extension#readme",
   "dependencies": {
     "browser-process-hrtime": "^0.1.2",
     "buffer": "^3.6.0",
