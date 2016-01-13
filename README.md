@@ -1,4 +1,4 @@
-# Popcorn Player Chrome Extension
+# Bit Player Chrome Extension
 
 Chrome extension for playing video torrents.
 
