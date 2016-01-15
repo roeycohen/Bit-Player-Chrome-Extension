@@ -6,7 +6,7 @@
   "scripts": {
     "test": "test",
     "start": "node server.js",
-    "browserify": "browserify bundle.js -o ext/js/bundle.js",
+    "browserify": "browserify -r browserify-fs:fs -r chrome-dgram:dgram -r chrome-socket:socket bundle.js -o ext/js/bundle.js",
     "bundle2": "browserify bundle2.js -o ext/js/bundle2.js"
   },
   "repository": {
@@ -27,7 +27,10 @@
   "homepage": "https://github.com/roeycohen/Bit-Player-Chrome-Extension#readme",
   "dependencies": {
     "browser-process-hrtime": "^0.1.2",
+    "browserify-fs": "^1.0.0",
     "buffer": "^3.6.0",
+    "chrome-dgram": "^2.1.7",
+    "chrome-socket": "0.0.1",
     "jschardet": "^1.4.1",
     "long": "^3.0.1",
     "opensubtitles": "0.0.3",
