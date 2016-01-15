@@ -61,23 +61,47 @@ app = {
 		//}, app.error);
 		//return;
 
-		app.torrent = torrent.TorrentStream(torrent_url, {
+		var torrent_fetch_success = false;
+		var retry_count = 0;
+		var torrent_options = {
 			verify: false,
 			storage: torrent.MemoryStorage,
-			connections: 50,
+			connections: 100,
 			uploads: 10,
 			dht: true,
 			tracker: true
-		});
+		};
+		$('#load_status').text('Fetching torrent data...');
+		app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
+
+		// for some reason, sometimes when a torrent fails to start a restart help.
+		var retry_timer = window.setInterval(function ()
+		{
+			if (!torrent_fetch_success)
+			{
+				app.torrent.remove(function ()
+				{
+					app.torrent.destroy(function ()
+					{
+						retry_count++;
+						$('#load_status').text('Fetching torrent data... (retry #' + retry_count + ')');
+						app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
+					});
+				});
+			}
+			else
+				clearInterval(retry_timer);
+		}, 15000); //15 secs
 
 		//this.torrent.listen(6666);
-		$('#load_status').text('Fetching torrent data...');
+
 		this.torrent.on("ready", function ()
 		{
-			console.log('torrent ready');
+			torrent_fetch_success = true;
+
 			var video_index = app.best_file(app.torrent.files);
 			if (0 > video_index)
-				$('#error').text('dang!');
+				$('#load_status').text('No video file found :(');
 			else
 			{
 				$('#load_status').text('Downloading...');
@@ -276,7 +300,8 @@ app = {
 				subs.set_srt(app.video, sub_data.sub_id, sub_data.encoding);
 			}
 		});
-		$(':file').change(function(e){
+		$(':file').change(function (e)
+		{
 
 			if (e.target.files[0])
 			{
@@ -288,7 +313,7 @@ app = {
 	},
 	controls_fill_sub: function (srts)
 	{
-		chrome.storage.local.get(['prefered_sub_lang'], function(data)
+		chrome.storage.local.get(['prefered_sub_lang'], function (data)
 		{
 			var $srt_li_to_load = null;
 			var $cm = app.$ctrls.find('#sub_select').find('.context_menu');
