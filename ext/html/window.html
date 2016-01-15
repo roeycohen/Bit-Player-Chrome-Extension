@@ -21,6 +21,7 @@
     <script src="../js/bundle2.js"></script>
     <script src="../js/background.js"></script>
     <script src="../js/subs.js"></script>
+    <script src="../js/controls.js"></script>
     <script src="../js/app.js"></script>
     <script src="../js/window.js"></script>
 </head>
@@ -43,6 +44,7 @@
 
 <div id="welcome">
     <input type="text" placeholder="PASTE A MAGNET LINK URL HERE"/>
+    <!--<input type="file" accept=".mp4,.mkv" />-->
 </div>
 
 <div id="loader" style="display:none;">
@@ -76,7 +78,7 @@
                 <li class="active"><i>Off</i></li>
                 <li class="manual">From file...</li>
             </ul>
-            <input type="file" accept=".srt" style="display:none;"/>
+            <input name='manual_subtitles_file' type="file" accept=".srt" style="display:none;"/>
         </div>
     </div>
 

@@ -25,11 +25,12 @@ Chrome extension for playing video torrents.
   - [ ] Subtitles manual search.
   - [x] Load subtitles from file.
 - [ ] Storage:
-  - [ ] Save user's settings to persistance storage.
+  - [ ] Save user's settings to persistence storage.
     - [x] subtitles size.
     - [x] subtitles language and if on or off.
-  - [ ] Save user's list of watched videos so that he can choose new ones.
+    - [ ] Save user's list of watched videos so that he can choose new ones.
 - [ ] Add plugins support (Kodi style).
 - [ ] Integrate with a website like myepisodes.com.
-- [ ] Allow user to save the downloaded video file to disk.
+- [x] Allow user to save the downloaded video file to disk.
+- [x] Allow user to play a video from the disk.
 

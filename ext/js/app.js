@@ -13,25 +13,11 @@ var test_torrent;
 
 app = {
 	torrent: null,
-	video: null,
-	$video: null,
-	$ctrls: null,
 	entry: function (torrent_url)
 	{
-		background.entry();
-
 		torrent_url = torrent_url || test_torrent;
-
-		app.video = document.getElementById("video");
-		app.$video = $(app.video);
-		app.$ctrls = $('#controls');
-		app.controls();
-
-		$(window).resize(function ()
-		{
-			app.$video.css('width', $(window).width());
-			app.$video.css('height', $(window).height());
-		}).trigger('resize');
+		background.entry();
+		controls.init();
 
 		if (torrent_url)
 			app.start_video(torrent_url);
@@ -56,7 +42,7 @@ app = {
 		//				return "srt" == e.SubFormat
 		//			});
 		//
-		//		app.controls_fill_sub(srts);
+		//		controls.controls_fill_sub(srts);
 		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb,eng'}]); //1954197964
 		//}, app.error);
 		//return;
@@ -121,7 +107,7 @@ app = {
 					subs.os_available_subs(token, torrent_file, 'heb,eng').then(function (srts)
 					{
 						if (srts.length > 0)
-							app.controls_fill_sub(srts);
+							controls.controls_fill_sub(srts);
 						else
 							app.error('subtitiles not found');
 					}, app.error)
@@ -134,7 +120,7 @@ app = {
 					$('#status a').attr('href', "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name);
 					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
 					//$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
-					app.$video.attr('type', 'video/mp4').attr('src', src);
+					$('#video').attr('type', 'video/mp4').attr('src', src);
 				});
 			}
 		});
@@ -177,163 +163,5 @@ app = {
 			{
 			}
 		);
-	},
-	hideControlsTimeout: null,
-	toggle_controls: function (on)
-	{
-		if (true === on)
-		{
-			$('#status').css('opacity', 1);
-			app.$ctrls.show();
-			app.$video.css({cursor: 'default'});
-
-			app.hideControlsTimeout && clearTimeout(app.hideControlsTimeout);
-			if (!app.video.paused)
-			{
-				app.hideControlsTimeout = window.setTimeout(function ()
-				{
-					app.toggle_controls(false);
-				}, 3000);
-			}
-		}
-		else
-		{
-			$('#status').css('opacity', 0);
-			app.$ctrls.hide();
-			app.$video.css({cursor: 'none'});
-		}
-	},
-	controls: function ()
-	{
-		$('#welcome input').on('change keyup keydown', function ()
-		{
-			var url = $(this).val();
-			if (url.match(/^magnet:*/))
-				app.start_video(url);
-			else
-				$(this).val('');
-		});
-		app.video.oncanplay = function ()
-		{
-			background.stop();
-			$('#loader, #help_link').slideUp();
-			$('#player').slideDown();
-		};
-
-		//mouse play/pause
-		app.$video.click(function ()
-		{
-			if (app.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-			app.video.paused ? app.video.play() : video.pause();
-		});
-
-		//keyboard
-		$(document).on('keydown', function (e)
-		{
-			if (app.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-
-			switch (e.keyCode)
-			{
-				case 32: //space
-					app.video.paused ? app.video.play() : video.pause();
-					break;
-				case 39: //right arrow
-					app.video.currentTime += 10;
-					break;
-				case 37: //left arrow
-					app.video.currentTime -= 10;
-					break;
-				case 38: //up arrow
-					app.video.currentTime += 60;
-					break;
-				case 40: //down arrow
-					app.video.currentTime -= 60;
-					break;
-			}
-		});
-
-		app.$video.on('playing play waiting pause mousemove', function ()
-		{
-			app.toggle_controls(true);
-		});
-
-		//subtitles
-		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		var set_font_size = function (increase)
-		{
-			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
-			var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
-			cue_style.setProperty('font-size', new_size, null);
-			chrome.storage.local.set({subtitles_size: new_size});
-		};
-
-		chrome.storage.local.get('subtitles_size', function (data)
-		{
-			if ('subtitles_size' in data)
-				cue_style.setProperty('font-size', data['subtitles_size'], null);
-		});
-
-		app.$ctrls.find('#plus').click(function ()
-		{
-			set_font_size(true);
-		});
-		app.$ctrls.find('#minus').click(function ()
-		{
-			set_font_size(false);
-		});
-		app.$ctrls.find('#sub_select .context_menu').on('click', 'li', function ()
-		{
-			var $li = $(this);
-			if ($li.hasClass('manual'))
-			{
-				$(':file').trigger('click');
-			}
-			else
-			{
-				$li.siblings().removeClass('active');
-				$li.addClass('active');
-
-				var sub_data = $li.data();
-				chrome.storage.local.set({prefered_sub_lang: sub_data.language || null}); //assuming the user will always use the same subtitles language...
-				subs.set_srt(app.video, sub_data.sub_id, sub_data.encoding);
-			}
-		});
-		$(':file').change(function (e)
-		{
-
-			if (e.target.files[0])
-			{
-				app.$ctrls.find('#sub_select .context_menu li').removeClass('active').filter('.manual').addClass('active');
-				subs.set_srt(app.video, 'manual', null, e.target.files[0]);
-				e.target.value = ''; //make sure the change event will trigger if the user chooses the previous file again
-			}
-		});
-	},
-	controls_fill_sub: function (srts)
-	{
-		chrome.storage.local.get(['prefered_sub_lang'], function (data)
-		{
-			var $srt_li_to_load = null;
-			var $cm = app.$ctrls.find('#sub_select').find('.context_menu');
-			$.each(srts, function (i, srt)
-			{
-				if (i === 0)
-					document.title = srt.MovieName + ' - Bit Player';
-
-				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
-					sub_id: srt.IDSubtitleFile,
-					language: srt.SubLanguageID,
-					encoding: srt.SubEncoding
-				});
-
-				$cm.append($li);
-
-				if (!$srt_li_to_load && data.prefered_sub_lang === srt.SubLanguageID)
-					$srt_li_to_load = $li;
-			});
-			$srt_li_to_load && $srt_li_to_load.trigger('click');
-		})
 	}
 };
