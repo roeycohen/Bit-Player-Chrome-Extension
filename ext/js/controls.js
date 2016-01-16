@@ -17,7 +17,7 @@ controls = {
 			controls.$video.css('height', $(window).height());
 		}).trigger('resize');
 
-		$('#welcome input').on('change keyup keydown', function ()
+		$('#welcome input[name="magnet_url"]').on('change keyup keydown', function ()
 		{
 			var url = $(this).val();
 			if (url.match(/^magnet:*/))
@@ -25,10 +25,23 @@ controls = {
 			else
 				$(this).val('');
 		});
+
+		$('#welcome [name="manual_video_file"]:file').change(function (e)
+		{
+			if (e.target.files[0])
+			{
+				$('#status').hide();
+				app.start_video_local(e.target.files[0]);
+			}
+		});
+		$('#welcome #manual_video_file_button').click(function (e){
+			$('#welcome [name="manual_video_file"]:file').trigger('click');
+		});
+
 		controls.video.oncanplay = function ()
 		{
 			background.stop();
-			$('#loader, #help_link').slideUp();
+			$('#loader, #welcome, #help_link').slideUp();
 			$('#player').slideDown();
 		};
 

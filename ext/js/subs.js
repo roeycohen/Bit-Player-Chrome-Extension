@@ -22,31 +22,59 @@ var subs = {
 	{
 		return new Promise(function (resolve, reject)
 		{
-			var r = [], o = 0;
+			var buffers = [], total_length = 0;
 			e.on("data", function (data)
 			{
-				r.push(subs.copyBuffer(data));
-				o += data.length;
+				buffers.push(subs.copyBuffer(data));
+				total_length += data.length;
 			});
 			e.on("end", function ()
 			{
 				e.destroy();
-				resolve(buffer.Buffer.concat(r, o))
+				resolve(buffer.Buffer.concat(buffers, total_length));
 			});
 			e.on("error", reject);
 		})
 	},
-	computeFileHash: function (e)
+	computeFileHash: function (torrent_file)
 	{
-		var stream_start = e.createReadStream({start: 0, end: 65535});
-		var steam_end = e.createReadStream({start: e.length - 65536, end: e.length - 1});
+		var stream_start = torrent_file.createReadStream({start: 0, end: 65535});
+		var steam_end = torrent_file.createReadStream({start: torrent_file.length - 65536, end: torrent_file.length - 1});
 
 		return Promise.all([subs.getStreamBuffer(stream_start), subs.getStreamBuffer(steam_end)]).then(function (t)
 		{
-			return subs.computeHash(e.length, t[0], t[1])
+			return subs.computeHash(torrent_file.length, t[0], t[1]);
 		})
 	},
+	computeLocalFileHash: function(file)
+	{
+		var getBuffer = function (file, start, end)
+		{
+			var toBuffer = function (ab) {
+				var buffer = new torrent.buffer.Buffer(ab.byteLength);
+				var view = new Uint8Array(ab);
+				for (var i = 0; i < buffer.length; ++i) {
+					buffer[i] = view[i];
+				}
+				return buffer;
+			};
 
+			return new Promise(function (resolve, reject)
+			{
+				var fileReader = new FileReader();
+				fileReader.onload = function (e)
+				{
+					resolve(toBuffer(e.target.result));
+				};
+				fileReader.readAsArrayBuffer(file.slice(start, end));
+			});
+		};
+
+		return Promise.all([getBuffer(file, 0, 65535), getBuffer(file, file.size - 65536, file.size - 1)]).then(function (t)
+		{
+			return subs.computeHash(file.size, t[0], t[1]);
+		});
+	},
 	// ============================================================================
 
 	//see: https://github.com/ka2er/node-opensubtitles-api/blob/master/lib/opensubtitles.js, checksumReady method.
@@ -88,7 +116,8 @@ var subs = {
 	{
 		return new Promise(function (resolve, reject)
 		{
-			subs.computeFileHash(torrent_file).then(function (hash)
+			var comp_func = torrent_file instanceof File ? subs.computeLocalFileHash : subs.computeFileHash;
+			comp_func(torrent_file).then(function (hash)
 			{
 				console.log('video hash: ' + hash);
 				os.api.SearchSubtitles(function (err, data)

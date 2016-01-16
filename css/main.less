@@ -12,15 +12,24 @@ body {
 #welcome {
 	.full_size();
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 
-	input {
+	input[name="magnet_url"] {
 		margin-top: -10%;
 		font-size: 25px;
 		text-align: center;
 		width: 80%;
 		padding: 10px;
+	}
+	#manual_video_file_button {
+		cursor: pointer;
+		margin-top: 40px;
+		color: #7d7d7d;
+		font-size: 18px;
+		padding: 10px;
+		background-color: white;
 	}
 }
 
@@ -43,7 +52,7 @@ body {
 	}
 }
 
-#help_link{
+#help_link {
 	position: absolute;
 	bottom: 30px;
 	left: 0;
@@ -55,24 +64,24 @@ body {
 }
 
 @keyframes background_colors_animate {
-    0% {
-        background-color: #1ABC9C;
-    }
-    17% {
-        background-color: #D35400;
-    }
-    33% {
-        background-color: #2C3E50;
-    }
-    50% {
-        background-color: #2980B9;
-    }
-    66% {
-        background-color: #7F8C8D;
-    }
-    83% {
-        background-color: #FFCB65;
-    }
+	0% {
+		background-color: #1ABC9C;
+	}
+	17% {
+		background-color: #D35400;
+	}
+	33% {
+		background-color: #2C3E50;
+	}
+	50% {
+		background-color: #2980B9;
+	}
+	66% {
+		background-color: #7F8C8D;
+	}
+	83% {
+		background-color: #FFCB65;
+	}
 }
 
 @keyframes background_img {
@@ -94,10 +103,10 @@ body {
 	animation-duration: 20s;
 	animation-iteration-count: infinite;
 
-	&:after{
+	&:after {
 		.full_size();
-		content:'';
-		background-color: rgba(0,0,0, 0.8);
+		content: '';
+		background-color: rgba(0, 0, 0, 0.8);
 	}
 	table {
 		.full_size();

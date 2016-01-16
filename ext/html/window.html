@@ -43,8 +43,9 @@
 </div>
 
 <div id="welcome">
-    <input type="text" placeholder="PASTE A MAGNET LINK URL HERE"/>
-    <!--<input type="file" accept=".mp4,.mkv" />-->
+    <input type="text" name="magnet_url" placeholder="PASTE A MAGNET LINK URL HERE"/>
+    <div id="manual_video_file_button"><span class="icon-upload"></span> Or play a file from disk...</div>
+    <input type="file" name="manual_video_file" accept=".mp4,.mkv" style="display:none;"/>
 </div>
 
 <div id="loader" style="display:none;">
@@ -78,7 +79,7 @@
                 <li class="active"><i>Off</i></li>
                 <li class="manual">From file...</li>
             </ul>
-            <input name='manual_subtitles_file' type="file" accept=".srt" style="display:none;"/>
+            <input type="file" name='manual_subtitles_file' accept=".srt" style="display:none;"/>
         </div>
     </div>
 

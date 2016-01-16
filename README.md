@@ -32,5 +32,5 @@ Chrome extension for playing video torrents.
 - [ ] Add plugins support (Kodi style).
 - [ ] Integrate with a website like myepisodes.com.
 - [x] Allow user to save the downloaded video file to disk.
-- [x] Allow user to play a video from the disk.
+- [x] Allow user to play a videos from the disk.
 

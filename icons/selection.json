@@ -20,12 +20,12 @@
 				"prevSize": 16,
 				"ligatures": "floppy-disk, save2",
 				"name": "floppy-disk",
-				"id": 99,
+				"id": 0,
 				"code": 59651
 			},
 			"setIdx": 0,
-			"setId": 0,
-			"iconIdx": 98
+			"setId": 1,
+			"iconIdx": 0
 		},
 		{
 			"icon": {
@@ -48,12 +48,12 @@
 				"prevSize": 16,
 				"ligatures": "bubble, comment",
 				"name": "bubble",
-				"id": 108,
+				"id": 1,
 				"code": 59648
 			},
 			"setIdx": 0,
-			"setId": 0,
-			"iconIdx": 107
+			"setId": 1,
+			"iconIdx": 1
 		},
 		{
 			"icon": {
@@ -75,12 +75,12 @@
 				"prevSize": 16,
 				"ligatures": "plus, add",
 				"name": "plus",
-				"id": 267,
+				"id": 2,
 				"code": 59649
 			},
 			"setIdx": 0,
-			"setId": 0,
-			"iconIdx": 266
+			"setId": 1,
+			"iconIdx": 2
 		},
 		{
 			"icon": {
@@ -103,12 +103,39 @@
 				"prevSize": 16,
 				"ligatures": "minus, subtract",
 				"name": "minus",
-				"id": 268,
+				"id": 3,
 				"code": 59650
 			},
 			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 3
+		},
+		{
+			"icon": {
+				"paths": [
+					"M448 576h128v-256h192l-256-256-256 256h192zM640 432v98.712l293.066 109.288-421.066 157.018-421.066-157.018 293.066-109.288v-98.712l-384 144v256l512 192 512-192v-256z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"tags": [
+					"upload",
+					"load",
+					"arrow"
+				],
+				"grid": 16
+			},
+			"attrs": [],
+			"properties": {
+				"order": 495,
+				"prevSize": 16,
+				"ligatures": "upload, load",
+				"name": "upload",
+				"id": 98,
+				"code": 59745
+			},
+			"setIdx": 1,
 			"setId": 0,
-			"iconIdx": 267
+			"iconIdx": 97
 		}
 	],
 	"height": 1024,

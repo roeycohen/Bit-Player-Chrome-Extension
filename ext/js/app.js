@@ -22,6 +22,20 @@ app = {
 		if (torrent_url)
 			app.start_video(torrent_url);
 	},
+	start_video_local: function (file)
+	{
+		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
+		subs.os_auth().then(function (token)
+		{
+			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
+			{
+				if (srts.length > 0)
+					controls.controls_fill_sub(srts);
+				else
+					app.error('subtitiles not found');
+			}, app.error)
+		}, app.error);
+	},
 	start_video: function (torrent_url)
 	{
 		$('#welcome').hide();
