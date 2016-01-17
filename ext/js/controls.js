@@ -41,7 +41,7 @@ controls = {
 		controls.video.oncanplay = function ()
 		{
 			background.stop();
-			$('#loader, #welcome, #help_link').slideUp();
+			$('#loader, #welcome, #help_link, #logo').slideUp();
 			$('#player').slideDown();
 		};
 

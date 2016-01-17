@@ -1,7 +1,7 @@
 {
-  "version": "0.4.9",
+  "version": "0.5.0",
   "manifest_version": 2,
-  "minimum_chrome_version": "31",
+  "minimum_chrome_version": "40",
   "app": {
     "background": {
       "persistent": false,
@@ -12,7 +12,7 @@
   },
   "name": "Bit Player",
   "short_name": "Bit Player",
-  "description": "Tiny video player for streaming torrents",
+  "description": "Tiny video player for streaming torrents, local video files with subtitles support",
   "externally_connectable": {
     "ids": [
       "bgljfjnanadgclhfmkndglfpfolkncdj"
@@ -44,6 +44,5 @@
       "multicastMembership": "",
       "send": "*"
     }
-  },
-  "update_url": "https://clients2.google.com/service/update2/crx"
+  }
 }

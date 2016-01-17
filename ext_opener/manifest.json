@@ -1,7 +1,7 @@
 {
   "version": "0.5.0",
   "manifest_version": 2,
-  "minimum_chrome_version": "31",
+  "minimum_chrome_version": "40",
   "background": {
     "persistent": false,
     "scripts": [
@@ -10,7 +10,7 @@
   },
   "name": "Bit Player Launcher",
   "short_name": "Bit Player Launcher",
-  "description": "Adds context menu for magnet/torrent links",
+  "description": "Open Bit Player from link context menu",
   "icons": {
     "128": "images/icon128.png",
     "48": "images/icon48.png",
@@ -20,6 +20,5 @@
   "permissions": [
     "contextMenus",
     "notifications"
-  ],
-  "update_url": "https://clients2.google.com/service/update2/crx"
+  ]
 }

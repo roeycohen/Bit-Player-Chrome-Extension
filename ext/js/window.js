@@ -1,17 +1,21 @@
 ;
 window.onload = function ()
 {
+	var win = chrome.app.window.current();
 	$('#btn-close').click(function()
 	{
-		chrome.app.window.current().close();
+		win.close();
 	});
 	$('#btn-maximize').click(function()
 	{
-		chrome.app.window.current().maximize();
+		if (win.isMaximized())
+			win.restore();
+		else
+			win.maximize();
 	});
 	$('#btn-minimize').click(function()
 	{
-		chrome.app.window.current().minimize();
+		win.minimize();
 	});
 
 	var options = {};

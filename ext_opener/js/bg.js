@@ -42,10 +42,10 @@ chrome.runtime.onInstalled.addListener(function ()
 		title: "Play with Bit Player",
 		contexts: ["link"],
 		targetUrlPatterns: [
-			"magnet:*",
-			"*://*/*.torrent",
-			"*://*/*.torrent?*",
-			"*://*/*.torrent#*"
+			"magnet:*"
+			//,"*://*/*.torrent",
+			//"*://*/*.torrent?*",
+			//"*://*/*.torrent#*"
 		]
 	}, function ()
 	{
