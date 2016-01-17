@@ -57,6 +57,12 @@ body {
 		background-color: rgba(100, 100, 100, 0.3);
 		color: white;
 		-webkit-app-region: drag;
+		#window_title{
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: ~"calc(100% - 80px)";
+		}
 		#window_buttons {
 			float: right;
 			-webkit-app-region: no-drag;
