@@ -42,49 +42,60 @@
     </table>
 </div>
 
-<div id="welcome">
-    <input type="text" name="magnet_url" placeholder="PASTE A MAGNET LINK URL HERE"/>
-    <div id="manual_video_file_button"><span class="icon-upload"></span> Or play a file from disk...</div>
-    <input type="file" name="manual_video_file" accept=".mp4,.mkv" style="display:none;"/>
-</div>
-
-<div id="loader" style="display:none;">
-    <div>
-        <div class="sk-folding-cube">
-            <div class="sk-cube1 sk-cube"></div>
-            <div class="sk-cube2 sk-cube"></div>
-            <div class="sk-cube4 sk-cube"></div>
-            <div class="sk-cube3 sk-cube"></div>
+<div id="frame">
+    <div id="caption">
+        <span id="window_title">Bit Player</span>
+        <div id="window_buttons">
+                <div class="button" id="btn-minimize">&#9598;</div><div class="button" id="btn-maximize">&#9633;</div><div class="button" id="btn-close">&#10005;</div>
         </div>
-        <div id="load_status">Please wait...</div>
-        <div class="download_status"></div>
+    </div>
+    <div id="main_area">
+        <div id="welcome">
+            <input type="text" name="magnet_url" placeholder="PASTE A MAGNET LINK URL HERE"/>
+            <div id="manual_video_file_button"><span class="icon-upload"></span> Or play a file from disk...</div>
+            <input type="file" name="manual_video_file" accept=".mp4,.mkv" style="display:none;"/>
+        </div>
+
+        <div id="loader" style="display:none;">
+            <div>
+                <div class="sk-folding-cube">
+                    <div class="sk-cube1 sk-cube"></div>
+                    <div class="sk-cube2 sk-cube"></div>
+                    <div class="sk-cube4 sk-cube"></div>
+                    <div class="sk-cube3 sk-cube"></div>
+                </div>
+                <div id="load_status">Please wait...</div>
+                <div class="download_status"></div>
+            </div>
+        </div>
+
+        <div id="help_link"><a href="https://github.com/roeycohen/Bit-Player-Chrome-Extension" target="_blank">Developer? I'll be glad for some help :)</a></div>
+
+        <div id="player" style="display:none;">
+            <video id="video" controls <!--muted-->>
+            <!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
+            <!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
+            <!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
+            <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
+            </video>
+            <div id="controls">
+                <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
+                <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
+                <div class="button" id="sub_select">
+                    <span class="icon-bubble"></span>
+                    <ul class="context_menu">
+                        <li class="active"><i>Off</i></li>
+                        <li class="manual">From file...</li>
+                    </ul>
+                    <input type="file" name='manual_subtitles_file' accept=".srt" style="display:none;"/>
+                </div>
+            </div>
+
+            <div id="status"><span class="download_status"></span>&nbsp;&nbsp;<a target="_blank" target="Save file to disk"><span class="icon-floppy-disk"></span></a></div>
+        </div>
     </div>
 </div>
 
-<div id="help_link"><a href="https://github.com/roeycohen/Bit-Player-Chrome-Extension" target="_blank">Developer? I'll be glad for some help :)</a></div>
-
-<div id="player" style="display:none;">
-    <video id="video" controls <!--muted-->>
-    <!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
-    <!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
-    <!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
-    <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
-    </video>
-    <div id="controls">
-        <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
-        <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
-        <div class="button" id="sub_select">
-            <span class="icon-bubble"></span>
-            <ul class="context_menu">
-                <li class="active"><i>Off</i></li>
-                <li class="manual">From file...</li>
-            </ul>
-            <input type="file" name='manual_subtitles_file' accept=".srt" style="display:none;"/>
-        </div>
-    </div>
-
-    <div id="status"><span class="download_status"></span>&nbsp;&nbsp;<a target="_blank" target="Save file to disk"><span class="icon-floppy-disk"></span></a></div>
-</div>
 
 </body>
 </html>

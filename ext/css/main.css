@@ -1,29 +1,117 @@
+* {
+  box-sizing: border-box;
+}
 .full_size {
   position: absolute;
-  height: 100%;
   width: 100%;
+  top: 0;
+  bottom: 0;
 }
 body {
   margin: 0;
   font-size: 15px;
 }
-#welcome {
+#background {
   position: absolute;
-  height: 100%;
   width: 100%;
+  top: 0;
+  bottom: 0;
+  background-color: #1ABC9C;
+  animation-name: background_colors_animate;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+}
+#background:after {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  content: '';
+  background-color: rgba(0, 0, 0, 0.6);
+}
+#background table {
+  width: 100%;
+  height: 100%;
+  border-spacing: 0;
+}
+#background table tr {
+  height: 50%;
+}
+#background table td {
+  background-position: left 0;
+  height: 33.33333%;
+  background-size: 100%;
+  animation-name: background_img;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+#background table td[pnum="0"],
+#background table td[pnum="2"],
+#background table td[pnum="4"] {
+  background-position: right 0;
+}
+#frame {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+}
+#frame #caption {
+  height: 25px;
+  padding: 2px;
+  background-color: rgba(100, 100, 100, 0.3);
+  color: white;
+  -webkit-app-region: drag;
+}
+#frame #caption #window_buttons {
+  float: right;
+  -webkit-app-region: no-drag;
+}
+#frame #caption #window_buttons .button {
+  vertical-align: bottom;
+  display: inline-block;
+  width: 20px;
+  height: 18px;
+  font-size: 13px;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+}
+#frame #caption #window_buttons .button:hover {
+  background-color: #3461ad;
+}
+#frame #caption #window_buttons .button#btn-minimize {
+  padding-top: 6px;
+}
+#frame #caption #window_buttons .button#btn-maximize {
+  padding-top: 2px;
+}
+#frame #caption #window_buttons .button#btn-close:hover {
+  background-color: #da4141;
+}
+#frame #main_area {
+  position: relative;
+  height: calc(100% - 25px);
+}
+#frame #welcome {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
-#welcome input[name="magnet_url"] {
+#frame #welcome input[name="magnet_url"] {
   margin-top: -10%;
   font-size: 25px;
   text-align: center;
   width: 80%;
   padding: 10px;
 }
-#welcome #manual_video_file_button {
+#frame #welcome #manual_video_file_button {
   cursor: pointer;
   margin-top: 40px;
   color: #7d7d7d;
@@ -31,35 +119,40 @@ body {
   padding: 10px;
   background-color: white;
 }
-#loader {
+#frame #loader {
   position: absolute;
-  height: 100%;
   width: 100%;
+  top: 0;
+  bottom: 0;
+  top: 30px;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
   text-align: center;
 }
-#loader > div {
+#frame #loader > div {
   margin-top: -10%;
 }
-#loader #load_status {
+#frame #loader #load_status {
   font-family: fantasy;
   font-size: 30px;
 }
-#loader .download_status {
+#frame #loader .download_status {
   font-size: 15px;
 }
-#help_link {
+#frame #help_link {
   position: absolute;
   bottom: 30px;
   left: 0;
   right: 0;
   text-align: center;
 }
-#help_link a {
+#frame #help_link a {
   color: #bfbfbf;
+}
+#frame video#video {
+  background-color: black;
 }
 @keyframes background_colors_animate {
   0% {
@@ -92,45 +185,6 @@ body {
     background-size: 100%;
   }
 }
-#background {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background-color: #1ABC9C;
-  animation-name: background_colors_animate;
-  animation-duration: 20s;
-  animation-iteration-count: infinite;
-}
-#background:after {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  content: '';
-  background-color: rgba(0, 0, 0, 0.8);
-}
-#background table {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  border-spacing: 0;
-}
-#background table tr {
-  height: 50%;
-}
-#background table td {
-  background-position: left 0;
-  height: 33.33333%;
-  background-size: 100%;
-  animation-name: background_img;
-  animation-duration: 20s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
-#background table td[pnum="0"],
-#background table td[pnum="2"],
-#background table td[pnum="4"] {
-  background-position: right 0;
-}
 #controls,
 #status {
   position: absolute;
@@ -160,7 +214,7 @@ video::-webkit-media-controls-toggle-closed-captions-button {
   /*-webkit-appearance:none;*/
   display: none;
 }
-.button {
+#controls .button {
   color: white;
   display: inline-block;
   background-color: #101010;
@@ -171,7 +225,7 @@ video::-webkit-media-controls-toggle-closed-captions-button {
   position: relative;
   opacity: 0.8;
 }
-.button .context_menu {
+#controls .button .context_menu {
   display: none;
   list-style: none;
   padding: 0;
@@ -185,17 +239,17 @@ video::-webkit-media-controls-toggle-closed-captions-button {
   font-weight: 300;
   white-space: nowrap;
 }
-.button .context_menu li {
+#controls .button .context_menu li {
   padding: 5px;
   cursor: pointer;
 }
-.button .context_menu li:hover,
-.button .context_menu li.active {
+#controls .button .context_menu li:hover,
+#controls .button .context_menu li.active {
   background-color: #434343;
 }
-.button .context_menu li + li {
+#controls .button .context_menu li + li {
   border-top: 1px solid #555555;
 }
-.button:hover .context_menu {
+#controls .button:hover .context_menu {
   display: block;
 }

@@ -13,7 +13,7 @@ background = {
 	},
 	stop: function()
 	{
-		$('#background').hide();
+		$('#background > table').hide();
 		if (background.timer)
 			clearInterval(background.timer);
 	},

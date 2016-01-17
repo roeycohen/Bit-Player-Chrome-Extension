@@ -1,6 +1,19 @@
 ;
 window.onload = function ()
 {
+	$('#btn-close').click(function()
+	{
+		chrome.app.window.current().close();
+	});
+	$('#btn-maximize').click(function()
+	{
+		chrome.app.window.current().maximize();
+	});
+	$('#btn-minimize').click(function()
+	{
+		chrome.app.window.current().minimize();
+	});
+
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
 	{

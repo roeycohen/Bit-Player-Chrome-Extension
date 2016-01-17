@@ -13,8 +13,8 @@ controls = {
 
 		$(window).resize(function ()
 		{
-			controls.$video.css('width', $(window).width());
-			controls.$video.css('height', $(window).height());
+			controls.$video.css('width', $('#main_area').width());
+			controls.$video.css('height', $('#main_area').height());
 		}).trigger('resize');
 
 		$('#welcome input[name="magnet_url"]').on('change keyup keydown', function ()
@@ -168,7 +168,10 @@ controls = {
 			$.each(srts, function (i, srt)
 			{
 				if (i === 0)
+				{
 					document.title = srt.MovieName + ' - Bit Player';
+					$('#window_title').html(document.title);
+				}
 
 				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
 					sub_id: srt.IDSubtitleFile,
