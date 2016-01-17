@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.5.1",
   "manifest_version": 2,
   "minimum_chrome_version": "40",
   "app": {
@@ -15,7 +15,7 @@
   "description": "Tiny video player for streaming torrents, local video files with subtitles support",
   "externally_connectable": {
     "ids": [
-      "bgljfjnanadgclhfmkndglfpfolkncdj"
+      "andfnelfgfdifognepabogfledhdijhn"
     ]
   },
   "icons": {

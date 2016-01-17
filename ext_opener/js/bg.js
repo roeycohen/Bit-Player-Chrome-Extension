@@ -1,5 +1,5 @@
-//var BIT_PLAYER_APP_ID = "icocmgpofpimcojhefbcfbdldkmndpgj";
-var BIT_PLAYER_APP_ID = "lhjejncdphamohhgcjkeineeajmhmnoh"; //dev
+var BIT_PLAYER_APP_ID = "mjkikpbeengfefopcnmhljmiobkghfpd";
+//var BIT_PLAYER_APP_ID = "lhjejncdphamohhgcjkeineeajmhmnoh"; //dev
 
 function error(error)
 {
