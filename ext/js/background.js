@@ -74,7 +74,7 @@ background = {
 				return o;
 			};
 
-			$.ajax('https://api-v2launch.trakt.tv/movies/popular?extended=images&limit=100', {
+			$.ajax('https://api-v2launch.trakt.tv/movies/popular?extended=images&limit=200', {
 				headers: {
 					'trakt-api-version': '2',
 					'trakt-api-key': 'c7e20abc718e46fc75399dd6688afca9ac83cd4519c9cb1fba862b37b8640e89'

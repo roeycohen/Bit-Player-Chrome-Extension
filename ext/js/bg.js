@@ -8,7 +8,7 @@ function open_app(options)
 		{
 			return key + "=" + encodeURIComponent(options[key])
 		}).join("&");
-		chrome.app.window.create("html/window.html?" + o, {bounds: {width: 800, height: 450}, frame: 'none'})
+		chrome.app.window.create("html/window.html?" + o, {bounds: {width: 1000, height: 600}, frame: 'none'})
 	})
 }
 chrome.app.runtime.onLaunched.addListener(function ()

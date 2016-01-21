@@ -1,13 +1,19 @@
 var BIT_PLAYER_APP_ID = "mjkikpbeengfefopcnmhljmiobkghfpd";
 //var BIT_PLAYER_APP_ID = "lhjejncdphamohhgcjkeineeajmhmnoh"; //dev
 
-function error(error)
+chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
 {
-	chrome.notifications.create("subtitles", {
+	window.open('https://chrome.google.com/webstore/detail/bit-player/mjkikpbeengfefopcnmhljmiobkghfpd');
+});
+
+function error(error, buttons)
+{
+	chrome.notifications.create("app_error", {
 			type: "basic",
 			title: "Bit Player Launcher",
 			iconUrl: "../images/icon64.png",
-			message: error
+			message: error,
+			buttons: buttons || []
 		},
 		function () // The callback is required before Chrome 42.
 		{
@@ -23,7 +29,7 @@ chrome.contextMenus.onClicked.addListener(function (info)
 	}, function (response)
 	{
 		if (undefined == response)
-			return error('Please install Bit Player app!');
+			return error('The Bit Player app is missing.', [{title: 'Click HERE to install it.'}]);
 
 		if (response.result !== 1)
 		{

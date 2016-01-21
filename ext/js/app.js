@@ -18,6 +18,10 @@ app = {
 		torrent_url = torrent_url || test_torrent;
 		background.entry();
 		controls.init();
+		app.detect_extension(function(exists){
+			if (!exists)
+				$('#launcher_link').show();
+		});
 
 		if (torrent_url)
 			app.start_video(torrent_url);
@@ -85,6 +89,7 @@ app = {
 					{
 						retry_count++;
 						$('#load_status').text('Fetching torrent data... (retry #' + retry_count + ')');
+						$('.download_status').text('When everything fails... a restart may help.');
 						app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
 					});
 				});
@@ -177,5 +182,19 @@ app = {
 			{
 			}
 		);
+	},
+	//finds out whether the launcher extension is available (if not, a link to install will be shown)
+	detect_extension: function (callback)
+	{
+		var img = new Image();
+		img.onload = function ()
+		{
+			callback(true);
+		};
+		img.onerror = function ()
+		{
+			callback(false);
+		};
+		img.src = "chrome-extension://andfnelfgfdifognepabogfledhdijhn/images/icon16.png";
 	}
 };

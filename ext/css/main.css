@@ -134,6 +134,21 @@ body {
   padding: 10px;
   background-color: white;
 }
+#frame #welcome #launcher_link {
+  display: none;
+  color: white;
+  margin-top: 60px;
+  position: relative;
+}
+#frame #welcome #launcher_link img {
+  position: absolute;
+  left: 102%;
+  top: 0;
+  display: none;
+}
+#frame #welcome #launcher_link:hover img {
+  display: inline-block;
+}
 #frame #loader {
   position: absolute;
   width: 100%;
