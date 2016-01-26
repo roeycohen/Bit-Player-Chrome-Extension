@@ -3,18 +3,25 @@ var http = {
 	server: null,
 	start: function ()
 	{
-		http.server = http.createServer();
-		console.log("http://localhost:" + http.server.address().port);
-		t.on("connection", function (e)
+		//console.log(torrent);
+		http.server = torrent.http.createServer();
+
+		http.server.on("connection", function (e)
 		{
 			e.setTimeout(36e6)
 		});
-		t.on("request", http.request);
+
+		http.server.on("request", http.request);
+
+		http.server.listen(5001, function ()
+		{
+			console.log("http://localhost:" + http.server.address().port);
+		});
 	},
 	request: function (request, response)
 	{
 		console.log('request', request);
-		
+
 		if ("OPTIONS" === request.method && request.headers["access-control-request-headers"])
 		{
 			response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -24,10 +31,17 @@ var http = {
 			return;
 		}
 
+		var parser = document.createElement('a');
+		parser.href = request.url;
+		var n = parser.pathname;
+		console.log(n);
+
+		response.statusCode = 200;
+		response.end('hello');
+		return;
+
 		if (request.headers.origin)
 			response.setHeader("Access-Control-Allow-Origin", request.headers.origin);
-
-		var n = url.parse(request.url).pathname;
 
 		if ("/favicon.ico" === n)
 			return response.end();
@@ -35,9 +49,9 @@ var http = {
 		if ("/" === n)
 		{
 			response.setHeader("Content-Type", "text/html");
-			response.end("<h1>WebTorrent</h1><ol>" + e.files.map(function (e, t)
+			response.end("<h1>WebTorrent</h1><ol>" + e.files.map(function (file, index)
 				{
-					return '<li><a href="/' + t + '">' + e.name + "</a></li>"
+					return '<li><a href="/' + index + '">' + file.name + "</a></li>"
 				}).join("<br>") + "</ol>");
 			return;
 		}
@@ -68,19 +82,20 @@ var http = {
 			return;
 		}
 
-		response.setHeader("Accept-Ranges", "bytes");
-		response.setHeader("Content-Type", mime.lookup(o.name));
 		response.statusCode = 200;
+		response.setHeader("Content-Disposition", "attachment");
+		response.setHeader("Accept-Ranges", "bytes");
+		response.setHeader("Content-Type", torrent.mime.lookup(o.name));
 		response.setHeader("transferMode.dlna.org", "Streaming");
 		response.setHeader("contentFeatures.dlna.org", "DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000");
 
-		var d;
+		var range;
 		if (request.headers.range)
 		{
 			response.statusCode = 206;
-			d = rangeParser(o.length, request.headers.range)[0];
-			response.setHeader("Content-Range", "bytes " + d.start + "-" + d.end + "/" + o.length);
-			response.setHeader("Content-Length", d.end - d.start + 1);
+			range = torrent.rangeParser(o.length, request.headers.range)[0];
+			response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + o.length);
+			response.setHeader("Content-Length", range.end - range.start + 1);
 		}
 		else
 		{
@@ -93,7 +108,7 @@ var http = {
 			return;
 		}
 
-		var i = o.createReadStream(d);
+		var i = o.createReadStream(range);
 		response.on("close", function ()
 		{
 			i.destroy();

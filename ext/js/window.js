@@ -2,6 +2,8 @@
 //cast.entry();
 window.onload = function ()
 {
+	http.start();
+
 	var win = chrome.app.window.current();
 	$('#btn-close').click(function ()
 	{
@@ -41,7 +43,7 @@ window.onload = function ()
 
 	chrome.storage.local.debug = options.debug;
 
-	app.entry(options.url);
+	//app.entry(options.url);
 };
 
 /*

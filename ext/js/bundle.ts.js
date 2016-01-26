@@ -49,7 +49,10 @@
 			t.exports.long = e("long"),
 			t.exports.encoding = e("encoding"),
 			t.exports.stream = e("stream"),
-			t.exports.zlib = e("zlib")
+			t.exports.zlib = e("zlib"),
+			t.exports.http = e("http"),
+			t.exports.mime = e("mime"),
+			t.exports.rangeParser = e("range-parser")
 		},
 			{
 				"./opensubs": 439,
@@ -61,7 +64,10 @@
 				"long": 319,
 				"encoding": 3,
 				"stream": 295,
-				"zlib": 127
+				"zlib": 127,
+				"http": 315,
+				"mime": 111,
+				"range-parser": 336
 			}
 		],
 		//=============================================================================================
