@@ -25715,7 +25715,7 @@
 					t.headers.origin && n.setHeader("Access-Control-Allow-Origin", t.headers.origin);
 					var i = s.parse(t.url).pathname;
 					if ("/favicon.ico" === i)return n.end();
-					if ("/" === i)return n.setHeader("Content-Type", "text/html"), n.end("<h1>WebTorrent</h1><ol>" + e.files.map(function (e, t)
+					if ("/" === i)return n.setHeader("Content-Type", "text/html"), n.end("<h1>WebTorrent</h1><ol>" + [].map(function (e, t)
 						{
 							return '<li><a href="/' + t + '">' + e.name + "</a></li>"
 						}).join("<br>") + "</ol>");

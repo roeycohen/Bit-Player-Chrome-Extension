@@ -2,7 +2,8 @@
 var test_torrent;
 //big bang (hash: 2476dfc7cc376dd0)
 //test_torrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-//arrow 18: test_torrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//arrow 18:
+// test_torrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //sicario
 //test_torrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //arrow 19
@@ -16,7 +17,7 @@ app = {
 	entry: function (torrent_url)
 	{
 		torrent_url = torrent_url || test_torrent;
-		background.entry();
+		//background.entry();
 		controls.init();
 		app.detect_extension(function(exists){
 			if (!exists)
@@ -136,9 +137,9 @@ app = {
 				t.listen(0, function ()
 				{
 					app.torrent.httpPort = t.address().port; //save port for later use
-					$('#status a').attr('href', "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name);
+					cast.url = "http://192.168.3.102:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
 					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
-					//$('#note').append($('<a target="_blank"></a>').text(src).attr('href', src));
+					$('#status a').attr('href', src);
 					$('#video').attr('type', 'video/mp4').attr('src', src);
 				});
 			}

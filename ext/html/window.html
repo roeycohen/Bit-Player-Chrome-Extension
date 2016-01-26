@@ -16,10 +16,13 @@
     <link rel="stylesheet" href="../css/icons/style.css">
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/cast_sender.js"></script>
     <script src="../js/libs/jquery.min.js"></script>
     <script src="../js/bundle.ts.js"></script>
     <script src="../js/bundle2.js"></script>
     <script src="../js/background.js"></script>
+    <script src="../js/http.js"></script>
+    <script src="../js/cast.js"></script>
     <script src="../js/subs.js"></script>
     <script src="../js/controls.js"></script>
     <script src="../js/app.js"></script>
@@ -84,6 +87,7 @@
             <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
             </video>
             <div id="controls">
+                <div class="button" id="cast">cast</div>
                 <div class="button" id="minus" title="Increase subtitles size"><span class="icon-minus"></span></div>
                 <div class="button" id="plus" title="Decrease subtitles size"><span class="icon-plus"></span></div>
                 <div class="button" id="sub_select">
