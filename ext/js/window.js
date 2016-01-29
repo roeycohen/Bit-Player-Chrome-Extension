@@ -2,8 +2,6 @@
 //cast.entry();
 window.onload = function ()
 {
-	http.start();
-
 	var win = chrome.app.window.current();
 	$('#btn-close').click(function ()
 	{
@@ -20,18 +18,10 @@ window.onload = function ()
 	{
 		win.minimize();
 	});
-	$('#manual_video_file_button').click(function()
-	{
-		var t = torrent.HttpServer();
-		t.listen(0, '192.168.3.102', function ()
-		{
-			console.log("http://192.168.3.102:" + t.address().port);
-		});
-	});
-	$('#cast').click(function()
-	{
-		cast.load_media();
-	});
+	//$('#cast').click(function()
+	//{
+	//	cast.load_media();
+	//});
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
 	{
@@ -43,7 +33,7 @@ window.onload = function ()
 
 	chrome.storage.local.debug = options.debug;
 
-	//app.entry(options.url);
+	app.entry(options.url);
 };
 
 /*

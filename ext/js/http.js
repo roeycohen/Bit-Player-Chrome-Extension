@@ -1,118 +1,144 @@
 ;
+//based on: https://github.com/feross/webtorrent/blob/1f3a4153b6e8d07b5637376b509c424528809899/lib/server.js
 var http = {
 	server: null,
-	start: function ()
+	file: null,
+	start: function (port)
 	{
-		//console.log(torrent);
-		http.server = torrent.http.createServer();
+		if (undefined === port)
+			port = 5000;
 
-		http.server.on("connection", function (e)
+		//console.log(torrent);
+		http.server = torrent.http.createServer(http.request);
+
+		http.server.on("connection", function (socket)
 		{
-			e.setTimeout(36e6)
+			socket.setTimeout(36000000)
 		});
 
-		http.server.on("request", http.request);
+		http.server.on("error", function (e)
+		{
+			if (0 < e.message.indexOf('failed to listen'))
+			{
+				console.log('port ' + port + ' was already in use, using random port.');
+				http.server.close();
+				http.start(0);
+			}
+		});
 
-		http.server.listen(5001, function ()
+		http.server.listen(port, function ()
 		{
 			console.log("http://localhost:" + http.server.address().port);
 		});
 	},
-	request: function (request, response)
+	request: function (req, res)
 	{
-		console.log('request', request);
-
-		if ("OPTIONS" === request.method && request.headers["access-control-request-headers"])
+		// Allow CORS requests to specify arbitrary headers, e.g. 'Range',
+		// by responding to the OPTIONS preflight request with the specified
+		// origin and requested headers.
+		if (req.method === 'OPTIONS' && req.headers['access-control-request-headers'])
 		{
-			response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-			response.setHeader("Access-Control-Allow-Headers", request.headers["access-control-request-headers"]);
-			response.setHeader("Access-Control-Max-Age", "1728000");
-			response.end();
-			return;
+			res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+			res.setHeader('Access-Control-Allow-Headers', req.headers['access-control-request-headers']);
+			res.setHeader('Access-Control-Max-Age', '1728000');
+			return res.end();
+		}
+
+		if (req.headers.origin)
+		{
+			res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 		}
 
 		var parser = document.createElement('a');
-		parser.href = request.url;
-		var n = parser.pathname;
-		console.log(n);
+		parser.href = req.url;
+		var pathname = parser.pathname;
+		//console.log(pathname);
 
-		response.statusCode = 200;
-		response.end('hello');
-		return;
+		if (pathname === '/favicon.ico') return res.end();
 
-		if (request.headers.origin)
-			response.setHeader("Access-Control-Allow-Origin", request.headers.origin);
-
-		if ("/favicon.ico" === n)
-			return response.end();
-
-		if ("/" === n)
+		if ("/" === pathname)
 		{
-			response.setHeader("Content-Type", "text/html");
-			response.end("<h1>WebTorrent</h1><ol>" + e.files.map(function (file, index)
-				{
-					return '<li><a href="/' + index + '">' + file.name + "</a></li>"
-				}).join("<br>") + "</ol>");
-			return;
+			res.setHeader("Content-Type", "text/html");
+			return res.end("<h1>Bit-Player</h1>");
 		}
 
-		var s = /\/(subtitles\/)?(\d+)/.exec(n);
-		var a = s && Number(s[2]);
-		if (!s || a >= e.files.length)
+		/*
+		 var s = /\/(subtitles\/)?(\d+)/.exec(pathname);
+		 var s = /\/(subtitles\/)?(\d+)/.exec(pathname);
+		 var a = s && Number(s[2]);
+		 if (!s || a >= e.files.length)
+		 {
+		 res.statusCode = 404;
+		 return res.end('404 Not Found');
+		 }
+
+		 var file = e.files[a];
+		 if (s[1])
+		 {
+		 if (file.subtitles)
+		 {
+		 subtitles = "WEBVTT\n" + file.subtitles.replace(/(\d\d:\d\d)\,(\d\d\d)/g, "$1.$2");
+		 res.setHeader("Content-Type", "text/vtt");
+		 res.end(subtitles);
+		 }
+		 else
+		 {
+		 res.statusCode = 404;
+		 res.end()
+		 }
+		 return;
+		 }
+		 */
+
+		var file = http.file;
+		if (!file)
 		{
-			response.statusCode = 404;
-			response.end();
-			return;
+			res.statusCode = 404;
+			return res.end()
 		}
 
-		var o = e.files[a];
-		if (s[1])
-		{
-			if (o.subtitles)
-			{
-				subtitles = "WEBVTT\n" + o.subtitles.replace(/(\d\d:\d\d)\,(\d\d\d)/g, "$1.$2");
-				response.setHeader("Content-Type", "text/vtt");
-				response.end(subtitles);
-			}
-			else
-			{
-				response.statusCode = 404;
-				response.end()
-			}
-			return;
-		}
+		if (file instanceof File)
+			file.length = file.size;
 
-		response.statusCode = 200;
-		response.setHeader("Content-Disposition", "attachment");
-		response.setHeader("Accept-Ranges", "bytes");
-		response.setHeader("Content-Type", torrent.mime.lookup(o.name));
-		response.setHeader("transferMode.dlna.org", "Streaming");
-		response.setHeader("contentFeatures.dlna.org", "DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000");
+		//res.setHeader("Content-Disposition", "attachment");
+		res.setHeader('Accept-Ranges', 'bytes');
+		res.setHeader('Content-Type', torrent.mime.lookup(file.name));
+		res.statusCode = 200;
+		// Support DLNA streaming
+		res.setHeader('transferMode.dlna.org', 'Streaming');
+		res.setHeader('contentFeatures.dlna.org', 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=01700000000000000000000000000000');
 
-		var range;
-		if (request.headers.range)
+		var range = null;
+		if (req.headers.range)
 		{
-			response.statusCode = 206;
-			range = torrent.rangeParser(o.length, request.headers.range)[0];
-			response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + o.length);
-			response.setHeader("Content-Length", range.end - range.start + 1);
+			res.statusCode = 206;
+			range = torrent.rangeParser(file.length, req.headers.range)[0];
+			res.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + file.length);
+			res.setHeader("Content-Length", range.end - range.start + 1);
 		}
 		else
 		{
-			response.setHeader("Content-Length", o.length);
+			res.setHeader("Content-Length", file.length);
 		}
 
-		if ("HEAD" === request.method)
-		{
-			response.end();
-			return;
-		}
+		if ("HEAD" === req.method)
+			return res.end();
 
-		var i = o.createReadStream(range);
-		response.on("close", function ()
+		if (file instanceof File)
 		{
-			i.destroy();
-		});
-		i.pipe(response);
+			if (range)
+				file = file.slice(range.start, range.end + 1);
+
+			bundle2.filereaderStream(file).pipe(res);
+		}
+		else
+		{
+			var ts = file.createReadStream(range);
+			res.on("close", function ()
+			{
+				ts.destroy();
+			});
+			ts.pipe(res);
+		}
 	}
 };

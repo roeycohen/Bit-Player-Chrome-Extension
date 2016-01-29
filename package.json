@@ -31,6 +31,7 @@
     "buffer": "^3.6.0",
     "chrome-dgram": "^2.1.7",
     "chrome-socket": "0.0.1",
+    "filereader-stream": "^1.0.0",
     "jschardet": "^1.4.1",
     "long": "^3.0.1",
     "opensubtitles": "0.0.3",
@@ -40,7 +41,7 @@
     "torrent-stream": "^1.0.0"
   },
   "devDependencies": {
-    "browserify": "^10.2.4",
-    "watchify": "^3.2.3"
+    "browserify": "*",
+    "watchify": "*"
   }
 }

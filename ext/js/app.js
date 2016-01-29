@@ -18,6 +18,8 @@ app = {
 	{
 		torrent_url = torrent_url || test_torrent;
 		//background.entry();
+		http.start();
+
 		controls.init();
 		app.detect_extension(function(exists){
 			if (!exists)
@@ -29,7 +31,13 @@ app = {
 	},
 	start_video_local: function (file)
 	{
-		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
+		http.file = file;
+		var src = "http://localhost:" +http.server.address().port + "/" + file.name;
+		console.log(src);
+		$('#status a').attr('href', src);
+		$('#video').attr('type', 'video/mp4').attr('src', src);
+		//$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
+
 		subs.os_auth().then(function (token)
 		{
 			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
@@ -133,15 +141,12 @@ app = {
 					}, app.error)
 				}, app.error);
 
-				var t = torrent.HttpServer(app.torrent);
-				t.listen(0, function ()
-				{
-					app.torrent.httpPort = t.address().port; //save port for later use
-					cast.url = "http://192.168.3.102:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
-					var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
-					$('#status a').attr('href', src);
-					$('#video').attr('type', 'video/mp4').attr('src', src);
-				});
+				http.file = torrent_file;
+				var src = "http://localhost:" +http.server.address().port + "/" + torrent_file.name;
+				console.log(src);
+				//cast.url = "http://192.168.3.102:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
+				$('#status a').attr('href', src);
+				$('#video').attr('type', 'video/mp4').attr('src', src);
 			}
 		});
 	},
