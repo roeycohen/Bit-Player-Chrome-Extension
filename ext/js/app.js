@@ -85,6 +85,7 @@ app = {
 		{
 			if (!torrent_fetch_success)
 			{
+				//restarting the torrent doesn't work :\
 				app.torrent.remove(function ()
 				{
 					app.torrent.destroy(function ()
