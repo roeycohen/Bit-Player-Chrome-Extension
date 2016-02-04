@@ -1,5 +1,5 @@
 ;
-//cast.entry();
+cast.entry();
 window.onload = function ()
 {
 	var win = chrome.app.window.current();
@@ -18,10 +18,10 @@ window.onload = function ()
 	{
 		win.minimize();
 	});
-	//$('#cast').click(function()
-	//{
-	//	cast.load_media();
-	//});
+	$('#cast').click(function ()
+	{
+		cast.load_media();
+	});
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
 	{

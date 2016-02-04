@@ -3,10 +3,11 @@
 var http = {
 	server: null,
 	file: null,
+	sub: null,
 	start: function (port)
 	{
 		if (undefined === port)
-			port = 5000;
+			port = 5556; //5558
 
 		//console.log(torrent);
 		http.server = torrent.http.createServer(http.request);
@@ -52,7 +53,7 @@ var http = {
 		var parser = document.createElement('a');
 		parser.href = req.url;
 		var pathname = parser.pathname;
-		//console.log(pathname);
+		//console.log("REQUREST", pathname);
 
 		if (pathname === '/favicon.ico') return res.end();
 
@@ -62,39 +63,22 @@ var http = {
 			return res.end("<h1>Bit-Player</h1>");
 		}
 
-		/*
-		 var s = /\/(subtitles\/)?(\d+)/.exec(pathname);
-		 var s = /\/(subtitles\/)?(\d+)/.exec(pathname);
-		 var a = s && Number(s[2]);
-		 if (!s || a >= e.files.length)
-		 {
-		 res.statusCode = 404;
-		 return res.end('404 Not Found');
-		 }
-
-		 var file = e.files[a];
-		 if (s[1])
-		 {
-		 if (file.subtitles)
-		 {
-		 subtitles = "WEBVTT\n" + file.subtitles.replace(/(\d\d:\d\d)\,(\d\d\d)/g, "$1.$2");
-		 res.setHeader("Content-Type", "text/vtt");
-		 res.end(subtitles);
-		 }
-		 else
-		 {
-		 res.statusCode = 404;
-		 res.end()
-		 }
-		 return;
-		 }
-		 */
+		if ("/sub.vtt" === pathname)
+		{
+			if (!http.sub)
+			{
+				res.statusCode = 404;
+				return res.end('no subtitles found');
+			}
+			res.setHeader("Content-Type", "text/vtt");
+			return res.end(subs.track_to_srt(http.sub));
+		}
 
 		var file = http.file;
 		if (!file)
 		{
 			res.statusCode = 404;
-			return res.end()
+			return res.end('no video found')
 		}
 
 		if (file instanceof File)

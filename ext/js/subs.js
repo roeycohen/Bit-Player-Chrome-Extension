@@ -233,7 +233,8 @@ var subs = {
 
 		$.each(subs.tracks, function(i, track)
 		{
-			track.mode = i == (sub_id) ? 'showing' : 'hidden';
+			track.mode = i == sub_id ? 'showing' : 'hidden';
+			http.sub = i == sub_id ? track : null;
 		});
 	},
 
@@ -258,6 +259,19 @@ var subs = {
 			//vttCue.line = 15; //0 - 10
 			track.addCue(vttCue);
 		}
+	},
+
+	track_to_srt: function(track)
+	{
+		var vtt = '';
+		vtt += "WEBVTT\n\n";
+		for (var ci = 0; ci < track.cues.length; ci++)
+		{
+			var cue = track.cues[ci];
+			vtt += subs.seconds_to_hhmmss(cue.startTime) + ' --> ' + subs.seconds_to_hhmmss(cue.endTime) + "\n";
+			vtt += cue.text + "\n\n";
+		}
+		return vtt;
 	},
 
 	//based on: https://github.com/bazh/subtitles-parser/blob/master/index.js
@@ -302,6 +316,19 @@ var subs = {
 
 		// hours + minutes + seconds + ms
 		return parts[1] * 3600000 + parts[2] * 60000 + parts[3] * 1000 + parts[4];
+	},
+
+	seconds_to_hhmmss: function (totalSeconds)
+	{
+		var hours = Math.floor(totalSeconds / 3600);
+		var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+		var seconds = totalSeconds - (hours * 3600) - (minutes * 60);
+		seconds = seconds.toFixed(3);
+
+		var result = (hours < 10 ? "0" + hours : hours);
+		result += ":" + (minutes < 10 ? "0" + minutes : minutes);
+		result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+		return result;
 	},
 
 	// cached results for torrent.opensubs.get_lang_ids()
