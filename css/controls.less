@@ -8,7 +8,7 @@
 @media screen and (min-width: 1000px) {
 	#controls {
 		bottom: 5px;
-		right:auto;
+		right: auto;
 		left: ~"calc(50% + 400px)";
 	}
 }
@@ -21,7 +21,7 @@
 	background-color: #101010;
 	padding: 5px;
 	transition: opacity 1s ease-in-out;
-	a{
+	a {
 		color: #d7d7d7;
 	}
 }
@@ -29,21 +29,87 @@
 /*https://gist.github.com/afabbro/3759334*/
 video::-webkit-media-controls-toggle-closed-captions-button {
 	/*-webkit-appearance:none;*/
-	display:none;
+	display: none;
 }
 
-#controls{
-	.button {
-		color: white;
-		display: inline-block;
-		background-color: #101010;
-		font-weight: 900;
-		cursor: default;
-		padding: 5px 7px;
-		border-radius: 5px;
-		position: relative;
-		opacity: 0.8;
+#controls {
+	position: absolute;
+	bottom: 0;
+	left: 12px;
+	right: 12px;
+	z-index: 2147483647;
 
+	.meta, .button {
+		position: relative;
+		display: inline-block;
+		color: white;
+		padding: 7px;
+		text-shadow: 1px 1px 1px black;
+		font-size: 13px;
+		[class^="icon-"] {
+			font-size: 20px;
+		}
+	}
+	.meta {
+		vertical-align: top;
+	}
+
+	#time_bar {
+		padding-top: 10px;
+		position: relative;
+		cursor: pointer;
+		> div {
+			position: absolute;
+			height: 3px;
+			bottom: 1px;
+		}
+
+		#bg {
+			background-color: rgba(255, 255, 255, 0.2);
+			width: 100%;
+		}
+		#buffered {
+			background-color: rgba(255, 255, 255, 0.5);
+			width: 66%;
+		}
+		#goto {
+			background-color: rgba(255, 255, 255, 0.8);
+			width: 50%;
+		}
+		#percentage {
+			background-color: #3ab797;
+			width: 33%;
+			> div {
+				box-sizing: content-box;
+				position: absolute;
+				right: 0;
+				top: 1px;
+				transition: all 0.2s ease-in;
+				border-radius: 50%;
+				background-color: #3ab797;
+			}
+		}
+		&:hover {
+			> div {
+				height: 5px;
+				bottom: 0;
+			}
+			#percentage > div {
+				padding: 6px;
+				top: -3px;
+				right: -6px;
+			}
+		}
+	}
+	#left_controls {
+		float: left;
+	}
+
+	#right_controls {
+		float: right;
+	}
+
+	.button {
 		.context_menu {
 			display: none;
 			list-style: none;
@@ -72,4 +138,50 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 			display: block;
 		}
 	}
+
+	input[type='range'] {
+		&, &::-webkit-slider-runnable-track, &::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			position: relative;
+		}
+		width: 100px;
+		background: transparent;
+		&::-webkit-slider-runnable-track {
+			box-sizing: border-box;
+			border: solid 1em transparent;
+			border-width: 1em 5px;
+			height: 1em;
+			box-shadow: 0 1.1875em 0.25em -1.25em #000;
+			&:before {
+				position: absolute;
+				top: 0;
+				width: 90px;
+				height: 0.5em;
+				content: '';
+				border-radius: 0.625em;
+				box-shadow: inset 1px 1px 0.125em #206654;
+				background: -webkit-linear-gradient(#3ab797, #3ab797) padding-box;
+			}
+		}
+		&::-webkit-slider-thumb {
+			box-sizing: border-box;
+			border: 0;
+			border-radius: 50%;
+			cursor: ew-resize;
+			position: relative;
+			margin-top: -0.1875em;
+			width: 1em;
+			height: 1em;
+			padding: 0.33333em;
+			background: radial-gradient(at 65% 65%, #c1c1c1, #868887 70%) content-box, linear-gradient(#ffffff, #e1dad4) padding-box;
+			filter: drop-shadow(1px 1px 0.125em rgba(0, 0, 0, 0.5));
+		}
+		&:focus {
+			outline: none;
+		}
+	}
+	#mute {
+		padding-right: 0;
+	}
+
 }

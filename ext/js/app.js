@@ -18,12 +18,15 @@ app = {
 	entry: function (torrent_url)
 	{
 		torrent_url = torrent_url || test_torrent;
-		background.entry();
+		//background.entry();
 		controls.init();
 		app.detect_extension(function(exists){
 			if (!exists)
 				$('#launcher_link').show();
 		});
+
+		$('#welcome, #loader, #help_link').hide();
+		$('#player').show();
 
 		if (torrent_url)
 			app.start_video(torrent_url);
