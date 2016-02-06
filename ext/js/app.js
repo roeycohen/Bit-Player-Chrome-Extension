@@ -145,8 +145,8 @@ app = {
 
 				http.file = torrent_file;
 				var src = "http://localhost:" +http.server.address().port + "/" + torrent_file.name;
+				cast.url = "http://192.168.3.102:" +http.server.address().port + "/" + torrent_file.name;
 				console.log(src);
-				//cast.url = "http://192.168.3.102:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
 				$('#status a').attr('href', src);
 				$('#video').attr('type', 'video/mp4').attr('src', src);
 			}
