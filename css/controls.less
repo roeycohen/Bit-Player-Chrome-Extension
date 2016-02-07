@@ -1,20 +1,7 @@
-#controls, #status {
+#status {
 	position: absolute;
 	right: 5px;
-	bottom: 40px;
 	z-index: 2147483647;
-}
-
-@media screen and (min-width: 1000px) {
-	#controls {
-		bottom: 5px;
-		right: auto;
-		left: ~"calc(50% + 400px)";
-	}
-}
-
-#status {
-	bottom: auto;
 	top: 5px;
 	color: white;
 	border-radius: 4px;
@@ -26,10 +13,11 @@
 	}
 }
 
-/*https://gist.github.com/afabbro/3759334*/
-video::-webkit-media-controls-toggle-closed-captions-button {
-	/*-webkit-appearance:none;*/
-	display: none;
+// trick: chrome push subtitles up when the toolbar is visible
+video::-webkit-media-controls-panel {
+	width:1px;
+	height:1px;
+	opacity: 0;
 }
 
 #controls {
