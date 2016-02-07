@@ -215,22 +215,10 @@ body {
     background-size: 100%;
   }
 }
-#controls,
 #status {
   position: absolute;
   right: 5px;
-  bottom: 40px;
   z-index: 2147483647;
-}
-@media screen and (min-width: 1000px) {
-  #controls {
-    bottom: 5px;
-    right: auto;
-    left: calc(50% + 400px);
-  }
-}
-#status {
-  bottom: auto;
   top: 5px;
   color: white;
   border-radius: 4px;
@@ -241,21 +229,90 @@ body {
 #status a {
   color: #d7d7d7;
 }
-/*https://gist.github.com/afabbro/3759334*/
-video::-webkit-media-controls-toggle-closed-captions-button {
-  /*-webkit-appearance:none;*/
+video::-webkit-media-controls-panel {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+#controls {
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  z-index: 2147483647;
+}
+#controls .meta,
+#controls .button {
+  position: relative;
+  display: inline-block;
+  color: white;
+  padding: 7px;
+  text-shadow: 1px 1px 1px black;
+  font-size: 13px;
+}
+#controls .meta [class^="icon-"],
+#controls .button [class^="icon-"] {
+  font-size: 20px;
+}
+#controls .meta {
+  vertical-align: top;
+}
+#controls #time_bar {
+  padding-top: 10px;
+  position: relative;
+  cursor: pointer;
+}
+#controls #time_bar > div {
+  position: absolute;
+  height: 3px;
+  bottom: 1px;
+  width: 0;
+}
+#controls #time_bar #bg {
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 100%;
+}
+#controls #time_bar #bg > div {
+  position: absolute;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+#controls #time_bar #goto {
+  background-color: rgba(255, 255, 255, 0.8);
   display: none;
 }
-#controls .button {
-  color: white;
-  display: inline-block;
-  background-color: #101010;
-  font-weight: 900;
-  cursor: default;
-  padding: 5px 7px;
-  border-radius: 5px;
-  position: relative;
-  opacity: 0.8;
+#controls #time_bar #percentage {
+  background-color: #3ab797;
+}
+#controls #time_bar #percentage > div {
+  box-sizing: content-box;
+  position: absolute;
+  right: 0;
+  top: 1px;
+  transition: all 0.2s ease-in;
+  border-radius: 50%;
+  background-color: #3ab797;
+}
+#controls #time_bar:hover > div {
+  height: 5px;
+  bottom: 0;
+}
+#controls #time_bar:hover #bg > div {
+  height: 5px;
+}
+#controls #time_bar:hover #goto {
+  display: block;
+}
+#controls #time_bar:hover #percentage > div {
+  padding: 6px;
+  top: -3px;
+  right: -6px;
+}
+#controls #left_controls {
+  float: left;
+}
+#controls #right_controls {
+  float: right;
 }
 #controls .button .context_menu {
   display: none;
@@ -284,4 +341,50 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 }
 #controls .button:hover .context_menu {
   display: block;
+}
+#controls input[type='range'] {
+  width: 100px;
+  background: transparent;
+}
+#controls input[type='range'],
+#controls input[type='range']::-webkit-slider-runnable-track,
+#controls input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  position: relative;
+}
+#controls input[type='range']::-webkit-slider-runnable-track {
+  box-sizing: border-box;
+  border: solid 1em transparent;
+  border-width: 1em 5px;
+  height: 1em;
+  box-shadow: 0 1.1875em 0.25em -1.25em #000;
+}
+#controls input[type='range']::-webkit-slider-runnable-track:before {
+  position: absolute;
+  top: 0;
+  width: 90px;
+  height: 0.5em;
+  content: '';
+  border-radius: 0.625em;
+  box-shadow: inset 1px 1px 0.125em #206654;
+  background: -webkit-linear-gradient(#3ab797, #3ab797) padding-box;
+}
+#controls input[type='range']::-webkit-slider-thumb {
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  cursor: ew-resize;
+  position: relative;
+  margin-top: -0.1875em;
+  width: 1em;
+  height: 1em;
+  padding: 0.33333em;
+  background: radial-gradient(at 65% 65%, #c1c1c1, #868887 70%) content-box, linear-gradient(#ffffff, #e1dad4) padding-box;
+  filter: drop-shadow(1px 1px 0.125em rgba(0, 0, 0, 0.5));
+}
+#controls input[type='range']:focus {
+  outline: none;
+}
+#controls #btn_mute {
+  padding-right: 0;
 }

@@ -10,6 +10,8 @@ var test_torrent;
 //test_torrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //tarzan (hash: 62a191d72edb3cd0)
 //test_torrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
+//avi sample: streaming does work with it...
+//test_torrent = 'magnet:?xt=urn:btih:b662dbf7f84740b9fa1a332ce42c3f2859727134&dn=Marvels.Jessica.Jones.S01E05.WEBRip.XviD-FUM%5Bettv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //console.log(torrent);
 
 app = {
@@ -25,6 +27,9 @@ app = {
 			if (!exists)
 				$('#launcher_link').show();
 		});
+
+		//$('#welcome, #loader, #help_link').hide();
+		//$('#player').show();
 
 		if (torrent_url)
 			app.start_video(torrent_url);
@@ -94,6 +99,7 @@ app = {
 		{
 			if (!torrent_fetch_success)
 			{
+				//restarting the torrent doesn't work :\
 				app.torrent.remove(function ()
 				{
 					app.torrent.destroy(function ()
@@ -159,7 +165,7 @@ app = {
 		$.each(files, function (i, f)
 		{
 			var extension = f.path.substr((~-f.path.lastIndexOf(".") >>> 0) + 2);
-			if ($.inArray(extension, ['mp4', 'avi', 'mkv']) > -1 && f.length > biggest_file)
+			if ($.inArray(extension, ['mp4', 'mkv']) > -1 && f.length > biggest_file)
 			{
 				biggest_file = f.length;
 				best_match_index = i;
