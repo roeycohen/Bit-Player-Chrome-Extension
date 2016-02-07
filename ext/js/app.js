@@ -25,8 +25,8 @@ app = {
 				$('#launcher_link').show();
 		});
 
-		$('#welcome, #loader, #help_link').hide();
-		$('#player').show();
+		//$('#welcome, #loader, #help_link').hide();
+		//$('#player').show();
 
 		if (torrent_url)
 			app.start_video(torrent_url);

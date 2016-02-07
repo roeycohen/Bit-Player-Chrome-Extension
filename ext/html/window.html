@@ -77,7 +77,7 @@
         <div id="help_link"><a href="https://github.com/roeycohen/Bit-Player-Chrome-Extension" target="_blank">Developer? I'll be glad for some help :)</a></div>
 
         <div id="player" style="display:none;">
-            <video id="video">
+            <video id="video" muted <!--controls-->>
             <!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
             <!--<track label="srt" kind="subtitles" srclang="en" src="../sample/The.Big.Bang.Theory.S09E07.The.Spock.Resonance.1080p.WEB-DL.DD5.H.264-Oosh.srt"/>-->
             <!--<track label="vtt" kind="subtitles" srclang="en" src="../sample/captions_output_1451546087.vtt"/>-->
@@ -87,21 +87,20 @@
             <div id="controls">
                 <div id="time_bar">
                     <div id="bg"></div>
-                    <div id="buffered"></div>
                     <div id="goto"></div>
                     <div id="percentage"><div></div></div>
                 </div>
                 <div id="left_controls">
-                    <div class="button" title="Play/Pause"><span class="icon-play3"></span></div>
-                    <div class="meta" id="time">1:57:33 / 2:48:33</div>
-                    &nbsp;<div class="button" id="mute" title="Mute"><span class="icon-volume-medium"></span></div><input type="range"/>
+                    <div class="button" id="btn_play_pause" title="Play/Pause"><span class="icon-play3"></span></div>
+                    <div class="meta" id="time">00:00 / 00:00</div>
+                    &nbsp;<div class="button" id="btn_mute" title="Mute"><span class="icon-volume-medium"></span></div><input id="volume_bar" type="range" min="0" max="1" step="0.01"/>
                 </div>
                 <div id="right_controls">
-                    <div class="button" title="Toggle full screen"><span class="icon-enlarge2"></span></div>
-                    <div class="button" title="Cast..."><span class="icon-google127"></span></div>
-                    <div class="button" title="Increase subtitles size"><span class="icon-minus"></span></div>
-                    <div class="button" title="Decrease subtitles size"><span class="icon-plus"></span></div>
-                    <div class="button" title="Decrease subtitles size">
+                    <div class="button" id="btn_full_screen" title="Toggle full screen"><span class="icon-enlarge2"></span></div>
+                    <div class="button" id="btn_cast" title="Cast..."><span class="icon-google127"></span></div>
+                    <div class="button" id="btn_minus" title="Decrease subtitles size"><span class="icon-minus"></span></div>
+                    <div class="button" id="btn_plus" title="Increase subtitles size"><span class="icon-plus"></span></div>
+                    <div class="button" id="btn_sub_select">
                         <span class="icon-bubble"></span>
                         <ul class="context_menu">
                             <li class="active"><i>Off</i></li>

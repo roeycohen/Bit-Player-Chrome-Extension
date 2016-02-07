@@ -5,6 +5,7 @@ controls = {
 	video: null,
 	$video: null,
 	$ctrls: null,
+	cue_style: null,
 	init: function ()
 	{
 		controls.video = document.getElementById("video");
@@ -34,7 +35,8 @@ controls = {
 				app.start_video_local(e.target.files[0]);
 			}
 		});
-		$('#welcome #manual_video_file_button').click(function (e){
+		$('#welcome #manual_video_file_button').click(function (e)
+		{
 			$('#welcome [name="manual_video_file"]:file').trigger('click');
 		});
 
@@ -45,7 +47,48 @@ controls = {
 			$('#player').slideDown();
 		};
 
-		//mouse play/pause
+		controls.$video.on('playing play waiting pause mousemove', function ()
+		{
+			controls.toggle_controls(true);
+		});
+
+		//subtitles font size
+		controls.cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
+		chrome.storage.local.get('subtitles_size', function (data)
+		{
+			if ('subtitles_size' in data)
+				controls.cue_style.setProperty('font-size', data['subtitles_size'], null);
+		});
+
+		controls.controls_handlers();
+	},
+	toggle_controls: function (on)
+	{
+		if (true === on)
+		{
+			$('#status').css('opacity', 1);
+			controls.$ctrls.show();
+			controls.$video.css({cursor: 'default'});
+
+			controls.hideControlsTimeout && clearTimeout(controls.hideControlsTimeout);
+			if (!controls.video.paused)
+			{
+				controls.hideControlsTimeout = window.setTimeout(function ()
+				{
+					controls.toggle_controls(false);
+				}, 3000);
+			}
+		}
+		else
+		{
+			$('#status').css('opacity', 0);
+			controls.$ctrls.hide();
+			controls.$video.css({cursor: 'none'});
+		}
+	},
+	controls_handlers: function ()
+	{
+		//video click play/pause
 		controls.$video.click(function ()
 		{
 			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
@@ -79,36 +122,101 @@ controls = {
 			}
 		});
 
-		controls.$video.on('playing play waiting pause mousemove', function ()
+		//progress bar
+		controls.$video.on('timeupdate', function ()
 		{
-			controls.toggle_controls(true);
+			$('#time').text(controls.seconds_to_hhmmss(controls.video.currentTime) + ' / ' + controls.seconds_to_hhmmss(controls.video.duration));
+			$('#time_bar #percentage').css('width', (controls.video.currentTime * 100 / controls.video.duration) + '%');
+		});
+		controls.$ctrls.find('#time_bar').mouseup(function (e)
+		{
+			controls.video.currentTime = e.offsetX / $(this).width() * controls.video.duration;
+		});
+		controls.$ctrls.find('#time_bar').mousemove(function (e)
+		{
+			$('#time_bar #goto').css('width', (e.offsetX * 100 / $(this).width()) + '%');
+		});
+		controls.$video.on('durationchange', function ()
+		{
+			$('#time').text(controls.seconds_to_hhmmss(controls.video.currentTime) + ' / ' + controls.seconds_to_hhmmss(controls.video.duration));
+		});
+		controls.$video.on('progress', function ()
+		{
+			var $bg_bar = $('#time_bar #bg');
+			$bg_bar.html('');
+			for (var i = 0; i < controls.video.buffered.length; i++)
+			{
+				$bg_bar.append(
+					$('<div></div>').css({
+						left: (controls.video.buffered.start(i) * 100 / controls.video.duration) + '%',
+						width: ((controls.video.buffered.end(i) - controls.video.buffered.start(i)) * 100 / controls.video.duration) + '%'
+					})
+				);
+			}
+		});
+
+		//pause/play button
+		controls.$ctrls.find('#btn_play_pause').click(function ()
+		{
+			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+				return;
+			controls.video.paused ? controls.video.play() : video.pause();
+			$(this).find('> span').attr('class', controls.video.paused ? 'icon-play3' : 'icon-pause2');
+		});
+		controls.$video.on('play pause', function ()
+		{
+			controls.$ctrls.find('#btn_play_pause > span').attr('class', controls.video.paused ? 'icon-play3' : 'icon-pause2');
+		});
+
+		//volume
+		var last_vol = controls.video.volume;
+		controls.$ctrls.find('#btn_mute').click(function ()
+		{
+			if (controls.video.volume > 0)
+			{
+				last_vol = controls.video.volume;
+				controls.video.volume = 0;
+			}
+			else
+			{
+				controls.video.volume = last_vol;
+			}
+			controls.$ctrls.find('#volume_bar').val(controls.video.volume);
+			controls.mute_icon();
+		});
+		controls.$ctrls.find('#volume_bar').change(function (e)
+		{
+			controls.video.volume = $(this).val();
+			controls.mute_icon();
+
+		}).val(controls.video.volume);
+
+		//full screen
+		controls.$ctrls.find('#btn_full_screen').click(function ()
+		{
+			var $icon_span = $(this).find('> span');
+			if (document.webkitFullscreenElement)
+			{
+				document.webkitExitFullscreen();
+				$icon_span.attr('class', 'icon-enlarge2');
+			}
+			else
+			{
+				controls.video.webkitRequestFullScreen();
+				$icon_span.attr('class', 'icon-shrink2');
+			}
 		});
 
 		//subtitles
-		var cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		var set_font_size = function (increase)
+		controls.$ctrls.find('#btn_plus').click(function ()
 		{
-			var cur_size = parseFloat(cue_style.getPropertyValue('font-size'));
-			var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
-			cue_style.setProperty('font-size', new_size, null);
-			chrome.storage.local.set({subtitles_size: new_size});
-		};
-
-		chrome.storage.local.get('subtitles_size', function (data)
-		{
-			if ('subtitles_size' in data)
-				cue_style.setProperty('font-size', data['subtitles_size'], null);
+			controls.set_font_size(true);
 		});
-
-		controls.$ctrls.find('#plus').click(function ()
+		controls.$ctrls.find('#btn_minus').click(function ()
 		{
-			set_font_size(true);
+			controls.set_font_size(false);
 		});
-		controls.$ctrls.find('#minus').click(function ()
-		{
-			set_font_size(false);
-		});
-		controls.$ctrls.find('#sub_select .context_menu').on('click', 'li', function ()
+		controls.$ctrls.find('#btn_sub_select .context_menu').on('click', 'li', function ()
 		{
 			var $li = $(this);
 			if ($li.hasClass('manual'))
@@ -129,42 +237,18 @@ controls = {
 		{
 			if (e.target.files[0])
 			{
-				controls.$ctrls.find('#sub_select .context_menu li').removeClass('active').filter('.manual').addClass('active');
+				controls.$ctrls.find('#btn_sub_select .context_menu li').removeClass('active').filter('.manual').addClass('active');
 				subs.set_srt(controls.video, 'manual', null, e.target.files[0]);
 				e.target.value = ''; //make sure the change event will trigger if the user chooses the previous file again
 			}
 		});
-	},
-	toggle_controls: function (on)
-	{
-		if (true === on)
-		{
-			$('#status').css('opacity', 1);
-			controls.$ctrls.show();
-			controls.$video.css({cursor: 'default'});
-
-			controls.hideControlsTimeout && clearTimeout(controls.hideControlsTimeout);
-			if (!controls.video.paused)
-			{
-				controls.hideControlsTimeout = window.setTimeout(function ()
-				{
-					controls.toggle_controls(false);
-				}, 3000);
-			}
-		}
-		else
-		{
-			$('#status').css('opacity', 0);
-			controls.$ctrls.hide();
-			controls.$video.css({cursor: 'none'});
-		}
 	},
 	controls_fill_sub: function (srts)
 	{
 		chrome.storage.local.get(['prefered_sub_lang'], function (data)
 		{
 			var $srt_li_to_load = null;
-			var $cm = controls.$ctrls.find('#sub_select').find('.context_menu');
+			var $cm = controls.$ctrls.find('#btn_sub_select').find('.context_menu');
 			$.each(srts, function (i, srt)
 			{
 				if (i === 0)
@@ -186,5 +270,37 @@ controls = {
 			});
 			$srt_li_to_load && $srt_li_to_load.trigger('click');
 		})
+	},
+	mute_icon: function ()
+	{
+		var vol = controls.video.volume;
+		var $icon_span = controls.$ctrls.find('#btn_mute > span');
+		if (vol == 0)
+			$icon_span.attr('class', 'icon-volume-mute2');
+		else if (vol > 0.66)
+			$icon_span.attr('class', 'icon-volume-high');
+		else if (vol > 0.3)
+			$icon_span.attr('class', 'icon-volume-medium');
+		else
+			$icon_span.attr('class', 'icon-volume-low');
+	},
+	seconds_to_hhmmss: function (totalSeconds)
+	{
+		var hours = Math.floor(totalSeconds / 3600);
+		var minutes = Math.floor((totalSeconds - (hours * 3600)) / 60);
+		var seconds = totalSeconds - (hours * 3600) - (minutes * 60);
+		seconds = seconds.toFixed(0);
+
+		var result = hours ? (hours < 10 ? "0" + hours : hours) + ':' : '';
+		result += (minutes < 10 ? "0" + minutes : minutes);
+		result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+		return result;
+	},
+	set_font_size: function (increase)
+	{
+		var cur_size = parseFloat(controls.cue_style.getPropertyValue('font-size'));
+		var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
+		controls.cue_style.setProperty('font-size', new_size, null);
+		chrome.storage.local.set({subtitles_size: new_size});
 	}
 };

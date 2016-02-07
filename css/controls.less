@@ -62,23 +62,24 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 			position: absolute;
 			height: 3px;
 			bottom: 1px;
+			width: 0;
 		}
 
 		#bg {
 			background-color: rgba(255, 255, 255, 0.2);
 			width: 100%;
-		}
-		#buffered {
-			background-color: rgba(255, 255, 255, 0.5);
-			width: 66%;
+			> div {
+				position: absolute;
+				height: 3px;
+				background-color: rgba(255, 255, 255, 0.5);
+			}
 		}
 		#goto {
 			background-color: rgba(255, 255, 255, 0.8);
-			width: 50%;
+			display: none;
 		}
 		#percentage {
 			background-color: #3ab797;
-			width: 33%;
 			> div {
 				box-sizing: content-box;
 				position: absolute;
@@ -93,6 +94,12 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 			> div {
 				height: 5px;
 				bottom: 0;
+			}
+			#bg > div {
+				height: 5px;
+			}
+			#goto {
+				display: block;
 			}
 			#percentage > div {
 				padding: 6px;
@@ -180,8 +187,7 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 			outline: none;
 		}
 	}
-	#mute {
+	#btn_mute {
 		padding-right: 0;
 	}
-
 }

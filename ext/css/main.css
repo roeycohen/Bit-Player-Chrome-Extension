@@ -278,22 +278,23 @@ video::-webkit-media-controls-toggle-closed-captions-button {
   position: absolute;
   height: 3px;
   bottom: 1px;
+  width: 0;
 }
 #controls #time_bar #bg {
   background-color: rgba(255, 255, 255, 0.2);
   width: 100%;
 }
-#controls #time_bar #buffered {
+#controls #time_bar #bg > div {
+  position: absolute;
+  height: 3px;
   background-color: rgba(255, 255, 255, 0.5);
-  width: 66%;
 }
 #controls #time_bar #goto {
   background-color: rgba(255, 255, 255, 0.8);
-  width: 50%;
+  display: none;
 }
 #controls #time_bar #percentage {
   background-color: #3ab797;
-  width: 33%;
 }
 #controls #time_bar #percentage > div {
   box-sizing: content-box;
@@ -307,6 +308,12 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 #controls #time_bar:hover > div {
   height: 5px;
   bottom: 0;
+}
+#controls #time_bar:hover #bg > div {
+  height: 5px;
+}
+#controls #time_bar:hover #goto {
+  display: block;
 }
 #controls #time_bar:hover #percentage > div {
   padding: 6px;
@@ -390,6 +397,6 @@ video::-webkit-media-controls-toggle-closed-captions-button {
 #controls input[type='range']:focus {
   outline: none;
 }
-#controls #mute {
+#controls #btn_mute {
   padding-right: 0;
 }
