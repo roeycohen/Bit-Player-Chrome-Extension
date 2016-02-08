@@ -1,7 +1,7 @@
 ;
 var cast = {
 	available: false,
-	current_media_session: false,
+	current_media: false,
 	url: null,
 	entry: function ()
 	{
@@ -28,7 +28,7 @@ var cast = {
 			});
 		chrome.cast.initialize(apiConfig, function(){}, function(){});
 	},
-	load_media: function()
+	load_media: function ()
 	{
 		chrome.cast.requestSession(function (e)
 		{
@@ -51,7 +51,7 @@ var cast = {
 			if (http.sub)
 			{
 				var cTrack = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
-				cTrack.trackContentId = "http://192.168.3.102:" +http.server.address().port + "/sub.vtt";
+				cTrack.trackContentId = "http://192.168.3.102:" + http.server.address().port + "/sub.vtt";
 				cTrack.trackContentType = 'text/vtt';
 				cTrack.subtype = chrome.cast.media.TextTrackType.SUBTITLES;
 				cTrack.name = 'Subtitles';
@@ -79,12 +79,23 @@ var cast = {
 			console.log('error', e)
 		});
 	},
-	onMediaDiscovered: function(how, media)
+	onMediaDiscovered: function (how, media)
 	{
-		console.log('onMediaDiscovered');
-		app.current_media_session = media;
+		console.log('onMediaDiscovered', 'how');
+		cast.current_media = media;
+		media.addUpdateListener(function (isAlive)
+		{
+			if (!isAlive)
+			{
+				//currentMediaTime = 0;
+			}
+			else
+			{
+				controls.controls_update_from_cast(cast.current_media);
+			}
+		});
 	},
-	onMediaError: function(e)
+	onMediaError: function (e)
 	{
 		console.log('onMediaError', e);
 	},

@@ -18,10 +18,6 @@ window.onload = function ()
 	{
 		win.minimize();
 	});
-	$('#cast').click(function ()
-	{
-		cast.load_media();
-	});
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
 	{

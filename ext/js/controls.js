@@ -88,14 +88,6 @@ controls = {
 	},
 	controls_handlers: function ()
 	{
-		//video click play/pause
-		controls.$video.click(function ()
-		{
-			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-			controls.video.paused ? controls.video.play() : video.pause();
-		});
-
 		//keyboard
 		$(document).on('keydown', function (e)
 		{
@@ -105,7 +97,7 @@ controls = {
 			switch (e.keyCode)
 			{
 				case 32: //space
-					controls.video.paused ? controls.video.play() : video.pause();
+					controls.$ctrls.find('#btn_play_pause').trigger('click');
 					break;
 				case 39: //right arrow
 					controls.video.currentTime += 10;
@@ -125,8 +117,8 @@ controls = {
 		//progress bar
 		controls.$video.on('timeupdate', function ()
 		{
-			$('#time').text(controls.seconds_to_hhmmss(controls.video.currentTime) + ' / ' + controls.seconds_to_hhmmss(controls.video.duration));
-			$('#time_bar #percentage').css('width', (controls.video.currentTime * 100 / controls.video.duration) + '%');
+			controls.$ctrls.find('#time').text(controls.seconds_to_hhmmss(controls.video.currentTime) + ' / ' + controls.seconds_to_hhmmss(controls.video.duration));
+			controls.$ctrls.find('#time_bar #percentage').css('width', (controls.video.currentTime * 100 / controls.video.duration) + '%');
 		});
 		controls.$ctrls.find('#time_bar').mouseup(function (e)
 		{
@@ -158,10 +150,24 @@ controls = {
 		//pause/play button
 		controls.$ctrls.find('#btn_play_pause').click(function ()
 		{
-			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-			controls.video.paused ? controls.video.play() : video.pause();
-			$(this).find('> span').attr('class', controls.video.paused ? 'icon-play3' : 'icon-pause2');
+			if (cast.current_media)
+			{
+				if (cast.current_media.playerState === "PLAYING")
+					cast.current_media.pause();
+				else
+					cast.current_media.play();
+			}
+			else
+			{
+				if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+					return;
+				controls.video.paused ? controls.video.play() : video.pause();
+			}
+		});
+		//video click play/pause
+		controls.$video.click(function ()
+		{
+			controls.$ctrls.find('#btn_play_pause').trigger('click');
 		});
 		controls.$video.on('play pause', function ()
 		{
@@ -173,19 +179,24 @@ controls = {
 		controls.$ctrls.find('#btn_mute').click(function ()
 		{
 			if (controls.video.volume > 0)
-			{
 				last_vol = controls.video.volume;
-				controls.video.volume = 0;
-			}
-			else
-			{
-				controls.video.volume = last_vol;
-			}
-			controls.$ctrls.find('#volume_bar').val(controls.video.volume);
-			controls.mute_icon();
+
+			controls.$ctrls.find('#volume_bar').val(controls.video.volume > 0 ? 0 : last_vol).trigger('change');
 		});
-		controls.$ctrls.find('#volume_bar').change(function (e)
+		controls.$ctrls.find('#volume_bar').change(function ()
 		{
+			if (cast.current_media)
+			{
+				var volume = new chrome.cast.Volume();
+				volume.level = $(this).val();
+				volume.muted = false;
+
+				var request = new chrome.cast.media.VolumeRequest();
+				request.volume = volume;
+
+				cast.current_media.setVolume(request);
+			}
+
 			controls.video.volume = $(this).val();
 			controls.mute_icon();
 
@@ -242,6 +253,34 @@ controls = {
 				e.target.value = ''; //make sure the change event will trigger if the user chooses the previous file again
 			}
 		});
+
+		controls.$ctrls.find('#btn_cast').click(function ()
+		{
+			cast.load_media();
+		});
+	},
+	cast_progress_timer: null,
+	controls_update_from_cast: function (media)
+	{
+		console.log('controls_update_from_cast', media);
+		controls.$ctrls.find('#btn_play_pause > span').attr('class', media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
+		controls.$ctrls.find('#volume_bar').val(media.volume.level);
+		if (media.playerState === "PLAYING")
+		{
+			if (controls.cast_progress_timer)
+				return;
+
+			controls.cast_progress_timer = setInterval(function(){
+				console.log(media);
+				var cTime = media.getEstimatedTime();
+				controls.$ctrls.find('#time').text(controls.seconds_to_hhmmss(cTime) + ' / ' + controls.seconds_to_hhmmss(media.media.duration));
+				controls.$ctrls.find('#time_bar #percentage').css('width', (cTime * 100 / media.media.duration) + '%');
+			}, 1000);
+		}
+		else{
+			clearInterval(controls.cast_progress_timer);
+			controls.cast_progress_timer = null;
+		}
 	},
 	controls_fill_sub: function (srts)
 	{
