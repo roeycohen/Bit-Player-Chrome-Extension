@@ -165,7 +165,7 @@ controls = {
 			}
 		});
 		//video click play/pause
-		controls.$video.click(function ()
+		$('#video, #casting_bg').click(function ()
 		{
 			controls.$ctrls.find('#btn_play_pause').trigger('click');
 		});

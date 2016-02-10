@@ -30,6 +30,8 @@ var cast = {
 	},
 	load_media: function ()
 	{
+		$('#casting_bg').show();
+
 		chrome.cast.requestSession(function (e)
 		{
 			console.log('here');
@@ -76,6 +78,7 @@ var cast = {
 
 		}, function (e)
 		{
+			$('#casting_bg').hide();
 			console.log('error', e)
 		});
 	},
