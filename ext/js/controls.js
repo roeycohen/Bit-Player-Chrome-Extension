@@ -88,28 +88,42 @@ controls = {
 	},
 	controls_handlers: function ()
 	{
+		function seek_relative(span)
+		{
+			if (cast.media)
+			{
+				var request = new chrome.cast.media.SeekRequest();
+				request.currentTime = cast.media.getEstimatedTime() + span;
+				console.log(request.currentTime);
+				cast.media.seek_relative(request);
+			}
+			else
+			{
+				if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+					return;
+				controls.video.currentTime += span;
+			}
+		}
+
 		//keyboard
 		$(document).on('keydown', function (e)
 		{
-			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-
 			switch (e.keyCode)
 			{
 				case 32: //space
 					controls.$ctrls.find('#btn_play_pause').trigger('click');
 					break;
 				case 39: //right arrow
-					controls.video.currentTime += 10;
+					seek_relative(10);
 					break;
 				case 37: //left arrow
-					controls.video.currentTime -= 10;
+					seek_relative(-10);
 					break;
 				case 38: //up arrow
-					controls.video.currentTime += 60;
+					seek_relative(60);
 					break;
 				case 40: //down arrow
-					controls.video.currentTime -= 60;
+					seek_relative(-60);
 					break;
 			}
 		});
@@ -122,7 +136,15 @@ controls = {
 		});
 		controls.$ctrls.find('#time_bar').mouseup(function (e)
 		{
-			controls.video.currentTime = e.offsetX / $(this).width() * controls.video.duration;
+			var new_time = e.offsetX / $(this).width() * controls.video.duration;
+			if (cast.media)
+			{
+				var request = new chrome.cast.media.SeekRequest();
+				request.currentTime = new_time;
+				cast.media.seek(request);
+			}
+			else
+				controls.video.currentTime = new_time;
 		});
 		controls.$ctrls.find('#time_bar').mousemove(function (e)
 		{
@@ -150,18 +172,18 @@ controls = {
 		//pause/play button
 		controls.$ctrls.find('#btn_play_pause').click(function ()
 		{
-			if (cast.current_media)
+			if (cast.media)
 			{
-				if (cast.current_media.playerState === "PLAYING")
-					cast.current_media.pause();
+				if (cast.media.playerState === "PLAYING")
+					cast.media.pause();
 				else
-					cast.current_media.play();
+					cast.media.play();
 			}
 			else
 			{
 				if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
 					return;
-				controls.video.paused ? controls.video.play() : video.pause();
+				controls.video.paused ? controls.video.play() : controls.video.pause();
 			}
 		});
 		//video click play/pause
@@ -185,7 +207,7 @@ controls = {
 		});
 		controls.$ctrls.find('#volume_bar').change(function ()
 		{
-			if (cast.current_media)
+			if (cast.media)
 			{
 				var volume = new chrome.cast.Volume();
 				volume.level = $(this).val();
@@ -194,7 +216,7 @@ controls = {
 				var request = new chrome.cast.media.VolumeRequest();
 				request.volume = volume;
 
-				cast.current_media.setVolume(request);
+				cast.media.setVolume(request);
 			}
 
 			controls.video.volume = $(this).val();
@@ -260,24 +282,38 @@ controls = {
 		});
 	},
 	cast_progress_timer: null,
-	controls_update_from_cast: function (media)
+	cast_time: null,
+	controls_update_from_cast: function (isAlive)
 	{
-		console.log('controls_update_from_cast', media);
-		controls.$ctrls.find('#btn_play_pause > span').attr('class', media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
-		controls.$ctrls.find('#volume_bar').val(media.volume.level);
-		if (media.playerState === "PLAYING")
+		if (!isAlive)
+			return;
+		
+		console.log('controls_update_from_cast', cast.media);
+
+		controls.$ctrls.find('#btn_play_pause > span').attr('class', cast.media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
+		controls.$ctrls.find('#volume_bar').val(cast.media.volume.level);
+
+		if (cast.media.playerState === "PLAYING")
 		{
 			if (controls.cast_progress_timer)
 				return;
 
-			controls.cast_progress_timer = setInterval(function(){
-				console.log(media);
-				var cTime = media.getEstimatedTime();
-				controls.$ctrls.find('#time').text(controls.seconds_to_hhmmss(cTime) + ' / ' + controls.seconds_to_hhmmss(media.media.duration));
-				controls.$ctrls.find('#time_bar #percentage').css('width', (cTime * 100 / media.media.duration) + '%');
+			controls.cast_progress_timer = setInterval(function ()
+			{
+				if (!cast.media)
+				{
+					clearInterval(controls.cast_progress_timer);
+					controls.cast_progress_timer = null;
+					return;
+				}
+
+				controls.cast_time = cast.media.getEstimatedTime();
+				controls.$ctrls.find('#time').text(controls.seconds_to_hhmmss(controls.cast_time) + ' / ' + controls.seconds_to_hhmmss(cast.media.media.duration));
+				controls.$ctrls.find('#time_bar #percentage').css('width', (controls.cast_time * 100 / cast.media.media.duration) + '%');
 			}, 1000);
 		}
-		else{
+		else
+		{
 			clearInterval(controls.cast_progress_timer);
 			controls.cast_progress_timer = null;
 		}

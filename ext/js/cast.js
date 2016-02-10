@@ -1,7 +1,8 @@
 ;
+//https://developers.google.com/cast/docs/chrome_sender
 var cast = {
 	available: false,
-	current_media: false,
+	media: false,
 	url: null,
 	entry: function ()
 	{
@@ -30,17 +31,16 @@ var cast = {
 	},
 	load_media: function ()
 	{
-		$('#casting_bg').show();
-
 		chrome.cast.requestSession(function (e)
 		{
-			console.log('here');
+			controls.video.pause();
+			$('#casting_bg').show();
+
 			session = e;
 
 			//if (session.media.length != 0)
 			//	cast.onMediaDiscovered('onRequestSession', session.media[0]);
 
-			//https://developers.google.com/cast/docs/chrome_sender
 
 			session.addMediaListener(cast.onMediaDiscovered.bind(this, 'addMediaListener'));
 
@@ -49,6 +49,7 @@ var cast = {
 			mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
 			mediaInfo.contentType = 'video/mp4';
 			var request = new chrome.cast.media.LoadRequest(mediaInfo);
+			request.currentTime = controls.video.currentTime;
 
 			if (http.sub)
 			{
@@ -78,6 +79,13 @@ var cast = {
 
 		}, function (e)
 		{
+			if (cast.media)
+			{
+				cast.media.removeUpdateListener(controls.controls_update_from_cast);
+				cast.media = null;
+			}
+			if (controls.cast_time)
+				controls.video.currentTime = controls.cast_time;
 			$('#casting_bg').hide();
 			console.log('error', e)
 		});
@@ -85,18 +93,8 @@ var cast = {
 	onMediaDiscovered: function (how, media)
 	{
 		console.log('onMediaDiscovered', 'how');
-		cast.current_media = media;
-		media.addUpdateListener(function (isAlive)
-		{
-			if (!isAlive)
-			{
-				//currentMediaTime = 0;
-			}
-			else
-			{
-				controls.controls_update_from_cast(cast.current_media);
-			}
-		});
+		cast.media = media;
+		media.addUpdateListener(controls.controls_update_from_cast);
 	},
 	onMediaError: function (e)
 	{
