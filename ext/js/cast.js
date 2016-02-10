@@ -92,7 +92,7 @@ var cast = {
 	},
 	onMediaDiscovered: function (how, media)
 	{
-		console.log('onMediaDiscovered', 'how');
+		console.log('onMediaDiscovered', how);
 		cast.media = media;
 		media.addUpdateListener(controls.controls_update_from_cast);
 	},
