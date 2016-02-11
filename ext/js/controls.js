@@ -1,4 +1,4 @@
-;
+ ;
 
 controls = {
 	hideControlsTimeout: null,
@@ -6,6 +6,8 @@ controls = {
 	$video: null,
 	$ctrls: null,
 	cue_style: null,
+	subtitles_size: 1,
+	subtitles_size_cast: 1,
 	init: function ()
 	{
 		controls.video = document.getElementById("video");
@@ -54,10 +56,15 @@ controls = {
 
 		//subtitles font size
 		controls.cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		chrome.storage.local.get('subtitles_size', function (data)
+		chrome.storage.local.get(['subtitles_size', 'subtitles_size_cast'], function (data)
 		{
 			if ('subtitles_size' in data)
-				controls.cue_style.setProperty('font-size', data['subtitles_size'], null);
+			{
+				controls.subtitles_size = (data['subtitles_size']); //support for previous values
+				controls.cue_style.setProperty('font-size', controls.subtitles_size + 'em', null);
+			}
+			if ('subtitles_size_cast' in data)
+				controls.subtitles_size_cast = data['subtitles_size_cast'];
 		});
 
 		controls.controls_handlers();
@@ -95,7 +102,7 @@ controls = {
 				var request = new chrome.cast.media.SeekRequest();
 				request.currentTime = cast.media.getEstimatedTime() + span;
 				console.log(request.currentTime);
-				cast.media.seek_relative(request);
+				cast.media.seek(request);
 			}
 			else
 			{
@@ -278,6 +285,7 @@ controls = {
 
 		controls.$ctrls.find('#btn_cast').click(function ()
 		{
+			controls.video.pause();
 			cast.load_media();
 		});
 	},
@@ -287,7 +295,7 @@ controls = {
 	{
 		if (!isAlive)
 			return;
-		
+
 		console.log('controls_update_from_cast', cast.media);
 
 		controls.$ctrls.find('#btn_play_pause > span').attr('class', cast.media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
@@ -373,9 +381,19 @@ controls = {
 	},
 	set_font_size: function (increase)
 	{
-		var cur_size = parseFloat(controls.cue_style.getPropertyValue('font-size'));
-		var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
-		controls.cue_style.setProperty('font-size', new_size, null);
-		chrome.storage.local.set({subtitles_size: new_size});
+		if (cast.media)
+		{
+			controls.subtitles_size_cast = Math.min(Math.max(controls.subtitles_size_cast + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
+			chrome.storage.local.set({'subtitles_size_cast': controls.subtitles_size_cast});
+
+			cast.media.editTracksInfo(new chrome.cast.media.EditTracksInfoRequest(null, cast.sub_style(controls.subtitles_size_cast)));
+		}
+		else
+		{
+			controls.subtitles_size = Math.min(Math.max(controls.subtitles_size + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
+			chrome.storage.local.set({subtitles_size: controls.subtitles_size});
+
+			controls.cue_style.setProperty('font-size', controls.subtitles_size + 'em', null);
+		}
 	}
 };

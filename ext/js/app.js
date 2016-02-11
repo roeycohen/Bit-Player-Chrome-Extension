@@ -37,13 +37,13 @@ app = {
 	start_video_local: function (file)
 	{
 		http.file = file;
-		var src = "http://localhost:" +http.server.address().port + "/" + file.name;
+		//var src = "http://localhost:" +http.server.address().port + "/" + file.name;
 		cast.url = "http://192.168.3.102:" +http.server.address().port + "/" + file.name;
-		console.log(src);
+		console.log(cast.url);
 
-		$('#status a').attr('href', src);
-		$('#video').attr('type', 'video/mp4').attr('src', src);
-		//$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
+		//$('#status a').attr('href', src);
+		//$('#video').attr('type', 'video/mp4').attr('src', src);
+		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
 
 		subs.os_auth().then(function (token)
 		{

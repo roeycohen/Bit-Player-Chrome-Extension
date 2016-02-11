@@ -2,7 +2,8 @@
 //https://developers.google.com/cast/docs/chrome_sender
 var cast = {
 	available: false,
-	media: false,
+	session: null,
+	media: null,
 	url: null,
 	entry: function ()
 	{
@@ -31,18 +32,11 @@ var cast = {
 	},
 	load_media: function ()
 	{
-		chrome.cast.requestSession(function (e)
+		chrome.cast.requestSession(function (session)
 		{
-			controls.video.pause();
 			$('#casting_bg').show();
 
-			session = e;
-
-			//if (session.media.length != 0)
-			//	cast.onMediaDiscovered('onRequestSession', session.media[0]);
-
-
-			session.addMediaListener(cast.onMediaDiscovered.bind(this, 'addMediaListener'));
+			cast.session = session;
 
 			var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
 			mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
@@ -63,19 +57,14 @@ var cast = {
 
 				mediaInfo.customData = null;
 				mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
-				mediaInfo.textTrackStyle = new chrome.cast.media.TextTrackStyle();
-				mediaInfo.textTrackStyle.backgroundColor = '#00000000';
-				mediaInfo.textTrackStyle.edgeColor = '#000000';
-				mediaInfo.textTrackStyle.edgeType = chrome.cast.media.TextTrackEdgeType.SANS_SERIF;
-				mediaInfo.textTrackStyle.fontGenericFamily = chrome.cast.media.TextTrackFontGenericFamily.SERIF;
-				mediaInfo.textTrackStyle.fontScale = 1.2;
+				mediaInfo.textTrackStyle = cast.sub_style();
 				mediaInfo.duration = null;
 				mediaInfo.tracks = [cTrack];
 
 				request.activeTrackIds = [1];
 			}
 
-			session.loadMedia(request, cast.onMediaDiscovered.bind(this, 'loadMedia'), cast.onMediaError);
+			cast.session.loadMedia(request, cast.onMediaDiscovered.bind(this, 'loadMedia'), cast.onMediaError);
 
 		}, function (e)
 		{
@@ -99,6 +88,21 @@ var cast = {
 	onMediaError: function (e)
 	{
 		console.log('onMediaError', e);
+	},
+	// ======================================================================
+	sub_style: function(font_scale)
+	{
+		if (!font_scale)
+			font_scale = controls.subtitles_size_cast;
+
+		var tts = new chrome.cast.media.TextTrackStyle();
+		tts.backgroundColor = '#00000000';
+		tts.edgeColor = '#000000';
+		tts.edgeType = chrome.cast.media.TextTrackEdgeType.SANS_SERIF;
+		tts.fontGenericFamily = chrome.cast.media.TextTrackFontGenericFamily.SERIF;
+		tts.fontScale = font_scale;
+
+		return tts;
 	},
 	detect_devices: function ()
 	{
