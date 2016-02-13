@@ -10,11 +10,11 @@ Chrome extension for playing video torrents.
 - [x] Create new icon for the plugin.
 - [ ] Test the plugin with large video files - currently the video is stored in memory and i'm not sure it will work with large files.
 - [ ] Player:
-  - [ ] Create or integrate a better video player/controls.
+  - [x] Create or integrate a better video player/controls,
   - [ ] Integrate a player that will support more video file types(??)
   - [x] Keyboard shortcuts (space: play/pause, left/right: 10 secs skip, up/down: 1 minute skip). 
   - [x] Mouse hiding on playing.
-  - [ ] Add chromecast support.
+  - [ ] Add chromecast support (in progress)
 - [ ] Subtitles:
   - [x] Change subtitles font size.
   - [x] Fix encoding issues.
