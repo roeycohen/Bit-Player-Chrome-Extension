@@ -34,6 +34,7 @@ var cast = {
 	{
 		chrome.cast.requestSession(function (session)
 		{
+			chrome.power.requestKeepAwake('system');
 			$('#casting_bg').show();
 
 			cast.session = session;
@@ -68,6 +69,7 @@ var cast = {
 
 		}, function (e)
 		{
+			chrome.power.releaseKeepAwake();
 			if (cast.media)
 			{
 				cast.media.removeUpdateListener(controls.controls_update_from_cast);

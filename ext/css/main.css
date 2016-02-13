@@ -1,0 +1,408 @@
+* {
+  box-sizing: border-box;
+}
+.full_size {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+}
+body {
+  margin: 0;
+  font-size: 15px;
+}
+#casting_bg {
+  display: none;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  background-image: url('../images/tv_noise.gif');
+  background-size: 110%;
+}
+#casting_bg:after {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  content: '';
+  background-color: rgba(0, 0, 0, 0.6);
+}
+#background {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  background-color: #1ABC9C;
+  animation-name: background_colors_animate;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+}
+#background:after {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  content: '';
+  background-color: rgba(0, 0, 0, 0.6);
+}
+#background table {
+  width: 100%;
+  height: 100%;
+  border-spacing: 0;
+}
+#background table tr {
+  height: 50%;
+}
+#background table td {
+  background-position: left 0;
+  height: 33.33333%;
+  background-size: 100%;
+  animation-name: background_img;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+#background table td[pnum="0"],
+#background table td[pnum="2"],
+#background table td[pnum="4"] {
+  background-position: right 0;
+}
+#logo {
+  position: absolute;
+  left: 10px;
+  top: 30px;
+  width: 81px;
+  height: 69px;
+  background-image: url("../images/logo.png");
+  background-size: 100% 100%;
+}
+#frame {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+}
+#frame #caption {
+  height: 25px;
+  padding: 2px;
+  background-color: rgba(100, 100, 100, 0.3);
+  color: white;
+  -webkit-app-region: drag;
+}
+#frame #caption #window_title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: calc(100% - 80px);
+}
+#frame #caption #window_buttons {
+  float: right;
+  -webkit-app-region: no-drag;
+}
+#frame #caption #window_buttons .button {
+  vertical-align: bottom;
+  display: inline-block;
+  width: 20px;
+  height: 18px;
+  font-size: 13px;
+  text-align: center;
+  font-family: "Courier New", Courier, monospace;
+  cursor: pointer;
+}
+#frame #caption #window_buttons .button:hover {
+  background-color: #3461ad;
+}
+#frame #caption #window_buttons .button#btn-minimize {
+  padding-top: 6px;
+}
+#frame #caption #window_buttons .button#btn-maximize {
+  padding-top: 2px;
+}
+#frame #caption #window_buttons .button#btn-close:hover {
+  background-color: #da4141;
+}
+#frame #main_area {
+  position: relative;
+  height: calc(100% - 25px);
+}
+#frame #welcome {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#frame #welcome input[name="magnet_url"] {
+  margin-top: -10%;
+  font-size: 25px;
+  text-align: center;
+  width: 80%;
+  padding: 10px;
+}
+#frame #welcome #manual_video_file_button {
+  cursor: pointer;
+  margin-top: 40px;
+  color: #7d7d7d;
+  font-size: 18px;
+  padding: 10px;
+  background-color: white;
+}
+#frame #welcome #launcher_link {
+  display: none;
+  color: white;
+  margin-top: 60px;
+  position: relative;
+}
+#frame #welcome #launcher_link img {
+  position: absolute;
+  left: 102%;
+  top: 0;
+  display: none;
+}
+#frame #welcome #launcher_link:hover img {
+  display: inline-block;
+}
+#frame #loader {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+#frame #loader > div {
+  margin-top: -10%;
+}
+#frame #loader #load_status {
+  font-family: fantasy;
+  font-size: 30px;
+}
+#frame #loader .download_status {
+  font-size: 15px;
+}
+#frame #help_link {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+#frame #help_link a {
+  color: #bfbfbf;
+}
+#frame video#video {
+  background-color: black;
+}
+@keyframes background_colors_animate {
+  0% {
+    background-color: #1ABC9C;
+  }
+  17% {
+    background-color: #D35400;
+  }
+  33% {
+    background-color: #2C3E50;
+  }
+  50% {
+    background-color: #2980B9;
+  }
+  66% {
+    background-color: #7F8C8D;
+  }
+  83% {
+    background-color: #FFCB65;
+  }
+}
+@keyframes background_img {
+  0% {
+    background-size: 100%;
+  }
+  50% {
+    background-size: 150%;
+  }
+  100% {
+    background-size: 100%;
+  }
+}
+#status {
+  position: absolute;
+  right: 5px;
+  z-index: 2147483647;
+  top: 5px;
+  color: white;
+  border-radius: 4px;
+  background-color: #101010;
+  padding: 5px;
+  transition: opacity 1s ease-in-out;
+}
+#status a {
+  color: #d7d7d7;
+}
+video::-webkit-media-controls-panel {
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+#controls {
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  z-index: 2147483647;
+}
+#controls .meta,
+#controls .button {
+  position: relative;
+  display: inline-block;
+  color: white;
+  padding: 7px;
+  text-shadow: 1px 1px 1px black;
+  font-size: 13px;
+}
+#controls .meta [class^="icon-"],
+#controls .button [class^="icon-"] {
+  font-size: 20px;
+}
+#controls .meta {
+  vertical-align: top;
+}
+#controls #time_bar {
+  padding-top: 10px;
+  position: relative;
+  cursor: pointer;
+}
+#controls #time_bar > div {
+  position: absolute;
+  height: 3px;
+  bottom: 1px;
+  width: 0;
+}
+#controls #time_bar #bg {
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 100%;
+}
+#controls #time_bar #bg > div {
+  position: absolute;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+#controls #time_bar #goto {
+  background-color: rgba(255, 255, 255, 0.8);
+  display: none;
+}
+#controls #time_bar #percentage {
+  background-color: #3ab797;
+}
+#controls #time_bar #percentage > div {
+  box-sizing: content-box;
+  position: absolute;
+  right: 0;
+  top: 1px;
+  transition: all 0.2s ease-in;
+  border-radius: 50%;
+  background-color: #3ab797;
+}
+#controls #time_bar:hover > div {
+  height: 5px;
+  bottom: 0;
+}
+#controls #time_bar:hover #bg > div {
+  height: 5px;
+}
+#controls #time_bar:hover #goto {
+  display: block;
+}
+#controls #time_bar:hover #percentage > div {
+  padding: 6px;
+  top: -3px;
+  right: -6px;
+}
+#controls #left_controls {
+  float: left;
+}
+#controls #right_controls {
+  float: right;
+}
+#controls .button .context_menu {
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  background-color: #101010;
+  bottom: 100%;
+  right: 0;
+  border: 1px solid #555555;
+  border-radius: 5px 5px 0 5px;
+  font-weight: 300;
+  white-space: nowrap;
+}
+#controls .button .context_menu li {
+  padding: 5px;
+  cursor: pointer;
+}
+#controls .button .context_menu li:hover,
+#controls .button .context_menu li.active {
+  background-color: #434343;
+}
+#controls .button .context_menu li + li {
+  border-top: 1px solid #555555;
+}
+#controls .button:hover .context_menu {
+  display: block;
+}
+#controls input[type='range'] {
+  width: 100px;
+  background: transparent;
+}
+#controls input[type='range'],
+#controls input[type='range']::-webkit-slider-runnable-track,
+#controls input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  position: relative;
+}
+#controls input[type='range']::-webkit-slider-runnable-track {
+  box-sizing: border-box;
+  border: solid 1em transparent;
+  border-width: 1em 5px;
+  height: 1em;
+  box-shadow: 0 1.1875em 0.25em -1.25em #000;
+}
+#controls input[type='range']::-webkit-slider-runnable-track:before {
+  position: absolute;
+  top: 0;
+  width: 90px;
+  height: 0.5em;
+  content: '';
+  border-radius: 0.625em;
+  box-shadow: inset 1px 1px 0.125em #206654;
+  background: -webkit-linear-gradient(#3ab797, #3ab797) padding-box;
+}
+#controls input[type='range']::-webkit-slider-thumb {
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 50%;
+  cursor: ew-resize;
+  position: relative;
+  margin-top: -0.1875em;
+  width: 1em;
+  height: 1em;
+  padding: 0.33333em;
+  background: radial-gradient(at 65% 65%, #c1c1c1, #868887 70%) content-box, linear-gradient(#ffffff, #e1dad4) padding-box;
+  filter: drop-shadow(1px 1px 0.125em rgba(0, 0, 0, 0.5));
+}
+#controls input[type='range']:focus {
+  outline: none;
+}
+#controls #btn_mute {
+  padding-right: 0;
+}
