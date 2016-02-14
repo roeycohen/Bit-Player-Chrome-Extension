@@ -15,17 +15,19 @@
 
 // trick: chrome push subtitles up when the toolbar is visible
 video::-webkit-media-controls-panel {
-	width:1px;
-	height:1px;
+	width: 1px;
+	height: 1px;
 	opacity: 0;
 }
 
 #controls {
 	position: absolute;
 	bottom: 0;
-	left: 12px;
-	right: 12px;
+	left: 0;
+	right: 0;
+	padding: 20px 12px 0;
 	z-index: 2147483647;
+	background-image: svg-gradient(to bottom, transparent, rgba(0, 0, 0, 0.9));
 
 	.meta, .button {
 		position: relative;
