@@ -234,17 +234,14 @@ controls = {
 		//full screen
 		controls.$ctrls.find('#btn_full_screen').click(function ()
 		{
-			var $icon_span = $(this).find('> span');
 			if (document.webkitFullscreenElement)
-			{
 				document.webkitExitFullscreen();
-				$icon_span.attr('class', 'icon-enlarge2');
-			}
 			else
-			{
 				controls.video.webkitRequestFullScreen();
-				$icon_span.attr('class', 'icon-shrink2');
-			}
+		});
+		$(document).on('webkitfullscreenchange', function(e)
+		{
+			$('#btn_full_screen > span').attr('class', document.webkitIsFullScreen ? 'icon-shrink2' : 'icon-enlarge2');
 		});
 
 		//subtitles
