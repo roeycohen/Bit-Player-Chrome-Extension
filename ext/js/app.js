@@ -16,11 +16,12 @@ var test_torrent;
 
 app = {
 	torrent: null,
+	torrent_fetch_success: false,
 	trakt_info: null,
 	entry: function (torrent_url)
 	{
 		torrent_url = torrent_url || test_torrent;
-		//background.entry();
+		background.entry();
 		http.start();
 
 		controls.init();
@@ -62,7 +63,7 @@ app = {
 		//	os.api.SearchSubtitles(function (err, data)
 		//	{
 		//		if (err)
-		//			this.error(err);
+		//			app.error(err);
 		//
 		//		var srts = data.data && data.data.filter(function (e)
 		//			{
@@ -74,7 +75,8 @@ app = {
 		//}, app.error);
 		//return;
 
-		var torrent_fetch_success = false;
+		$('#load_status').text('Fetching torrent data...');
+
 		var retry_count = 0;
 		var torrent_options = {
 			verify: false,
@@ -84,15 +86,16 @@ app = {
 			dht: true,
 			tracker: true
 		};
-		$('#load_status').text('Fetching torrent data...');
+
 		app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
+		app.torrent.on("ready", app.on_torrent_ready);
+		//app.torrent.listen(6666); //not sure why was it good for...
 
 		// for some reason, sometimes when a torrent fails to start a restart help.
 		var retry_timer = window.setInterval(function ()
 		{
-			if (!torrent_fetch_success)
+			if (!app.torrent_fetch_success)
 			{
-				//restarting the torrent doesn't work :\
 				app.torrent.remove(function ()
 				{
 					app.torrent.destroy(function ()
@@ -100,7 +103,9 @@ app = {
 						retry_count++;
 						$('#load_status').text('Fetching torrent data... (retry #' + retry_count + ')');
 						$('.download_status').text('When everything fails... a restart may help.');
+
 						app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
+						app.torrent.on("ready", app.on_torrent_ready);
 					});
 				});
 			}
@@ -108,28 +113,30 @@ app = {
 				clearInterval(retry_timer);
 		}, 15000); //15 secs
 
-		//this.torrent.listen(6666);
+	},
+	on_torrent_ready: function()
+	{
+		if (app.torrent.files.length === 0)
+			return; //looks like there's a bug that sometimes calls on ready event more than once when the first time returns an empty files array.
 
-		this.torrent.on("ready", function ()
+		app.torrent_fetch_success = true;
+
+		var video_index = app.best_file(app.torrent.files);
+		if (0 > video_index)
+			$('#load_status').text('No video file found :(');
+		else
 		{
-			torrent_fetch_success = true;
+			$('#load_status').text('Downloading...');
 
-			var video_index = app.best_file(app.torrent.files);
-			if (0 > video_index)
-				$('#load_status').text('No video file found :(');
-			else
+			var torrent_file = app.torrent.files[video_index];
+			console.log('torrent_file', torrent_file);
+			setInterval(function ()
 			{
-				$('#load_status').text('Downloading...');
-
-				var torrent_file = app.torrent.files[video_index];
-				console.log('torrent_file', torrent_file);
-				setInterval(function ()
-				{
-					var status_text = app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
-						app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.min(100, Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100) ) + '%), ' +
-						app.torrent.swarm.connections.length + ' peers';
-					$('.download_status').text(status_text);
-				}, 500);
+				var status_text = app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
+					app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.min(100, Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100) ) + '%), ' +
+					app.torrent.swarm.connections.length + ' peers';
+				$('.download_status').text(status_text);
+			}, 500);
 
 				app.subs_search(torrent_file);
 
@@ -139,8 +146,7 @@ app = {
 				console.log(src);
 				$('#status a').attr('href', src);
 				$('#video').attr('type', 'video/mp4').attr('src', src);
-			}
-		});
+		}
 	},
 	best_file: function (files)
 	{
