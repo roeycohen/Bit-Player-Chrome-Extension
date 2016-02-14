@@ -16,6 +16,7 @@ var test_torrent;
 
 app = {
 	torrent: null,
+	trakt_info: null,
 	entry: function (torrent_url)
 	{
 		torrent_url = torrent_url || test_torrent;
@@ -23,7 +24,8 @@ app = {
 		http.start();
 
 		controls.init();
-		app.detect_extension(function(exists){
+		app.detect_extension(function (exists)
+		{
 			if (!exists)
 				$('#launcher_link').show();
 		});
@@ -38,23 +40,14 @@ app = {
 	{
 		http.file = file;
 		//var src = "http://localhost:" +http.server.address().port + "/" + file.name;
-		cast.url = "http://192.168.3.102:" +http.server.address().port + "/" + file.name;
+		cast.url = "http://192.168.3.102:" + http.server.address().port + "/" + file.name;
 		console.log(cast.url);
 
 		//$('#status a').attr('href', src);
 		//$('#video').attr('type', 'video/mp4').attr('src', src);
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
 
-		subs.os_auth().then(function (token)
-		{
-			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
-			{
-				if (srts.length > 0)
-					controls.controls_fill_sub(srts);
-				else
-					app.error('subtitiles not found');
-			}, app.error)
-		}, app.error);
+		app.subs_search(file);
 	},
 	start_video: function (torrent_url)
 	{
@@ -138,20 +131,11 @@ app = {
 					$('.download_status').text(status_text);
 				}, 500);
 
-				subs.os_auth().then(function (token)
-				{
-					subs.os_available_subs(token, torrent_file, 'heb,eng').then(function (srts)
-					{
-						if (srts.length > 0)
-							controls.controls_fill_sub(srts);
-						else
-							app.error('subtitiles not found');
-					}, app.error)
-				}, app.error);
+				app.subs_search(torrent_file);
 
 				http.file = torrent_file;
-				var src = "http://localhost:" +http.server.address().port + "/" + torrent_file.name;
-				cast.url = "http://192.168.3.102:" +http.server.address().port + "/" + torrent_file.name;
+				var src = "http://localhost:" + http.server.address().port + "/" + torrent_file.name;
+				cast.url = "http://192.168.3.102:" + http.server.address().port + "/" + torrent_file.name;
 				console.log(src);
 				$('#status a').attr('href', src);
 				$('#video').attr('type', 'video/mp4').attr('src', src);
@@ -172,6 +156,27 @@ app = {
 			}
 		});
 		return best_match_index;
+	},
+	subs_search: function (file)
+	{
+		subs.os_auth().then(function (token)
+		{
+			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
+			{
+				if (srts.length > 0)
+				{
+					background.get_video_data('tt' + srts[0].IDMovieImdb).then(function (data)
+					{
+						app.trakt_info = data;
+						cast.set_sender_poster(); //calling here in case the data returns after the user started to casting
+					});
+
+					controls.controls_fill_sub(srts);
+				}
+				else
+					app.error('Subtitiles were not found.');
+			}, app.error)
+		}, app.error);
 	},
 	formatBytes: function (bytes)
 	{

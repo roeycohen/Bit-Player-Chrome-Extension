@@ -5,6 +5,7 @@ var cast = {
 	session: null,
 	media: null,
 	url: null,
+	poster_set: false,
 	entry: function ()
 	{
 		//cast.detect_devices();
@@ -35,7 +36,9 @@ var cast = {
 		chrome.cast.requestSession(function (session)
 		{
 			chrome.power.requestKeepAwake('system');
+
 			$('#casting_bg').show();
+			cast.set_sender_poster();
 
 			cast.session = session;
 
@@ -90,6 +93,24 @@ var cast = {
 	onMediaError: function (e)
 	{
 		console.log('onMediaError', e);
+	},
+	set_sender_poster: function()
+	{
+		try
+		{
+			//download poster only if cast is active
+			if (!cast.poster_set && app.trakt_info && $('#casting_bg').is(':visible'))
+			{
+				cast.poster_set = true;
+				background.get_image(app.trakt_info[0].show.images.fanart.medium).then(function (src_url)
+				{
+					$('#casting_bg').css('background-image', 'url("' + src_url + '")');
+				});
+			}
+		}
+		catch (e)
+		{
+		}
 	},
 	// ======================================================================
 	sub_style: function(font_scale)
