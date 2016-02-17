@@ -17,6 +17,7 @@ var test_torrent;
 app = {
 	torrent: null,
 	torrent_fetch_success: false,
+	video_name: null,
 	trakt_info: null,
 	entry: function (torrent_url)
 	{
@@ -114,7 +115,7 @@ app = {
 		}, 15000); //15 secs
 
 	},
-	on_torrent_ready: function()
+	on_torrent_ready: function ()
 	{
 		if (app.torrent.files.length === 0)
 			return; //looks like there's a bug that sometimes calls on ready event more than once when the first time returns an empty files array.
@@ -138,14 +139,14 @@ app = {
 				$('.download_status').text(status_text);
 			}, 500);
 
-				app.subs_search(torrent_file);
+			app.subs_search(torrent_file);
 
-				http.file = torrent_file;
-				var src = "http://localhost:" + http.server.address().port + "/" + torrent_file.name;
-				cast.url = "http://192.168.3.102:" + http.server.address().port + "/" + torrent_file.name;
-				console.log(src);
-				$('#status a').attr('href', src);
-				$('#video').attr('type', 'video/mp4').attr('src', src);
+			http.file = torrent_file;
+			var src = "http://localhost:" + http.server.address().port + "/" + torrent_file.name;
+			cast.url = "http://192.168.3.102:" + http.server.address().port + "/" + torrent_file.name;
+			console.log(src);
+			$('#status a').attr('href', src);
+			$('#video').attr('type', 'video/mp4').attr('src', src);
 		}
 	},
 	best_file: function (files)
@@ -174,9 +175,13 @@ app = {
 					background.get_video_data('tt' + srts[0].IDMovieImdb).then(function (data)
 					{
 						app.trakt_info = data;
+						console.log(app.trakt_info);
 						cast.set_sender_poster(); //calling here in case the data returns after the user started to casting
 					});
 
+					app.video_name = srts[0].MovieName;
+					document.title = app.video_name + ' - Bit Player';
+					$('#window_title').html(document.title);
 					controls.controls_fill_sub(srts);
 				}
 				else

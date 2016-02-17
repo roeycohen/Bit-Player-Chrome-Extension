@@ -331,12 +331,6 @@ controls = {
 			var $cm = controls.$ctrls.find('#btn_sub_select').find('.context_menu');
 			$.each(srts, function (i, srt)
 			{
-				if (i === 0)
-				{
-					document.title = srt.MovieName + ' - Bit Player';
-					$('#window_title').html(document.title);
-				}
-
 				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
 					sub_id: srt.IDSubtitleFile,
 					language: srt.SubLanguageID,

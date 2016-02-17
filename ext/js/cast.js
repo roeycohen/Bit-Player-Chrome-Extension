@@ -42,13 +42,31 @@ var cast = {
 
 			cast.session = session;
 
+			//media info
 			var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
+			mediaInfo.contentType = 'video/mp4';
+			mediaInfo.customData = null;
+			mediaInfo.duration = null;
+			mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
+
+			//meta data
 			mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
 			mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
-			mediaInfo.contentType = 'video/mp4';
+			if (app.video_name)
+				mediaInfo.metadata.title = app.video_name;
+			if (app.trakt_info && app.trakt_info[0] && app.trakt_info[0].show && app.trakt_info[0].show.images && app.trakt_info[0].show.images.fanart)
+			{
+				var fanart = app.trakt_info[0].show.images.fanart;
+				var sel_art = fanart.medium || fanart.full || fanart.thumb;
+				if (sel_art)
+					mediaInfo.metadata.images = [{url: sel_art}];
+			}
+
+			//request
 			var request = new chrome.cast.media.LoadRequest(mediaInfo);
 			request.currentTime = controls.video.currentTime;
 
+			//subtitles
 			if (http.sub)
 			{
 				var cTrack = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
@@ -59,10 +77,7 @@ var cast = {
 				cTrack.language = 'en-US';
 				cTrack.customData = null;
 
-				mediaInfo.customData = null;
-				mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
 				mediaInfo.textTrackStyle = cast.sub_style();
-				mediaInfo.duration = null;
 				mediaInfo.tracks = [cTrack];
 
 				request.activeTrackIds = [1];
