@@ -25,9 +25,7 @@ var cast = {
 				//sessionListener
 			}, function (e)
 			{
-				//receiverListener
-				cast.available = e === chrome.cast.ReceiverAvailability.AVAILABLE;
-				console.log('cast.available', cast.available);
+				controls.cast_available(e === chrome.cast.ReceiverAvailability.AVAILABLE);
 			});
 		chrome.cast.initialize(apiConfig, function(){}, function(){});
 	},
@@ -41,6 +39,7 @@ var cast = {
 			cast.set_sender_poster();
 
 			cast.session = session;
+			cast.session.addUpdateListener(controls.cast_session_update);
 
 			//media info
 			var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
@@ -85,25 +84,35 @@ var cast = {
 
 			cast.session.loadMedia(request, cast.onMediaDiscovered.bind(this, 'loadMedia'), cast.onMediaError);
 
-		}, function (e)
-		{
-			chrome.power.releaseKeepAwake();
-			if (cast.media)
-			{
-				cast.media.removeUpdateListener(controls.controls_update_from_cast);
-				cast.media = null;
-			}
-			if (controls.cast_time)
-				controls.video.currentTime = controls.cast_time;
-			$('#casting_bg').hide();
-			console.log('error', e)
-		});
+		}, cast.cast_stopped);
 	},
 	onMediaDiscovered: function (how, media)
 	{
 		console.log('onMediaDiscovered', how);
 		cast.media = media;
-		media.addUpdateListener(controls.controls_update_from_cast);
+		media.addUpdateListener(controls.cast_media_update);
+	},
+	cast_stopped: function(e)
+	{
+		console.log('cast_stopped', e);
+
+		chrome.power.releaseKeepAwake();
+		cast.session = null;
+		if (cast.media)
+		{
+			cast.media.removeUpdateListener(controls.cast_media_update);
+			cast.media = null;
+		}
+
+		//restore time control
+		if (controls.cast_time)
+			controls.video.currentTime = controls.cast_time;
+
+		//restore volume controls
+		controls.$ctrls.find('#volume_bar').val(controls.video.volume);
+		controls.mute_icon();
+
+		$('#casting_bg').hide();
 	},
 	onMediaError: function (e)
 	{

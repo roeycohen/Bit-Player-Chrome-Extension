@@ -175,7 +175,6 @@ app = {
 					background.get_video_data('tt' + srts[0].IDMovieImdb).then(function (data)
 					{
 						app.trakt_info = data;
-						console.log(app.trakt_info);
 						cast.set_sender_poster(); //calling here in case the data returns after the user started to casting
 					});
 

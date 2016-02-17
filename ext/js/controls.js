@@ -1,4 +1,4 @@
- ;
+;
 
 controls = {
 	hideControlsTimeout: null,
@@ -204,31 +204,31 @@ controls = {
 		});
 
 		//volume
-		var last_vol = controls.video.volume;
 		controls.$ctrls.find('#btn_mute').click(function ()
 		{
-			if (controls.video.volume > 0)
-				last_vol = controls.video.volume;
+			if (cast.session)
+				cast.session.setReceiverMuted(!cast.session.receiver.volume.muted);
+			else
+				controls.video.muted = !controls.video.muted;
 
-			controls.$ctrls.find('#volume_bar').val(controls.video.volume > 0 ? 0 : last_vol).trigger('change');
+			controls.mute_icon();
 		});
 		controls.$ctrls.find('#volume_bar').change(function ()
 		{
-			if (cast.media)
+			var new_vol = parseFloat($(this).val());
+			if (cast.session)
 			{
-				var volume = new chrome.cast.Volume();
-				volume.level = $(this).val();
-				volume.muted = false;
-
-				var request = new chrome.cast.media.VolumeRequest();
-				request.volume = volume;
-
-				cast.media.setVolume(request);
+				cast.session.setReceiverVolumeLevel(new_vol);
+				if (cast.session.receiver.volume.muted)
+					cast.session.setReceiverMuted(false);
+			}
+			else
+			{
+				controls.video.volume = new_vol;
+				controls.video.muted = false;
 			}
 
-			controls.video.volume = $(this).val();
 			controls.mute_icon();
-
 		}).val(controls.video.volume);
 
 		//full screen
@@ -239,7 +239,7 @@ controls = {
 			else
 				controls.video.webkitRequestFullScreen();
 		});
-		$(document).on('webkitfullscreenchange', function(e)
+		$(document).on('webkitfullscreenchange', function (e)
 		{
 			$('#btn_full_screen > span').attr('class', document.webkitIsFullScreen ? 'icon-shrink2' : 'icon-enlarge2');
 		});
@@ -288,15 +288,14 @@ controls = {
 	},
 	cast_progress_timer: null,
 	cast_time: null,
-	controls_update_from_cast: function (isAlive)
+	cast_media_update: function (isAlive)
 	{
 		if (!isAlive)
 			return;
 
-		console.log('controls_update_from_cast', cast.media);
+		console.log('cast_media_update', cast.media);
 
 		controls.$ctrls.find('#btn_play_pause > span').attr('class', cast.media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
-		controls.$ctrls.find('#volume_bar').val(cast.media.volume.level);
 
 		if (cast.media.playerState === "PLAYING")
 		{
@@ -323,6 +322,18 @@ controls = {
 			controls.cast_progress_timer = null;
 		}
 	},
+	cast_session_update: function (isAlive)
+	{
+		if (!isAlive)
+			return;
+
+		controls.$ctrls.find('#volume_bar').val(cast.session.receiver.volume.level);
+		controls.mute_icon();
+	},
+	cast_available: function(is_available)
+	{
+		controls.$ctrls.find('#btn_cast').toggle(is_available);
+	},
 	controls_fill_sub: function (srts)
 	{
 		chrome.storage.local.get(['prefered_sub_lang'], function (data)
@@ -347,13 +358,26 @@ controls = {
 	},
 	mute_icon: function ()
 	{
-		var vol = controls.video.volume;
+		var vol, muted;
+		if (cast.session)
+		{
+			vol = cast.session.receiver.volume.level;
+			muted = cast.session.receiver.volume.muted;
+		}
+		else
+		{
+			vol = controls.video.volume;
+			muted = controls.video.muted;
+		}
+
 		var $icon_span = controls.$ctrls.find('#btn_mute > span');
-		if (vol == 0)
+		if (muted)
 			$icon_span.attr('class', 'icon-volume-mute2');
+		else if (vol == 0)
+			$icon_span.attr('class', 'icon-volume-mute');
 		else if (vol > 0.66)
 			$icon_span.attr('class', 'icon-volume-high');
-		else if (vol > 0.3)
+		else if (vol > 0.33)
 			$icon_span.attr('class', 'icon-volume-medium');
 		else
 			$icon_span.attr('class', 'icon-volume-low');
