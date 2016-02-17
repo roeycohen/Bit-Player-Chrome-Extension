@@ -39,7 +39,7 @@ var cast = {
 			cast.set_sender_poster();
 
 			cast.session = session;
-			cast.session.addUpdateListener(controls.cast_session_update);
+			cast.session.addUpdateListener(cast.session_listener);
 
 			//media info
 			var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
@@ -84,41 +84,45 @@ var cast = {
 
 			cast.session.loadMedia(request, cast.onMediaDiscovered.bind(this, 'loadMedia'), cast.onMediaError);
 
-		}, cast.cast_stopped);
+		}, function (){});
 	},
 	onMediaDiscovered: function (how, media)
 	{
 		console.log('onMediaDiscovered', how);
 		cast.media = media;
-		media.addUpdateListener(controls.cast_media_update);
+		media.addUpdateListener(cast.media_listener);
 	},
-	cast_stopped: function(e)
+	session_listener: function (isAlive)
 	{
-		console.log('cast_stopped', e);
-
-		chrome.power.releaseKeepAwake();
-		cast.session = null;
-		if (cast.media)
+		if (!isAlive)
 		{
-			cast.media.removeUpdateListener(controls.cast_media_update);
-			cast.media = null;
+			chrome.power.releaseKeepAwake();
+
+			if (cast.session)
+			{
+				cast.session.removeUpdateListener(cast.session_listener);
+				cast.session = null;
+			}
+			cast.session = null;
+			if (cast.media)
+			{
+				cast.media.removeUpdateListener(cast.media_listener);
+				cast.media = null;
+			}
+
+			$('#casting_bg').hide();
 		}
-
-		//restore time control
-		if (controls.cast_time)
-			controls.video.currentTime = controls.cast_time;
-
-		//restore volume controls
-		controls.$ctrls.find('#volume_bar').val(controls.video.volume);
-		controls.mute_icon();
-
-		$('#casting_bg').hide();
+		controls.cast_session_update(isAlive);
+	},
+	media_listener: function (isAlive)
+	{
+		controls.cast_media_update(isAlive);
 	},
 	onMediaError: function (e)
 	{
 		console.log('onMediaError', e);
 	},
-	set_sender_poster: function()
+	set_sender_poster: function ()
 	{
 		try
 		{
@@ -137,7 +141,7 @@ var cast = {
 		}
 	},
 	// ======================================================================
-	sub_style: function(font_scale)
+	sub_style: function (font_scale)
 	{
 		if (!font_scale)
 			font_scale = controls.subtitles_size_cast;

@@ -325,9 +325,18 @@ controls = {
 	cast_session_update: function (isAlive)
 	{
 		if (!isAlive)
-			return;
+		{
+			//restore time control
+			if (controls.cast_time)
+				controls.video.currentTime = controls.cast_time;
 
-		controls.$ctrls.find('#volume_bar').val(cast.session.receiver.volume.level);
+			//restore volume controls
+			controls.$ctrls.find('#volume_bar').val(controls.video.volume);
+		}
+		else
+		{
+			controls.$ctrls.find('#volume_bar').val(cast.session.receiver.volume.level);
+		}
 		controls.mute_icon();
 	},
 	cast_available: function(is_available)
