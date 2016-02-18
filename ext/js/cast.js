@@ -148,9 +148,9 @@ var cast = {
 
 		var tts = new chrome.cast.media.TextTrackStyle();
 		tts.backgroundColor = '#00000000';
-		tts.edgeColor = '#000000';
-		tts.edgeType = chrome.cast.media.TextTrackEdgeType.SANS_SERIF;
-		tts.fontGenericFamily = chrome.cast.media.TextTrackFontGenericFamily.SERIF;
+		tts.edgeColor = '#000000cc';
+		tts.edgeType = chrome.cast.media.TextTrackEdgeType.OUTLINE;
+		tts.fontGenericFamily = chrome.cast.media.TextTrackFontGenericFamily.SANS_SERIF;
 		tts.fontScale = font_scale;
 
 		return tts;

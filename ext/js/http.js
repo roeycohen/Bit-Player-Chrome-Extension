@@ -84,7 +84,7 @@ var http = {
 		if (file instanceof File)
 			file.length = file.size;
 
-		//res.setHeader("Content-Disposition", "attachment");
+		res.setHeader("Content-Disposition", "attachment");
 		res.setHeader('Accept-Ranges', 'bytes');
 		res.setHeader('Content-Type', torrent.mime.lookup(file.name));
 		res.statusCode = 200;
