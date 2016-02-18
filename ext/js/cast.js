@@ -27,9 +27,13 @@ var cast = {
 			{
 				controls.cast_available(e === chrome.cast.ReceiverAvailability.AVAILABLE);
 			});
-		chrome.cast.initialize(apiConfig, function(){}, function(){});
+		chrome.cast.initialize(apiConfig, function ()
+		{
+		}, function ()
+		{
+		});
 	},
-	load_media: function ()
+	start: function ()
 	{
 		chrome.cast.requestSession(function (session)
 		{
@@ -41,56 +45,72 @@ var cast = {
 			cast.session = session;
 			cast.session.addUpdateListener(cast.session_listener);
 
-			//media info
-			var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
-			mediaInfo.contentType = 'video/mp4';
-			mediaInfo.customData = null;
-			mediaInfo.duration = null;
-			mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
+			cast.load_media();
 
-			//meta data
-			mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
-			mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
-			if (app.video_name)
-				mediaInfo.metadata.title = app.video_name;
-			if (app.trakt_info && app.trakt_info[0] && app.trakt_info[0].show && app.trakt_info[0].show.images && app.trakt_info[0].show.images.fanart)
-			{
-				var fanart = app.trakt_info[0].show.images.fanart;
-				var sel_art = fanart.medium || fanart.full || fanart.thumb;
-				if (sel_art)
-					mediaInfo.metadata.images = [{url: sel_art}];
-			}
-
-			//request
-			var request = new chrome.cast.media.LoadRequest(mediaInfo);
-			request.currentTime = controls.video.currentTime;
-
-			//subtitles
-			if (http.sub)
-			{
-				var cTrack = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
-				cTrack.trackContentId = "http://192.168.3.102:" + http.server.address().port + "/sub.vtt";
-				cTrack.trackContentType = 'text/vtt';
-				cTrack.subtype = chrome.cast.media.TextTrackType.SUBTITLES;
-				cTrack.name = 'Subtitles';
-				cTrack.language = 'en-US';
-				cTrack.customData = null;
-
-				mediaInfo.textTrackStyle = cast.sub_style();
-				mediaInfo.tracks = [cTrack];
-
-				request.activeTrackIds = [1];
-			}
-
-			cast.session.loadMedia(request, cast.onMediaDiscovered.bind(this, 'loadMedia'), cast.onMediaError);
-
-		}, function (){});
+		}, function ()
+		{
+		});
 	},
-	onMediaDiscovered: function (how, media)
+	load_media: function ()
 	{
-		console.log('onMediaDiscovered', how);
-		cast.media = media;
-		media.addUpdateListener(cast.media_listener);
+		if (!cast.session)
+			return;
+
+		var start_time = controls.video.currentTime;
+		if (cast.media)
+		{
+			start_time = cast.media.getEstimatedTime();
+			//cast.media.stop();
+			cast.media.removeUpdateListener(cast.media_listener);
+			cast.media = null;
+		}
+
+		//media info
+		var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
+		mediaInfo.contentType = 'video/mp4';
+		mediaInfo.customData = null;
+		mediaInfo.duration = null;
+		mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
+
+		//meta data
+		mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
+		mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.GENERIC;
+		if (app.video_name)
+			mediaInfo.metadata.title = app.video_name;
+		if (app.trakt_info && app.trakt_info[0] && app.trakt_info[0].show && app.trakt_info[0].show.images && app.trakt_info[0].show.images.fanart)
+		{
+			var fanart = app.trakt_info[0].show.images.fanart;
+			var sel_art = fanart.medium || fanart.full || fanart.thumb;
+			if (sel_art)
+				mediaInfo.metadata.images = [{url: sel_art}];
+		}
+
+		//request
+		var request = new chrome.cast.media.LoadRequest(mediaInfo);
+		request.currentTime = start_time;
+
+		//subtitles
+		if (http.sub)
+		{
+			var cTrack = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
+			cTrack.trackContentId = "http://192.168.3.102:" + http.server.address().port + "/sub.vtt";
+			cTrack.trackContentType = 'text/vtt';
+			cTrack.subtype = chrome.cast.media.TextTrackType.SUBTITLES;
+			cTrack.name = 'Subtitles';
+			cTrack.language = 'en-US';
+
+			mediaInfo.textTrackStyle = cast.sub_style();
+			mediaInfo.tracks = [cTrack];
+
+			request.activeTrackIds = [1];
+		}
+
+		cast.session.loadMedia(request, function (media)
+		{
+			cast.media = media;
+			media.addUpdateListener(cast.media_listener);
+
+		}, cast.onMediaError);
 	},
 	session_listener: function (isAlive)
 	{

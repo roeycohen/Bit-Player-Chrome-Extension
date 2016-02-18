@@ -283,7 +283,7 @@ controls = {
 		controls.$ctrls.find('#btn_cast').click(function ()
 		{
 			controls.video.pause();
-			cast.load_media();
+			cast.start();
 		});
 	},
 	cast_progress_timer: null,

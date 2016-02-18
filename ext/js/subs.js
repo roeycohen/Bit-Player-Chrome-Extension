@@ -231,11 +231,14 @@ var subs = {
 			}
 		}
 
+		http.sub = null;
 		$.each(subs.tracks, function(i, track)
 		{
 			track.mode = i == sub_id ? 'showing' : 'hidden';
-			http.sub = i == sub_id ? track : null;
+			if (i == sub_id)
+				http.sub = track;
 		});
+		cast.load_media();
 	},
 
 	srt_to_track: function(srt, track)
