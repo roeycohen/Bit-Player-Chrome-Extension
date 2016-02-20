@@ -22,10 +22,12 @@ app = {
 	entry: function (torrent_url)
 	{
 		torrent_url = torrent_url || test_torrent;
+
 		background.entry();
 		http.start();
-
 		controls.init();
+		cast.entry();
+
 		app.detect_extension(function (exists)
 		{
 			if (!exists)
@@ -41,12 +43,7 @@ app = {
 	start_video_local: function (file)
 	{
 		http.file = file;
-		//var src = "http://localhost:" +http.server.address().port + "/" + file.name;
-		cast.url = "http://192.168.3.102:" + http.server.address().port + "/" + file.name;
-		console.log(cast.url);
 
-		//$('#status a').attr('href', src);
-		//$('#video').attr('type', 'video/mp4').attr('src', src);
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
 
 		app.subs_search(file);
@@ -55,27 +52,6 @@ app = {
 	{
 		$('#welcome').hide();
 		$('#loader').show();
-
-		//background.stop();
-		//$('#loader, #help_link').slideUp();
-		//$('#player').slideDown();
-		//subs.os_auth().then(function (token)
-		//{
-		//	os.api.SearchSubtitles(function (err, data)
-		//	{
-		//		if (err)
-		//			app.error(err);
-		//
-		//		var srts = data.data && data.data.filter(function (e)
-		//			{
-		//				return "srt" == e.SubFormat
-		//			});
-		//
-		//		controls.controls_fill_sub(srts);
-		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb,eng'}]); //1954197964
-		//}, app.error);
-		//return;
-
 		$('#load_status').text('Fetching torrent data...');
 
 		var retry_count = 0;
@@ -143,8 +119,7 @@ app = {
 
 			http.file = torrent_file;
 			var src = "http://localhost:" + http.server.address().port + "/" + torrent_file.name;
-			cast.url = "http://192.168.3.102:" + http.server.address().port + "/" + torrent_file.name;
-			console.log(src);
+
 			$('#status a').attr('href', src);
 			$('#video').attr('type', 'video/mp4').attr('src', src);
 		}

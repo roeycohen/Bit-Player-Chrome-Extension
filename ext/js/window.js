@@ -1,5 +1,4 @@
 ;
-cast.entry();
 window.onload = function ()
 {
 	var win = chrome.app.window.current();

@@ -97,12 +97,14 @@ controls = {
 	{
 		function seek_relative(span)
 		{
-			if (cast.media)
+			if (cast.session)
 			{
-				var request = new chrome.cast.media.SeekRequest();
-				request.currentTime = cast.media.getEstimatedTime() + span;
-				console.log(request.currentTime);
-				cast.media.seek(request);
+				if (cast.media)
+				{
+					var request = new chrome.cast.media.SeekRequest();
+					request.currentTime = cast.media.getEstimatedTime() + span;
+					cast.media.seek(request);
+				}
 			}
 			else
 			{
@@ -144,11 +146,14 @@ controls = {
 		controls.$ctrls.find('#time_bar').mouseup(function (e)
 		{
 			var new_time = e.offsetX / $(this).width() * controls.video.duration;
-			if (cast.media)
+			if (cast.session)
 			{
-				var request = new chrome.cast.media.SeekRequest();
-				request.currentTime = new_time;
-				cast.media.seek(request);
+				if (cast.media)
+				{
+					var request = new chrome.cast.media.SeekRequest();
+					request.currentTime = new_time;
+					cast.media.seek(request);
+				}
 			}
 			else
 				controls.video.currentTime = new_time;
@@ -179,12 +184,15 @@ controls = {
 		//pause/play button
 		controls.$ctrls.find('#btn_play_pause').click(function ()
 		{
-			if (cast.media)
+			if (cast.session)
 			{
-				if (cast.media.playerState === "PLAYING")
-					cast.media.pause();
-				else
-					cast.media.play();
+				if (cast.media)
+				{
+					if (cast.media.playerState === "PLAYING")
+						cast.media.pause();
+					else
+						cast.media.play();
+				}
 			}
 			else
 			{
@@ -292,8 +300,6 @@ controls = {
 	{
 		if (!isAlive)
 			return;
-
-		console.log('cast_media_update', cast.media);
 
 		controls.$ctrls.find('#btn_play_pause > span').attr('class', cast.media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
 
@@ -405,12 +411,15 @@ controls = {
 	},
 	set_font_size: function (increase)
 	{
-		if (cast.media)
+		if (cast.session)
 		{
-			controls.subtitles_size_cast = Math.min(Math.max(controls.subtitles_size_cast + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
-			chrome.storage.local.set({'subtitles_size_cast': controls.subtitles_size_cast});
+			if (cast.media)
+			{
+				controls.subtitles_size_cast = Math.min(Math.max(controls.subtitles_size_cast + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
+				chrome.storage.local.set({'subtitles_size_cast': controls.subtitles_size_cast});
 
-			cast.media.editTracksInfo(new chrome.cast.media.EditTracksInfoRequest(null, cast.sub_style(controls.subtitles_size_cast)));
+				cast.media.editTracksInfo(new chrome.cast.media.EditTracksInfoRequest(null, cast.sub_style(controls.subtitles_size_cast)));
+			}
 		}
 		else
 		{

@@ -1,15 +1,16 @@
 ;
 //https://developers.google.com/cast/docs/chrome_sender
 var cast = {
-	available: false,
 	session: null,
 	media: null,
 	url: null,
 	poster_set: false,
+	cast_available: false,
+	devices: {},
 	entry: function ()
 	{
-		//cast.detect_devices();
-		//cast.self_address();
+		cast.scan_devices();
+
 		window['__onGCastApiAvailable'] = function (loaded, errorInfo)
 		{
 			if (loaded)
@@ -25,7 +26,8 @@ var cast = {
 				//sessionListener
 			}, function (e)
 			{
-				controls.cast_available(e === chrome.cast.ReceiverAvailability.AVAILABLE);
+				cast.cast_available = e === chrome.cast.ReceiverAvailability.AVAILABLE;
+				controls.cast_available(cast.cast_available && Object.keys(cast.devices).length > 0);
 			});
 		chrome.cast.initialize(apiConfig, function ()
 		{
@@ -56,6 +58,10 @@ var cast = {
 		if (!cast.session)
 			return;
 
+		var selected_device = cast.devices[cast.session.receiver.friendlyName];
+		if (!selected_device)
+			return app.error('selected device was not found by app.');
+
 		var start_time = controls.video.currentTime;
 		if (cast.media)
 		{
@@ -65,8 +71,11 @@ var cast = {
 			cast.media = null;
 		}
 
+		var url = "http://" + selected_device.reachable_machine_ips[0] + ":" + http.server.address().port + "/" + http.file.name;
+		console.log(url);
+
 		//media info
-		var mediaInfo = new chrome.cast.media.MediaInfo(cast.url);
+		var mediaInfo = new chrome.cast.media.MediaInfo(url);
 		mediaInfo.contentType = 'video/mp4';
 		mediaInfo.customData = null;
 		mediaInfo.duration = null;
@@ -106,9 +115,9 @@ var cast = {
 		}
 
 		cast.session.loadMedia(request, function (media)
-		{
-			cast.media = media;
-			media.addUpdateListener(cast.media_listener);
+			{
+				cast.media = media;
+				media.addUpdateListener(cast.media_listener);
 
 		}, cast.onMediaError);
 	},
@@ -175,23 +184,66 @@ var cast = {
 
 		return tts;
 	},
-	detect_devices: function ()
+	scan_devices: function ()
 	{
-		chrome.mdns.onServiceList.addListener(
-			function (e)
-			{
-				console.log('mdns.onServiceList', e);
-			},
-			{
-				'serviceType': '_googlecast._tcp.local'
-			}
-		);
-	},
-	self_address: function ()
-	{
+		var calc_network = function (address, prefixLength)
+		{
+			var c = address.split(".");
+			var ipnum = parseInt(c[0], 10) << 24 | parseInt(c[1], 10) << 16 | parseInt(c[2], 10) << 8 | parseInt(c[3], 10);
+			var mask = -1 << 32 - prefixLength;
+			return ipnum & mask;
+		};
+
 		chrome.system.network.getNetworkInterfaces(function (interfaces)
 		{
-			console.log('getNetworkInterfaces', interfaces);
+			var self_ips = $.map(interfaces, function (intf)
+			{
+				if (!!intf.address.match(/^\d+\.\d+\.\d+\.\d+$/))
+				{
+					intf.network = calc_network(intf.address, intf.prefixLength);
+					return intf;
+				}
+			});
+
+			chrome.mdns.onServiceList.addListener(
+				function (services)
+				{
+					$.each(services, function (i, s)
+					{
+						var friendly_name = false;
+						$.each(s.serviceData, function(i, sd){
+							var fn_match = sd.match(/^fn=(.*)$/);
+							if (fn_match)
+								friendly_name = fn_match[1];
+						});
+
+						if (!friendly_name)
+							return; //chrome devices should have a friendly name...
+
+						if (friendly_name in cast.devices)
+							return; //device already found
+
+						s.reachable_machine_ips = [];
+						$.each(self_ips, function (j, intf)
+						{
+							if (intf.network === calc_network(s.ipAddress, intf.prefixLength))
+								s.reachable_machine_ips.push(intf.address);
+						});
+						if (s.reachable_machine_ips.length < 1)
+							return; //reachable devices should be reachable from one of the local interface...
+
+						cast.devices[friendly_name] = s;
+					});
+
+					controls.cast_available(cast.cast_available && Object.keys(cast.devices).length > 0);
+				},
+				{
+					'serviceType': '_googlecast._tcp.local'
+				}
+			);
+			chrome.mdns.forceDiscovery(function ()
+			{
+			});
 		});
 	}
 };
