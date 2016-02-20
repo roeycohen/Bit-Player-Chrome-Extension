@@ -172,15 +172,16 @@ app = {
 		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
 		return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 	},
-	error: function (error)
+	error: function (error, id, buttons)
 	{
 		console.log('error method: ', error);
 
-		chrome.notifications.create("subtitles", {
+		chrome.notifications.create(id || "bit-player", {
 				type: "basic",
 				title: "Subtitles",
 				iconUrl: "../images/icon64.png",
-				message: $.type(error) === "string" ? error : JSON.stringify(error)
+				message: $.type(error) === "string" ? error : JSON.stringify(error),
+				buttons: buttons || []
 			},
 			function () // The callback is required before Chrome 42.
 			{

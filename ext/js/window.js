@@ -1,4 +1,10 @@
 ;
+chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
+{
+	if (notificationId === 'wrong_extension')
+		window.open('http://www.omgchrome.com/cast-chrome-tab-to-tv-no-extension/');
+});
+
 window.onload = function ()
 {
 	var win = chrome.app.window.current();

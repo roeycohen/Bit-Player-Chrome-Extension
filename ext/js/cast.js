@@ -7,6 +7,7 @@ var cast = {
 	poster_set: false,
 	cast_available: false,
 	devices: {},
+	extension_notification_already_shown: false,
 	entry: function ()
 	{
 		cast.scan_devices();
@@ -26,6 +27,12 @@ var cast = {
 				//sessionListener
 			}, function (e)
 			{
+				if (chrome.cast.extensionId != 'fjhoaacokmgbjemoflkofnenfaiekifl' && e === chrome.cast.ReceiverAvailability.AVAILABLE && !cast.extension_notification_already_shown)
+				{
+					cast.extension_notification_already_shown = true;
+					return app.error('Seems like you have chrome cast.\nIn order to use it with this app, you must enable the "Media router" flag in your browser.', 'wrong_extension', [{title: 'Click HERE for more details.'}]);
+				}
+
 				cast.cast_available = e === chrome.cast.ReceiverAvailability.AVAILABLE;
 				controls.cast_available(cast.cast_available && Object.keys(cast.devices).length > 0);
 			});
@@ -115,9 +122,9 @@ var cast = {
 		}
 
 		cast.session.loadMedia(request, function (media)
-			{
-				cast.media = media;
-				media.addUpdateListener(cast.media_listener);
+		{
+			cast.media = media;
+			media.addUpdateListener(cast.media_listener);
 
 		}, cast.onMediaError);
 	},
@@ -211,7 +218,8 @@ var cast = {
 					$.each(services, function (i, s)
 					{
 						var friendly_name = false;
-						$.each(s.serviceData, function(i, sd){
+						$.each(s.serviceData, function (i, sd)
+						{
 							var fn_match = sd.match(/^fn=(.*)$/);
 							if (fn_match)
 								friendly_name = fn_match[1];
