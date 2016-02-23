@@ -262,6 +262,8 @@ var subs = {
 			//vttCue.line = 15; //0 - 10
 			track.addCue(vttCue);
 		}
+		track.ready = true;
+		track.onReady && track.onReady();
 	},
 
 	track_to_srt: function(track)

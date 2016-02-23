@@ -121,12 +121,19 @@ var cast = {
 			request.activeTrackIds = [1];
 		}
 
-		cast.session.loadMedia(request, function (media)
+		var send_request = function ()
 		{
-			cast.media = media;
-			media.addUpdateListener(cast.media_listener);
+			cast.session.loadMedia(request, function (media)
+			{
+				cast.media = media;
+				media.addUpdateListener(cast.media_listener);
+			}, cast.onMediaError);
+		};
 
-		}, cast.onMediaError);
+		if (http.sub && !http.sub.ready)
+			http.sub.onReady = send_request;
+		else
+			send_request();
 	},
 	session_listener: function (isAlive)
 	{
