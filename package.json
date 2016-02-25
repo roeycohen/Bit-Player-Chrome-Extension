@@ -4,10 +4,10 @@
   "description": "video torrents player with subtitles support",
   "main": "bundle.js",
   "scripts": {
-    "test": "test",
     "start": "node server.js",
     "browserify": "browserify -r browserify-fs:fs -r chrome-dgram:dgram -r chrome-socket:socket bundle.js -o ext/js/bundle.js",
-    "bundle2": "browserify bundle2.js -o ext/js/bundle2.js"
+    "bundle2": "browserify bundle2.js -o ext/js/bundle2.js",
+    "test": "browserify -r browserify-fs:fs -r chrome-dgram:dgram -r chrome-net:net -r ./dns:dns my_bundle.js -o ext/js/my_bundle.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "browserify-fs": "1.0.0",
     "buffer": "4.5.0",
     "chrome-dgram": "2.1.7",
+    "chrome-net": "^3.1.1",
     "chrome-socket": "0.0.1",
     "jschardet": "^1.4.1",
     "long": "3.0.3",

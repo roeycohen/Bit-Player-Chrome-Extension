@@ -1,6 +1,36 @@
 ;
 window.onload = function ()
 {
+	var modules = {};
+	for (var key in window.browserify)
+	{
+		var m = window.browserify[key];
+		$.extend(modules,m[1]);
+	}
+	console.log(modules);
+
+	for (var key in window.browserify)
+	{
+		var m = window.browserify[key];
+		if (m[0].toString() != "function (require,module,exports){\n\n}")
+			continue;
+		//if (Object.keys(m[1]).length === 0)
+		{
+			var found = false;
+			for (var i in modules)
+			{
+				if (modules[i] == key)
+				{
+					console.log(key, i);
+					found = true;
+				}
+			}
+			if (!found)
+				console.log(key, 'no usage?');
+		}
+	}
+
+	return;
 	var win = chrome.app.window.current();
 	$('#btn-close').click(function()
 	{
