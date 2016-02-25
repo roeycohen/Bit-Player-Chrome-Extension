@@ -7,7 +7,7 @@
     "start": "node server.js",
     "browserify": "browserify -r browserify-fs:fs -r chrome-dgram:dgram -r chrome-socket:socket bundle.js -o ext/js/bundle.js",
     "bundle2": "browserify bundle2.js -o ext/js/bundle2.js",
-    "test": "browserify -r browserify-fs:fs -r chrome-dgram:dgram -r chrome-net:net -r ./dns:dns my_bundle.js -o ext/js/my_bundle.js"
+    "my_bundle": "browserify -r browserify-fs:fs -r chrome-dgram:dgram -r chrome-net:net -r ./dns:dns my_bundle.js -o ext/js/my_bundle.js"
   },
   "repository": {
     "type": "git",

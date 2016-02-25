@@ -1,3 +1,9 @@
+//in node_modules\torrent-stream\node_modules\torrent-discovery\package.json remove these 3 lines:
+//"browser": {
+//	"bittorrent-dht/client": false
+//},
+//then run: npm run my_bundle
+
 process.hrtime = require('browser-process-hrtime');
 window.localStorage = chrome.storage.local;
 fs = require('fs');
