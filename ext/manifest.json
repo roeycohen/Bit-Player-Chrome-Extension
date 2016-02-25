@@ -28,6 +28,9 @@
     "storage",
     "contextMenus",
     "notifications",
+    "system.network",
+    "mdns",
+    "power",
     "fullscreen",
     "<all_urls>",
     "http://*/"

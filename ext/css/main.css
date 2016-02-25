@@ -11,6 +11,24 @@ body {
   margin: 0;
   font-size: 15px;
 }
+#casting_bg {
+  display: none;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  z-index: 2147483647;
+  background-image: url('../images/tv_noise.gif');
+  background-size: 110%;
+}
+#casting_bg:after {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  content: '';
+  background-color: rgba(0, 0, 0, 0.6);
+}
 #background {
   position: absolute;
   width: 100%;
@@ -389,4 +407,5 @@ video::-webkit-media-controls-panel {
 }
 #controls #btn_mute {
   padding-right: 0;
+  min-width: 30px;
 }

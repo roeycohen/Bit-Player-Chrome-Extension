@@ -32,6 +32,7 @@
     "chrome-dgram": "2.1.7",
     "chrome-net": "^3.1.1",
     "chrome-socket": "0.0.1",
+    "filereader-stream": "^1.0.0",
     "jschardet": "^1.4.1",
     "long": "3.0.3",
     "memory-chunk-store": "^1.2.0",
@@ -42,7 +43,7 @@
     "torrent-stream": "1.0.2"
   },
   "devDependencies": {
-    "browserify": "13.0.0",
-    "watchify": "3.7.0"
+    "browserify": "*",
+    "watchify": "*"
   }
 }

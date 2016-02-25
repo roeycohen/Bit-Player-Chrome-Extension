@@ -16,10 +16,13 @@
     <link rel="stylesheet" href="../css/icons/style.css">
     <link rel="stylesheet" href="../css/loader.css">
     <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/cast_sender.js"></script>
     <script src="../js/libs/jquery.min.js"></script>
     <script src="../js/bundle.ts.js"></script>
     <script src="../js/bundle2.js"></script>
     <script src="../js/background.js"></script>
+    <script src="../js/http.js"></script>
+    <script src="../js/cast.js"></script>
     <script src="../js/subs.js"></script>
     <script src="../js/controls.js"></script>
     <script src="../js/app.js"></script>
@@ -82,6 +85,7 @@
                 <!--<source src="../sample/the.big.bang.theory.907.hdtv.repack-lol.mp4" type="video/mp4"/>-->
                 <!--<track label="vtt2" kind="subtitles" srclang="en" src="../sample/test.vtt" default/>-->
             </video>
+            <div id="casting_bg"></div>
 
             <div id="controls">
 
@@ -102,7 +106,7 @@
                 </div>
 
                 <div id="right_controls">
-                    <!--<div class="button" id="btn_cast" title="Cast..."><span class="icon-google127"></span></div>-->
+                    <div class="button" id="btn_cast" title="Cast..." style="display: none;"><span class="icon-google127"></span></div>
                     <div class="button" id="btn_minus" title="Decrease subtitles size"><span class="icon-minus"></span>
                     </div>
                     <div class="button" id="btn_plus" title="Increase subtitles size"><span class="icon-plus"></span>
@@ -125,6 +129,8 @@
                 <span class="download_status"></span>&nbsp;&nbsp;<a target="_blank" target="Save file to disk"><span class="icon-floppy-disk"></span></a>
             </div>
         </div>
+
+
     </div>
 </div>
 

@@ -6,6 +6,8 @@ controls = {
 	$video: null,
 	$ctrls: null,
 	cue_style: null,
+	subtitles_size: 1,
+	subtitles_size_cast: 1,
 	init: function ()
 	{
 		controls.video = document.getElementById("video");
@@ -54,10 +56,15 @@ controls = {
 
 		//subtitles font size
 		controls.cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		chrome.storage.local.get('subtitles_size', function (data)
+		chrome.storage.local.get(['subtitles_size', 'subtitles_size_cast'], function (data)
 		{
 			if ('subtitles_size' in data)
-				controls.cue_style.setProperty('font-size', data['subtitles_size'], null);
+			{
+				controls.subtitles_size = (data['subtitles_size']); //support for previous values
+				controls.cue_style.setProperty('font-size', controls.subtitles_size + 'em', null);
+			}
+			if ('subtitles_size_cast' in data)
+				controls.subtitles_size_cast = data['subtitles_size_cast'];
 		});
 
 		controls.controls_handlers();
@@ -88,36 +95,44 @@ controls = {
 	},
 	controls_handlers: function ()
 	{
-		//video click play/pause
-		controls.$video.click(function ()
+		function seek_relative(span)
 		{
-			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-			controls.video.paused ? controls.video.play() : video.pause();
-		});
+			if (cast.session)
+			{
+				if (cast.media)
+				{
+					var request = new chrome.cast.media.SeekRequest();
+					request.currentTime = cast.media.getEstimatedTime() + span;
+					cast.media.seek(request);
+				}
+			}
+			else
+			{
+				if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+					return;
+				controls.video.currentTime += span;
+			}
+		}
 
 		//keyboard
 		$(document).on('keydown', function (e)
 		{
-			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-
 			switch (e.keyCode)
 			{
 				case 32: //space
-					controls.video.paused ? controls.video.play() : video.pause();
+					controls.$ctrls.find('#btn_play_pause').trigger('click');
 					break;
 				case 39: //right arrow
-					controls.video.currentTime += 10;
+					seek_relative(10);
 					break;
 				case 37: //left arrow
-					controls.video.currentTime -= 10;
+					seek_relative(-10);
 					break;
 				case 38: //up arrow
-					controls.video.currentTime += 60;
+					seek_relative(60);
 					break;
 				case 40: //down arrow
-					controls.video.currentTime -= 60;
+					seek_relative(-60);
 					break;
 			}
 		});
@@ -125,12 +140,23 @@ controls = {
 		//progress bar
 		controls.$video.on('timeupdate', function ()
 		{
-			$('#time').text(controls.seconds_to_hhmmss(controls.video.currentTime) + ' / ' + controls.seconds_to_hhmmss(controls.video.duration));
-			$('#time_bar #percentage').css('width', (controls.video.currentTime * 100 / controls.video.duration) + '%');
+			controls.$ctrls.find('#time').text(controls.seconds_to_hhmmss(controls.video.currentTime) + ' / ' + controls.seconds_to_hhmmss(controls.video.duration));
+			controls.$ctrls.find('#time_bar #percentage').css('width', (controls.video.currentTime * 100 / controls.video.duration) + '%');
 		});
 		controls.$ctrls.find('#time_bar').mouseup(function (e)
 		{
-			controls.video.currentTime = e.offsetX / $(this).width() * controls.video.duration;
+			var new_time = e.offsetX / $(this).width() * controls.video.duration;
+			if (cast.session)
+			{
+				if (cast.media)
+				{
+					var request = new chrome.cast.media.SeekRequest();
+					request.currentTime = new_time;
+					cast.media.seek(request);
+				}
+			}
+			else
+				controls.video.currentTime = new_time;
 		});
 		controls.$ctrls.find('#time_bar').mousemove(function (e)
 		{
@@ -158,10 +184,27 @@ controls = {
 		//pause/play button
 		controls.$ctrls.find('#btn_play_pause').click(function ()
 		{
-			if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
-				return;
-			controls.video.paused ? controls.video.play() : video.pause();
-			$(this).find('> span').attr('class', controls.video.paused ? 'icon-play3' : 'icon-pause2');
+			if (cast.session)
+			{
+				if (cast.media)
+				{
+					if (cast.media.playerState === "PLAYING")
+						cast.media.pause();
+					else
+						cast.media.play();
+				}
+			}
+			else
+			{
+				if (controls.video.readyState < 2) //http://www.w3schools.com/tags/av_prop_readystate.asp
+					return;
+				controls.video.paused ? controls.video.play() : controls.video.pause();
+			}
+		});
+		//video click play/pause
+		$('#video, #casting_bg').click(function ()
+		{
+			controls.$ctrls.find('#btn_play_pause').trigger('click');
 		});
 		controls.$video.on('play pause', function ()
 		{
@@ -169,26 +212,31 @@ controls = {
 		});
 
 		//volume
-		var last_vol = controls.video.volume;
 		controls.$ctrls.find('#btn_mute').click(function ()
 		{
-			if (controls.video.volume > 0)
+			if (cast.session)
+				cast.session.setReceiverMuted(!cast.session.receiver.volume.muted);
+			else
+				controls.video.muted = !controls.video.muted;
+
+			controls.mute_icon();
+		});
+		controls.$ctrls.find('#volume_bar').change(function ()
+		{
+			var new_vol = parseFloat($(this).val());
+			if (cast.session)
 			{
-				last_vol = controls.video.volume;
-				controls.video.volume = 0;
+				cast.session.setReceiverVolumeLevel(new_vol);
+				if (cast.session.receiver.volume.muted)
+					cast.session.setReceiverMuted(false);
 			}
 			else
 			{
-				controls.video.volume = last_vol;
+				controls.video.volume = new_vol;
+				controls.video.muted = false;
 			}
-			controls.$ctrls.find('#volume_bar').val(controls.video.volume);
-			controls.mute_icon();
-		});
-		controls.$ctrls.find('#volume_bar').change(function (e)
-		{
-			controls.video.volume = $(this).val();
-			controls.mute_icon();
 
+			controls.mute_icon();
 		}).val(controls.video.volume);
 
 		//full screen
@@ -199,7 +247,7 @@ controls = {
 			else
 				controls.video.webkitRequestFullScreen();
 		});
-		$(document).on('webkitfullscreenchange', function(e)
+		$(document).on('webkitfullscreenchange', function (e)
 		{
 			$('#btn_full_screen > span').attr('class', document.webkitIsFullScreen ? 'icon-shrink2' : 'icon-enlarge2');
 		});
@@ -239,6 +287,67 @@ controls = {
 				e.target.value = ''; //make sure the change event will trigger if the user chooses the previous file again
 			}
 		});
+
+		controls.$ctrls.find('#btn_cast').click(function ()
+		{
+			controls.video.pause();
+			cast.start();
+		});
+	},
+	cast_progress_timer: null,
+	cast_time: null,
+	cast_media_update: function (isAlive)
+	{
+		if (!isAlive)
+			return;
+
+		controls.$ctrls.find('#btn_play_pause > span').attr('class', cast.media.playerState === "PLAYING" ? 'icon-pause2' : 'icon-play3');
+
+		if (cast.media.playerState === "PLAYING")
+		{
+			if (controls.cast_progress_timer)
+				return;
+
+			controls.cast_progress_timer = setInterval(function ()
+			{
+				if (!cast.media)
+				{
+					clearInterval(controls.cast_progress_timer);
+					controls.cast_progress_timer = null;
+					return;
+				}
+
+				controls.cast_time = cast.media.getEstimatedTime();
+				controls.$ctrls.find('#time').text(controls.seconds_to_hhmmss(controls.cast_time) + ' / ' + controls.seconds_to_hhmmss(cast.media.media.duration));
+				controls.$ctrls.find('#time_bar #percentage').css('width', (controls.cast_time * 100 / cast.media.media.duration) + '%');
+			}, 1000);
+		}
+		else
+		{
+			clearInterval(controls.cast_progress_timer);
+			controls.cast_progress_timer = null;
+		}
+	},
+	cast_session_update: function (isAlive)
+	{
+		if (!isAlive)
+		{
+			//restore time control
+			if (controls.cast_time)
+				controls.video.currentTime = controls.cast_time;
+
+			//restore volume controls
+			controls.$ctrls.find('#volume_bar').val(controls.video.volume);
+		}
+		else
+		{
+			controls.$ctrls.find('#volume_bar').val(cast.session.receiver.volume.level);
+		}
+		controls.mute_icon();
+	},
+	cast_available: function(is_available)
+	{
+		controls.$ctrls.find('#btn_cast').toggle(is_available);
 	},
 	controls_fill_sub: function (srts)
 	{
@@ -248,12 +357,6 @@ controls = {
 			var $cm = controls.$ctrls.find('#btn_sub_select').find('.context_menu');
 			$.each(srts, function (i, srt)
 			{
-				if (i === 0)
-				{
-					document.title = srt.MovieName + ' - Bit Player';
-					$('#window_title').html(document.title);
-				}
-
 				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
 					sub_id: srt.IDSubtitleFile,
 					language: srt.SubLanguageID,
@@ -270,13 +373,26 @@ controls = {
 	},
 	mute_icon: function ()
 	{
-		var vol = controls.video.volume;
+		var vol, muted;
+		if (cast.session)
+		{
+			vol = cast.session.receiver.volume.level;
+			muted = cast.session.receiver.volume.muted;
+		}
+		else
+		{
+			vol = controls.video.volume;
+			muted = controls.video.muted;
+		}
+
 		var $icon_span = controls.$ctrls.find('#btn_mute > span');
-		if (vol == 0)
+		if (muted)
 			$icon_span.attr('class', 'icon-volume-mute2');
+		else if (vol == 0)
+			$icon_span.attr('class', 'icon-volume-mute');
 		else if (vol > 0.66)
 			$icon_span.attr('class', 'icon-volume-high');
-		else if (vol > 0.3)
+		else if (vol > 0.33)
 			$icon_span.attr('class', 'icon-volume-medium');
 		else
 			$icon_span.attr('class', 'icon-volume-low');
@@ -295,9 +411,22 @@ controls = {
 	},
 	set_font_size: function (increase)
 	{
-		var cur_size = parseFloat(controls.cue_style.getPropertyValue('font-size'));
-		var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
-		controls.cue_style.setProperty('font-size', new_size, null);
-		chrome.storage.local.set({subtitles_size: new_size});
+		if (cast.session)
+		{
+			if (cast.media)
+			{
+				controls.subtitles_size_cast = Math.min(Math.max(controls.subtitles_size_cast + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
+				chrome.storage.local.set({'subtitles_size_cast': controls.subtitles_size_cast});
+
+				cast.media.editTracksInfo(new chrome.cast.media.EditTracksInfoRequest(null, cast.sub_style(controls.subtitles_size_cast)));
+			}
+		}
+		else
+		{
+			controls.subtitles_size = Math.min(Math.max(controls.subtitles_size + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
+			chrome.storage.local.set({subtitles_size: controls.subtitles_size});
+
+			controls.cue_style.setProperty('font-size', controls.subtitles_size + 'em', null);
+		}
 	}
 };

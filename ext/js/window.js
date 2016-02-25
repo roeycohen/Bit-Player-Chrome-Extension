@@ -1,4 +1,10 @@
 ;
+chrome.notifications.onButtonClicked.addListener(function(notificationId, buttonIndex)
+{
+	if (notificationId === 'wrong_extension')
+		window.open('http://www.omgchrome.com/cast-chrome-tab-to-tv-no-extension/');
+});
+
 window.onload = function ()
 {
 	var modules = {};
@@ -32,22 +38,21 @@ window.onload = function ()
 
 	return;
 	var win = chrome.app.window.current();
-	$('#btn-close').click(function()
+	$('#btn-close').click(function ()
 	{
 		win.close();
 	});
-	$('#btn-maximize').click(function()
+	$('#btn-maximize').click(function ()
 	{
 		if (win.isMaximized())
 			win.restore();
 		else
 			win.maximize();
 	});
-	$('#btn-minimize').click(function()
+	$('#btn-minimize').click(function ()
 	{
 		win.minimize();
 	});
-
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
 	{

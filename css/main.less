@@ -15,6 +15,19 @@ body {
 	font-size: 15px;
 }
 
+#casting_bg {
+	display: none;
+	.full_size();
+	z-index: 2147483647;
+	background-image: url('../images/tv_noise.gif');
+	background-size: 110%;
+	&:after {
+		.full_size();
+		content: '';
+		background-color: rgba(0, 0, 0, 0.6);
+	}
+}
+
 #background {
 	.full_size();
 	background-color: #1ABC9C;
@@ -48,7 +61,8 @@ body {
 		}
 	}
 }
-#logo{
+
+#logo {
 	position: absolute;
 	left: 10px;
 	top: 30px;
@@ -57,6 +71,7 @@ body {
 	background-image: url("../images/logo.png");
 	background-size: 100% 100%;
 }
+
 #frame {
 	.full_size();
 	#caption {
@@ -65,7 +80,7 @@ body {
 		background-color: rgba(100, 100, 100, 0.3);
 		color: white;
 		-webkit-app-region: drag;
-		#window_title{
+		#window_title {
 			overflow: hidden;
 			white-space: nowrap;
 			text-overflow: ellipsis;
@@ -129,18 +144,18 @@ body {
 			padding: 10px;
 			background-color: white;
 		}
-		#launcher_link{
-			display:none;
+		#launcher_link {
+			display: none;
 			color: white;
 			margin-top: 60px;
 			position: relative;
-			img{
+			img {
 				position: absolute;
 				left: 102%;
 				top: 0;
 				display: none;
 			}
-			&:hover img{
+			&:hover img {
 				display: inline-block;
 			}
 		}

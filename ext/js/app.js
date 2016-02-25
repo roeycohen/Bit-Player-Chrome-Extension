@@ -2,7 +2,8 @@
 var test_torrent;
 //big bang (hash: 2476dfc7cc376dd0)
 //test_torrent = 'magnet:?xt=urn:btih:090c797d6c3bdcdae733527d9a275586ca5b55ae&dn=The+Big+Bang+Theory+S09E07+HDTV+x264+REPACK-LOL&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-//arrow 18: test_torrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//arrow 18:
+// test_torrent = 'magnet:?xt=urn:btih:d0a1545f5b1c3dc22b14cdeab7fd6b042e13cda7&dn=Arrow+S02E18+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //sicario
 //test_torrent = 'magnet:?xt=urn:btih:c8dc3ad5b55b6a519475149a790c7d1072aab7c5&dn=Arrow+S02E19+HDTV+x264-LOL+%5Beztv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
 //arrow 19
@@ -16,12 +17,19 @@ var test_torrent;
 app = {
 	torrent: null,
 	torrent_fetch_success: false,
+	video_name: null,
+	trakt_info: null,
 	entry: function (torrent_url)
 	{
 		torrent_url = torrent_url || test_torrent;
+
 		background.entry();
+		http.start();
 		controls.init();
-		app.detect_extension(function(exists){
+		cast.entry();
+
+		app.detect_extension(function (exists)
+		{
 			if (!exists)
 				$('#launcher_link').show();
 		});
@@ -34,43 +42,16 @@ app = {
 	},
 	start_video_local: function (file)
 	{
+		http.file = file;
+
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
-		subs.os_auth().then(function (token)
-		{
-			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
-			{
-				if (srts.length > 0)
-					controls.controls_fill_sub(srts);
-				else
-					app.error('subtitiles not found');
-			}, app.error)
-		}, app.error);
+
+		app.subs_search(file);
 	},
 	start_video: function (torrent_url)
 	{
 		$('#welcome').hide();
 		$('#loader').show();
-
-		//background.stop();
-		//$('#loader, #help_link').slideUp();
-		//$('#player').slideDown();
-		//subs.os_auth().then(function (token)
-		//{
-		//	os.api.SearchSubtitles(function (err, data)
-		//	{
-		//		if (err)
-		//			app.error(err);
-		//
-		//		var srts = data.data && data.data.filter(function (e)
-		//			{
-		//				return "srt" == e.SubFormat
-		//			});
-		//
-		//		controls.controls_fill_sub(srts);
-		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb,eng'}]); //1954197964
-		//}, app.error);
-		//return;
-
 		$('#load_status').text('Fetching torrent data...');
 
 		var retry_count = 0;
@@ -110,7 +91,7 @@ app = {
 		}, 15000); //15 secs
 
 	},
-	on_torrent_ready: function()
+	on_torrent_ready: function ()
 	{
 		if (app.torrent.files.length === 0)
 			return; //looks like there's a bug that sometimes calls on ready event more than once when the first time returns an empty files array.
@@ -134,26 +115,13 @@ app = {
 				$('.download_status').text(status_text);
 			}, 500);
 
-			subs.os_auth().then(function (token)
-			{
-				subs.os_available_subs(token, torrent_file, 'heb,eng').then(function (srts)
-				{
-					if (srts.length > 0)
-						controls.controls_fill_sub(srts);
-					else
-						app.error('subtitiles not found');
-				}, app.error)
-			}, app.error);
+			app.subs_search(torrent_file);
 
-			var t = torrent.HttpServer(app.torrent);
-			t.listen(0, function ()
-			{
-				app.torrent.httpPort = t.address().port; //save port for later use
-				var src = "http://localhost:" + app.torrent.httpPort + "/" + video_index + "/" + torrent_file.name;
-				console.log(src);
-				$('#status a').attr('href', src);
-				$('#video').attr('type', 'video/mp4').attr('src', src);
-			});
+			http.file = torrent_file;
+			var src = "http://localhost:" + http.server.address().port + "/" + torrent_file.name;
+
+			$('#status a').attr('href', src);
+			$('#video').attr('type', 'video/mp4').attr('src', src);
 		}
 	},
 	best_file: function (files)
@@ -171,6 +139,30 @@ app = {
 		});
 		return best_match_index;
 	},
+	subs_search: function (file)
+	{
+		subs.os_auth().then(function (token)
+		{
+			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
+			{
+				if (srts.length > 0)
+				{
+					background.get_video_data('tt' + srts[0].IDMovieImdb).then(function (data)
+					{
+						app.trakt_info = data;
+						cast.set_sender_poster(); //calling here in case the data returns after the user started to casting
+					});
+
+					app.video_name = srts[0].MovieName;
+					document.title = app.video_name + ' - Bit Player';
+					$('#window_title').html(document.title);
+					controls.controls_fill_sub(srts);
+				}
+				else
+					app.error('Subtitiles were not found.');
+			}, app.error)
+		}, app.error);
+	},
 	formatBytes: function (bytes)
 	{
 		if (isNaN(bytes) || bytes == 0)
@@ -180,15 +172,16 @@ app = {
 		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
 		return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
 	},
-	error: function (error)
+	error: function (error, id, buttons)
 	{
 		console.log('error method: ', error);
 
-		chrome.notifications.create("subtitles", {
+		chrome.notifications.create(id || "bit-player", {
 				type: "basic",
 				title: "Subtitles",
 				iconUrl: "../images/icon64.png",
-				message: $.type(error) === "string" ? error : JSON.stringify(error)
+				message: $.type(error) === "string" ? error : JSON.stringify(error),
+				buttons: buttons || []
 			},
 			function () // The callback is required before Chrome 42.
 			{
