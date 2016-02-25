@@ -34,6 +34,7 @@
     "chrome-socket": "0.0.1",
     "jschardet": "^1.4.1",
     "long": "3.0.3",
+    "memory-chunk-store": "^1.2.0",
     "opensubtitles": "0.0.3",
     "path": "0.12.7",
     "stream": "0.0.2",
