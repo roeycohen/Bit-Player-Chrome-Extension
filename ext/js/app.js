@@ -12,6 +12,8 @@ var test_torrent;
 //test_torrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
 //avi sample: streaming does work with it...
 //test_torrent = 'magnet:?xt=urn:btih:b662dbf7f84740b9fa1a332ce42c3f2859727134&dn=Marvels.Jessica.Jones.S01E05.WEBRip.XviD-FUM%5Bettv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+//big bang s09e15
+//test_torrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
 //console.log(torrent);
 
 app = {
@@ -57,14 +59,15 @@ app = {
 		var retry_count = 0;
 		var torrent_options = {
 			verify: false,
-			storage: torrent.MemoryStorage,
+			//storage: torrent.MemoryStorage,
+			storage: window.my_bundle.mem,
 			connections: 100,
 			uploads: 10,
 			dht: true,
 			tracker: true
 		};
 
-		app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
+		app.torrent = window.my_bundle.torrents(torrent_url, torrent_options);
 		app.torrent.on("ready", app.on_torrent_ready);
 		//app.torrent.listen(6666); //not sure why was it good for...
 
@@ -81,7 +84,7 @@ app = {
 						$('#load_status').text('Fetching torrent data... (retry #' + retry_count + ')');
 						$('.download_status').text('When everything fails... a restart may help.');
 
-						app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
+						app.torrent = window.my_bundle.torrents(torrent_url, torrent_options);
 						app.torrent.on("ready", app.on_torrent_ready);
 					});
 				});

@@ -16,45 +16,59 @@ if (typeof window !== 'undefined')
 		console.log('existsSync', path);
 		return true;
 	};
+
+	window.my_bundle = {
+		torrents: require('torrent-stream'),
+		mem: require('memory-chunk-store')
+	}
 }
-
-var torrents = require('torrent-stream');
-var mem = require('memory-chunk-store');
-
-var test_torrent = 'magnet:?xt=urn:btih:b662dbf7f84740b9fa1a332ce42c3f2859727134&dn=Marvels.Jessica.Jones.S01E05.WEBRip.XviD-FUM%5Bettv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
-
-var engine = torrents(test_torrent, {
-	storage: mem
-});
-
-engine.on('ready', function ()
+else
 {
-	engine.files.forEach(function (file)
+	var torrents = require('torrent-stream');
+	var mem = require('memory-chunk-store');
+
+	var test_torrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
+
+	var engine = torrents(test_torrent, {
+		verify: false,
+		storage: mem,
+		connections: 100,
+		uploads: 10,
+		dht: true,
+		tracker: true
+	});
+
+	engine.on('ready', function ()
 	{
-		if (file.name === 'Torrent-Downloaded-from-ExtraTorrent.cc.txt')
+		console.log('ready');
+		engine.files.forEach(function (file)
 		{
 			console.log('filename:', file.name);
-			var stream = file.createReadStream();
+			if (file.name === 'Tarzan.1999.720p.BrRip.x264.YIFY.srt')
+			{
 
-			stream.on("data", function (chunk)
-			{
-				console.log('got %d bytes of data', chunk.length, chunk);
-			});
-			stream.on("close", function ()
-			{
-				console.log("close");
-				//stream.destroy();
-			});
-			stream.on("end", function ()
-			{
-				console.log("end");
-				stream.destroy();
-			});
+				var stream = file.createReadStream();
 
-			//stream.pipe(process.stdout);
-		}
+				stream.on("data", function (chunk)
+				{
+					console.log('got %d bytes of data', chunk.length, chunk);
+				});
+				stream.on("close", function ()
+				{
+					console.log("close");
+					stream.destroy();
+				});
+				stream.on("end", function ()
+				{
+					console.log("end");
+					stream.destroy();
+				});
+
+				//stream.pipe(process.stdout);
+			}
+		});
 	});
-});
+}
 
 }).call(this,require('_process'))
 },{"_process":245,"browser-process-hrtime":45,"fs":"fs","memory-chunk-store":212,"torrent-stream":297}],2:[function(require,module,exports){
@@ -48855,6 +48869,7 @@ module.exports = {
 			case 'dht.transmissionbt.com':
 				return callback(null, '91.121.59.153', 4); //212.129.33.50
 		}
+		console.log('hostname not found');
 	}
 };
 },{}],"fs":[function(require,module,exports){

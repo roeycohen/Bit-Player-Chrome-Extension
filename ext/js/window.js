@@ -7,6 +7,7 @@ chrome.notifications.onButtonClicked.addListener(function(notificationId, button
 
 window.onload = function ()
 {
+	/*
 	var modules = {};
 	for (var key in window.browserify)
 	{
@@ -37,6 +38,7 @@ window.onload = function ()
 	}
 
 	return;
+	*/
 	var win = chrome.app.window.current();
 	$('#btn-close').click(function ()
 	{

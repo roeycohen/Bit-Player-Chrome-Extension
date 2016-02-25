@@ -13,5 +13,6 @@ module.exports = {
 			case 'dht.transmissionbt.com':
 				return callback(null, '91.121.59.153', 4); //212.129.33.50
 		}
+		console.log('hostname not found');
 	}
 };
