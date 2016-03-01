@@ -52,12 +52,13 @@ controls = {
 			controls.toggle_controls(true);
 		});
 
+		controls.fill_languages();
+
 		//subtitles font size
 		controls.cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		chrome.storage.local.get('subtitles_size', function (data)
+		subs.subtitles_size().then(function (size)
 		{
-			if ('subtitles_size' in data)
-				controls.cue_style.setProperty('font-size', data['subtitles_size'], null);
+			controls.cue_style.setProperty('font-size', size, null);
 		});
 
 		controls.controls_handlers();
@@ -199,7 +200,7 @@ controls = {
 			else
 				controls.video.webkitRequestFullScreen();
 		});
-		$(document).on('webkitfullscreenchange', function(e)
+		$(document).on('webkitfullscreenchange', function (e)
 		{
 			$('#btn_full_screen > span').attr('class', document.webkitIsFullScreen ? 'icon-shrink2' : 'icon-enlarge2');
 		});
@@ -226,7 +227,7 @@ controls = {
 				$li.addClass('active');
 
 				var sub_data = $li.data();
-				chrome.storage.local.set({prefered_sub_lang: sub_data.language || null}); //assuming the user will always use the same subtitles language...
+				subs.prefered_sub_lang(sub_data.language || null); //assuming the user will always use the same subtitles language...
 				subs.set_srt(controls.video, sub_data.sub_id, sub_data.encoding);
 			}
 		});
@@ -242,10 +243,10 @@ controls = {
 	},
 	controls_fill_sub: function (srts)
 	{
-		chrome.storage.local.get(['prefered_sub_lang'], function (data)
+		subs.prefered_sub_lang().then(function (prefered_sub_lang)
 		{
 			var $srt_li_to_load = null;
-			var $cm = controls.$ctrls.find('#btn_sub_select').find('.context_menu');
+			var $cm = controls.$ctrls.find('#btn_sub_select > .context_menu');
 			$.each(srts, function (i, srt)
 			{
 				if (i === 0)
@@ -262,11 +263,11 @@ controls = {
 
 				$cm.append($li);
 
-				if (!$srt_li_to_load && data.prefered_sub_lang === srt.SubLanguageID)
+				if (!$srt_li_to_load && prefered_sub_lang === srt.SubLanguageID)
 					$srt_li_to_load = $li;
 			});
 			$srt_li_to_load && $srt_li_to_load.trigger('click');
-		})
+		});
 	},
 	mute_icon: function ()
 	{
@@ -298,6 +299,40 @@ controls = {
 		var cur_size = parseFloat(controls.cue_style.getPropertyValue('font-size'));
 		var new_size = (cur_size + (increase ? 0.1 : -0.1) + 'em');
 		controls.cue_style.setProperty('font-size', new_size, null);
-		chrome.storage.local.set({subtitles_size: new_size});
+		subs.subtitles_size(new_size);
+	},
+	fill_languages: function ()
+	{
+		subs.users_languages().then(function(users_languages)
+		{
+			var $lsm = $('#lang_select_menu');
+			var $tr;
+			$.each(subs.lang_ids, function (i, l)
+			{
+				if (0 === i % 5)
+					$lsm.append($tr = $('<tr></tr>'));
+
+				$tr.append(
+					$('<td></td>').append(
+						$('<label></label>').append(
+							$('<input type="checkbox" name="lng_id[]"/>').val(l.SubLanguageID).prop('checked', -1 < $.inArray(l.SubLanguageID, users_languages)).prop('disabled', l.SubLanguageID === 'eng'),
+							l.LanguageName
+						)
+					)
+				);
+			});
+
+			$lsm.on('change', ':checkbox', function ()
+			{
+				//set selected languages
+				subs.users_languages(
+					$lsm.find(':checkbox:checked:enabled').map(function ()
+					{
+						return $(this).val();
+					}).get()
+				);
+			});
+		});
+
 	}
 };
