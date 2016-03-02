@@ -330,18 +330,32 @@ video::-webkit-media-controls-panel {
   font-weight: 300;
   white-space: nowrap;
 }
-#controls .button .context_menu li {
+#controls .button .context_menu li,
+#controls .button .context_menu label {
+  display: block;
   padding: 5px;
   cursor: pointer;
 }
 #controls .button .context_menu li:hover,
-#controls .button .context_menu li.active {
+#controls .button .context_menu label:hover,
+#controls .button .context_menu li.active,
+#controls .button .context_menu label.active {
   background-color: #434343;
 }
-#controls .button .context_menu li + li {
+#controls .button .context_menu li + li,
+#controls .button .context_menu label + li {
   border-top: 1px solid #555555;
 }
-#controls .button:hover .context_menu {
+#controls .button .context_menu li > .context_menu,
+#controls .button .context_menu label > .context_menu {
+  right: 100%;
+  bottom: -1px;
+}
+#controls .button .context_menu li:hover > .context_menu,
+#controls .button .context_menu label:hover > .context_menu {
+  display: block;
+}
+#controls .button:hover > .context_menu {
   display: block;
 }
 #controls input[type='range'] {

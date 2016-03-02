@@ -37,7 +37,7 @@ app = {
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
 		subs.os_auth().then(function (token)
 		{
-			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
+			subs.os_available_subs(token, file).then(function (srts)
 			{
 				if (srts.length > 0)
 					controls.controls_fill_sub(srts);
@@ -50,27 +50,6 @@ app = {
 	{
 		$('#welcome').hide();
 		$('#loader').show();
-
-		//background.stop();
-		//$('#loader, #help_link').slideUp();
-		//$('#player').slideDown();
-		//subs.os_auth().then(function (token)
-		//{
-		//	os.api.SearchSubtitles(function (err, data)
-		//	{
-		//		if (err)
-		//			app.error(err);
-		//
-		//		var srts = data.data && data.data.filter(function (e)
-		//			{
-		//				return "srt" == e.SubFormat
-		//			});
-		//
-		//		controls.controls_fill_sub(srts);
-		//	}, token, [{moviehash: '2476dfc7cc376dd0', sublanguageid: 'heb,eng'}]); //1954197964
-		//}, app.error);
-		//return;
-
 		$('#load_status').text('Fetching torrent data...');
 
 		var retry_count = 0;
@@ -136,7 +115,7 @@ app = {
 
 			subs.os_auth().then(function (token)
 			{
-				subs.os_available_subs(token, torrent_file, 'heb,eng').then(function (srts)
+				subs.os_available_subs(token, torrent_file).then(function (srts)
 				{
 					if (srts.length > 0)
 						controls.controls_fill_sub(srts);
