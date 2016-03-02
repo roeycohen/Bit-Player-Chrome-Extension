@@ -96,6 +96,9 @@ body {
 #frame #caption #window_buttons .button:hover {
   background-color: #3461ad;
 }
+#frame #caption #window_buttons .button.active {
+  color: #3ab797;
+}
 #frame #caption #window_buttons .button#btn-minimize {
   padding-top: 6px;
 }
@@ -104,6 +107,10 @@ body {
 }
 #frame #caption #window_buttons .button#btn-close:hover {
   background-color: #da4141;
+}
+#frame #caption #window_buttons .button#btn-always_on_top .icon {
+  margin-top: 2px;
+  font-size: 0.9em;
 }
 #frame #main_area {
   position: relative;

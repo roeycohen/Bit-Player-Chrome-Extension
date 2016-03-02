@@ -17,6 +17,11 @@ window.onload = function ()
 	{
 		win.minimize();
 	});
+	$('#btn-always_on_top').click(function()
+	{
+		$(this).toggleClass('active');
+		win.setAlwaysOnTop($(this).hasClass('active'));
+	});
 
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
