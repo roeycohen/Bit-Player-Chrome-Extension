@@ -27,8 +27,14 @@ var cast = {
 				//sessionListener
 			}, function (e)
 			{
-				if (chrome.cast.extensionId != 'fjhoaacokmgbjemoflkofnenfaiekifl' && e === chrome.cast.ReceiverAvailability.AVAILABLE && !cast.extension_notification_already_shown)
+				var supported_cast_extensions = [
+					'fjhoaacokmgbjemoflkofnenfaiekifl', //v48
+					'pkedcjkdefgpdelpbcmbmeomcjbeemfm' //v49
+				];
+				if (0 > supported_cast_extensions.indexOf(chrome.cast.extensionId) && e === chrome.cast.ReceiverAvailability.AVAILABLE)
 				{
+					if (cast.extension_notification_already_shown)
+						return;
 					cast.extension_notification_already_shown = true;
 					return app.error('Seems like you have chrome cast.\nIn order to use it with this app, you must enable the "Media router" flag in your browser.', 'wrong_extension', [{title: 'Click HERE for more details.'}]);
 				}
