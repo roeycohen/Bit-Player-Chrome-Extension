@@ -26,7 +26,7 @@
   },
   "permissions": [
     "storage",
-    "contextMenus",
+    "alwaysOnTopWindows",
     "notifications",
     "fullscreen",
     "<all_urls>",

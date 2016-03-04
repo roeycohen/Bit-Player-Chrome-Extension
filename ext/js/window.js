@@ -22,6 +22,11 @@ window.onload = function ()
 		cursorcolor: "#434343",
 		cursorborder: "1px solid #999"
 	});
+	$('#btn-always_on_top').click(function()
+	{
+		$(this).toggleClass('active');
+		win.setAlwaysOnTop($(this).hasClass('active'));
+	});
 
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)

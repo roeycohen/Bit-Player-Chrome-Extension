@@ -46,7 +46,10 @@
 <div id="frame">
     <div id="caption">
         <div id="window_buttons">
-                <div class="button" id="btn-minimize">&#9598;</div><div class="button" id="btn-maximize">&#9633;</div><div class="button" id="btn-close">&#10005;</div>
+            <div class="button" id="btn-always_on_top"><div class="icon icon-pushpin" title="Toggle always on top"></div></div><!--
+            --><div class="button" id="btn-minimize">&#9598;</div><!--
+            --><div class="button" id="btn-maximize">&#9633;</div><!--
+            --><div class="button" id="btn-close">&#10005;</div>
         </div>
         <div id="window_title"></div>
     </div>
@@ -113,7 +116,9 @@
                             <li class="active"><i>Off</i></li>
                             <li class="lang_select_menu">
                                 Select language...
-                                <table class="context_menu" id="lang_select_menu"><tbody></tbody></table>
+                                <table class="context_menu" id="lang_select_menu">
+                                    <tbody></tbody>
+                                </table>
                             </li>
                             <li class="manual">From file...</li>
                             <div id="available_subs"></div>
