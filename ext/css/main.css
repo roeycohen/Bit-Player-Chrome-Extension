@@ -342,10 +342,6 @@ video::-webkit-media-controls-panel {
 #controls .button .context_menu label.active {
   background-color: #434343;
 }
-#controls .button .context_menu li + li,
-#controls .button .context_menu label + li {
-  border-top: 1px solid #555555;
-}
 #controls .button .context_menu li > .context_menu,
 #controls .button .context_menu label > .context_menu {
   right: 100%;
@@ -357,6 +353,21 @@ video::-webkit-media-controls-panel {
 }
 #controls .button:hover > .context_menu {
   display: block;
+}
+#controls #available_subs {
+  max-height: 416px;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+@media (max-width: 1300px) {
+  #controls #lang_select_menu {
+    transition-property: right;
+    transition-duration: 300ms;
+    transition-timing-function: linear;
+  }
+  #controls #lang_select_menu:hover {
+    right: 40%;
+  }
 }
 #controls input[type='range'] {
   width: 100px;

@@ -127,9 +127,6 @@ video::-webkit-media-controls-panel {
 				&:hover, &.active {
 					background-color: #434343;
 				}
-				+ li {
-					border-top: 1px solid #555555;
-				}
 				> .context_menu {
 					right: 100%;
 					bottom: -1px;
@@ -141,6 +138,23 @@ video::-webkit-media-controls-panel {
 		}
 		&:hover > .context_menu {
 			display: block;
+		}
+	}
+
+	#available_subs {
+		max-height: 416px;
+		overflow-x: visible;
+		overflow-y: auto;
+	}
+
+	@media (max-width: 1300px) {
+		#lang_select_menu{
+			transition-property: right;
+			transition-duration: 300ms;
+			transition-timing-function: linear;
+			&:hover {
+				right: 40%;
+			}
 		}
 	}
 

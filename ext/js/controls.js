@@ -246,7 +246,7 @@ controls = {
 		subs.prefered_sub_lang().then(function (prefered_sub_lang)
 		{
 			var $srt_li_to_load = null;
-			var $cm = controls.$ctrls.find('#btn_sub_select > .context_menu');
+			var $cm = controls.$ctrls.find('#available_subs');
 			$.each(srts, function (i, srt)
 			{
 				if (i === 0)

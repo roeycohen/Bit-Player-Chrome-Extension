@@ -2,20 +2,25 @@
 window.onload = function ()
 {
 	var win = chrome.app.window.current();
-	$('#btn-close').click(function()
+	$('#btn-close').click(function ()
 	{
 		win.close();
 	});
-	$('#btn-maximize').click(function()
+	$('#btn-maximize').click(function ()
 	{
 		if (win.isMaximized())
 			win.restore();
 		else
 			win.maximize();
 	});
-	$('#btn-minimize').click(function()
+	$('#btn-minimize').click(function ()
 	{
 		win.minimize();
+	});
+	$('#available_subs').niceScroll({
+		autohidemode: "leave",
+		cursorcolor: "#434343",
+		cursorborder: "1px solid #999"
 	});
 
 	var options = {};
