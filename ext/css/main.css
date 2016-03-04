@@ -369,21 +369,11 @@ video::-webkit-media-controls-panel {
   position: relative;
 }
 #controls input[type='range']::-webkit-slider-runnable-track {
-  box-sizing: border-box;
-  border: solid 1em transparent;
-  border-width: 1em 5px;
-  height: 1em;
-  box-shadow: 0 1.1875em 0.25em -1.25em #000;
-}
-#controls input[type='range']::-webkit-slider-runnable-track:before {
-  position: absolute;
-  top: 0;
-  width: 90px;
-  height: 0.5em;
-  content: '';
+  position: relative;
+  top: -5px;
+  height: 7px;
+  background: #3ab797;
   border-radius: 0.625em;
-  box-shadow: inset 1px 1px 0.125em #206654;
-  background: -webkit-linear-gradient(#3ab797, #3ab797) padding-box;
 }
 #controls input[type='range']::-webkit-slider-thumb {
   box-sizing: border-box;
@@ -391,7 +381,7 @@ video::-webkit-media-controls-panel {
   border-radius: 50%;
   cursor: ew-resize;
   position: relative;
-  margin-top: -0.1875em;
+  margin-top: -3px;
   width: 1em;
   height: 1em;
   padding: 0.33333em;
