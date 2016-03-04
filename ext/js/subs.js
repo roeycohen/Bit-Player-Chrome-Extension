@@ -9,7 +9,22 @@ var zlib = torrent.zlib;
 
 var subs = {
 	auth_token: false,
+	video_hash: false,
 	tracks: {},
+
+	get_video_subtitles: function (file)
+	{
+		subs.os_auth().then(function (token)
+		{
+			subs.os_available_subs(token, file).then(function (srts)
+			{
+				if (srts.length > 0)
+					controls.controls_fill_sub(srts);
+				else
+					app.error('subtitiles not found');
+			}, app.error)
+		}, app.error);
+	},
 
 	//the original opensubtitles lib works only on regular files
 	copyBuffer: function (e)
@@ -36,7 +51,7 @@ var subs = {
 			e.on("error", reject);
 		})
 	},
-	computeFileHash: function (torrent_file)
+	computeTorrentFileHash: function (torrent_file)
 	{
 		var stream_start = torrent_file.createReadStream({start: 0, end: 65535});
 		var steam_end = torrent_file.createReadStream({
@@ -123,9 +138,24 @@ var subs = {
 		{
 			subs.users_languages().then(function (users_languages)
 			{
-				var comp_func = torrent_file instanceof File ? subs.computeLocalFileHash : subs.computeFileHash;
+				var comp_func;
+				if (subs.video_hash)
+				{
+					comp_func = function()
+					{
+						return new Promise(function (resolve, reject){
+							resolve(subs.video_hash);
+						});
+					}
+				}
+				else if (torrent_file instanceof File)
+					comp_func = subs.computeLocalFileHash;
+				else
+					comp_func = subs.computeTorrentFileHash;
+
 				comp_func(torrent_file).then(function (hash)
 				{
+					subs.video_hash = hash;
 					console.log('video hash: ' + hash);
 					os.api.SearchSubtitles(function (err, data)
 					{
@@ -361,6 +391,8 @@ var subs = {
 		if ($.isArray(lng_ids)) //set
 		{
 			chrome.storage.sync.set({users_lng_ids: lng_ids});
+			if (subs.video_hash) //if false, then the original call is already busy and will use the updated list
+				subs.get_video_subtitles();
 		}
 		else //get
 		{

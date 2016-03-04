@@ -35,16 +35,7 @@ app = {
 	start_video_local: function (file)
 	{
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
-		subs.os_auth().then(function (token)
-		{
-			subs.os_available_subs(token, file).then(function (srts)
-			{
-				if (srts.length > 0)
-					controls.controls_fill_sub(srts);
-				else
-					app.error('subtitiles not found');
-			}, app.error)
-		}, app.error);
+		subs.get_video_subtitles(file);
 	},
 	start_video: function (torrent_url)
 	{
@@ -113,16 +104,7 @@ app = {
 				$('.download_status').text(status_text);
 			}, 500);
 
-			subs.os_auth().then(function (token)
-			{
-				subs.os_available_subs(token, torrent_file).then(function (srts)
-				{
-					if (srts.length > 0)
-						controls.controls_fill_sub(srts);
-					else
-						app.error('subtitiles not found');
-				}, app.error)
-			}, app.error);
+			subs.get_video_subtitles(torrent_file);
 
 			var t = torrent.HttpServer(app.torrent);
 			t.listen(0, function ()
