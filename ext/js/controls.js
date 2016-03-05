@@ -214,7 +214,7 @@ controls = {
 		{
 			controls.set_font_size(false);
 		});
-		controls.$ctrls.find('#btn_sub_select .context_menu').on('click', 'li', function ()
+		controls.$ctrls.find('#btn_sub_select .context_menu').on('click', 'li:not(.lang_select_menu)', function ()
 		{
 			var $li = $(this);
 			if ($li.hasClass('manual'))

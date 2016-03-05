@@ -354,13 +354,6 @@ video::-webkit-media-controls-panel {
   right: 100%;
   bottom: -1px;
 }
-#controls .button .context_menu li:hover > .context_menu,
-#controls .button .context_menu label:hover > .context_menu {
-  display: block;
-}
-#controls .button:hover > .context_menu {
-  display: block;
-}
 #controls #available_subs {
   max-height: 416px;
   overflow-x: visible;

@@ -22,10 +22,32 @@ window.onload = function ()
 		cursorcolor: "#434343",
 		cursorborder: "1px solid #999"
 	});
-	$('#btn-always_on_top').click(function()
+	$('#btn-always_on_top').click(function ()
 	{
 		$(this).toggleClass('active');
 		win.setAlwaysOnTop($(this).hasClass('active'));
+	});
+
+	// context menu handling
+	$('.button:has(> .context_menu), li:has(> .context_menu)').hover(function ()
+	{
+		//in
+		if (this.menu_timeout)
+		{
+			clearTimeout(this.menu_timeout);
+			this.menu_timeout = null;
+		}
+		$(this).find('> .context_menu').show();
+	}, function ()
+	{
+		//out
+		var _this = this;
+		_this.menu_timeout = setTimeout(function ()
+		{
+			$(_this).find('> .context_menu').hide();
+			clearTimeout(_this.menu_timeout);
+			_this.menu_timeout = null;
+		}, 1000);
 	});
 
 	var options = {};
