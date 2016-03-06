@@ -4,7 +4,7 @@ Chrome extension for playing video torrents.
 
 ###Features / Roadmap (help will be appreciated :) )
 - [x] Play the main video file of a torrent.
-- [ ] Find a way to recreate the nodejs bundle.ts.js file (currently i'm using a compiled file that i found online).
+- [ ] Find a way to recreate the nodejs bundle.ts.js file (currently i'm using a compiled file that i found online) - found a way now just need to find time.
 - [x] Open subtitles integration (using automatic hash only).
 - [x] Open player using chrome's context menu on a magnet link - solved with another extension (couldn't find a better solution due to chrome's security restrictions.
 - [x] Create new icon for the plugin.
@@ -18,7 +18,7 @@ Chrome extension for playing video torrents.
 - [ ] Subtitles:
   - [x] Change subtitles font size.
   - [x] Fix encoding issues.
-  - [ ] Allow user to choose subtitles language.
+  - [x] Allow user to choose subtitles language.
   - [ ] Subtitles sync.
   - [ ] Integrate more subtitles vendors.
   - [ ] Subtitles manual search.

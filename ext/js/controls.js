@@ -54,17 +54,17 @@ controls = {
 			controls.toggle_controls(true);
 		});
 
+		controls.fill_languages();
+
 		//subtitles font size
 		controls.cue_style = document.getElementById('subs_style').sheet.cssRules[0].style;
-		chrome.storage.local.get(['subtitles_size', 'subtitles_size_cast'], function (data)
+		subs.subtitles_size().then(function (size)
 		{
-			if ('subtitles_size' in data)
-			{
-				controls.subtitles_size = (data['subtitles_size']); //support for previous values
-				controls.cue_style.setProperty('font-size', controls.subtitles_size + 'em', null);
-			}
-			if ('subtitles_size_cast' in data)
-				controls.subtitles_size_cast = data['subtitles_size_cast'];
+			controls.cue_style.setProperty('font-size', size + 'em', null);
+		});
+		subs.subtitles_size_cast().then(function (size)
+		{
+			controls.subtitles_size_cast = size;
 		});
 
 		controls.controls_handlers();
@@ -261,7 +261,7 @@ controls = {
 		{
 			controls.set_font_size(false);
 		});
-		controls.$ctrls.find('#btn_sub_select .context_menu').on('click', 'li', function ()
+		controls.$ctrls.find('#btn_sub_select .context_menu').on('click', 'li:not(.lang_select_menu)', function ()
 		{
 			var $li = $(this);
 			if ($li.hasClass('manual'))
@@ -274,7 +274,7 @@ controls = {
 				$li.addClass('active');
 
 				var sub_data = $li.data();
-				chrome.storage.local.set({prefered_sub_lang: sub_data.language || null}); //assuming the user will always use the same subtitles language...
+				subs.prefered_sub_lang(sub_data.language || null); //assuming the user will always use the same subtitles language...
 				subs.set_srt(controls.video, sub_data.sub_id, sub_data.encoding);
 			}
 		});
@@ -351,10 +351,10 @@ controls = {
 	},
 	controls_fill_sub: function (srts)
 	{
-		chrome.storage.local.get(['prefered_sub_lang'], function (data)
+		subs.prefered_sub_lang().then(function (prefered_sub_lang)
 		{
 			var $srt_li_to_load = null;
-			var $cm = controls.$ctrls.find('#btn_sub_select').find('.context_menu');
+			var $cm = controls.$ctrls.find('#available_subs').html('');
 			$.each(srts, function (i, srt)
 			{
 				var $li = $('<li></li>').text(srt.MovieReleaseName + ' (' + srt.LanguageName + ')').data({
@@ -365,11 +365,11 @@ controls = {
 
 				$cm.append($li);
 
-				if (!$srt_li_to_load && data.prefered_sub_lang === srt.SubLanguageID)
+				if (!$srt_li_to_load && prefered_sub_lang === srt.SubLanguageID)
 					$srt_li_to_load = $li;
 			});
 			$srt_li_to_load && $srt_li_to_load.trigger('click');
-		})
+		});
 	},
 	mute_icon: function ()
 	{
@@ -416,7 +416,7 @@ controls = {
 			if (cast.media)
 			{
 				controls.subtitles_size_cast = Math.min(Math.max(controls.subtitles_size_cast + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
-				chrome.storage.local.set({'subtitles_size_cast': controls.subtitles_size_cast});
+				subs.subtitles_size_cast(controls.subtitles_size_cast);
 
 				cast.media.editTracksInfo(new chrome.cast.media.EditTracksInfoRequest(null, cast.sub_style(controls.subtitles_size_cast)));
 			}
@@ -424,9 +424,43 @@ controls = {
 		else
 		{
 			controls.subtitles_size = Math.min(Math.max(controls.subtitles_size + (increase ? 0.1 : -0.1), 0.5), 3); //keeping size between 0.5 and 3
-			chrome.storage.local.set({subtitles_size: controls.subtitles_size});
+			subs.subtitles_size(controls.subtitles_size);
 
 			controls.cue_style.setProperty('font-size', controls.subtitles_size + 'em', null);
 		}
+	},
+	fill_languages: function ()
+	{
+		subs.users_languages().then(function(users_languages)
+		{
+			var $lsm = $('#lang_select_table');
+			var $tr;
+			$.each(subs.lang_ids, function (i, l)
+			{
+				if (0 === i % 5)
+					$lsm.append($tr = $('<tr></tr>'));
+
+				$tr.append(
+					$('<td></td>').append(
+						$('<label></label>').append(
+							$('<input type="checkbox" name="lng_id[]"/>').val(l.SubLanguageID).prop('checked', -1 < $.inArray(l.SubLanguageID, users_languages)).prop('disabled', l.SubLanguageID === 'eng'),
+							l.LanguageName
+						)
+					)
+				);
+			});
+
+			$lsm.on('change', ':checkbox', function ()
+			{
+				//set selected languages
+				subs.users_languages(
+					$lsm.find(':checkbox:checked:enabled').map(function ()
+					{
+						return $(this).val();
+					}).get()
+				);
+			});
+		});
+
 	}
 };

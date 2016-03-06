@@ -9,7 +9,33 @@ var zlib = torrent.zlib;
 
 var subs = {
 	auth_token: false,
+	video_hash: false,
 	tracks: {},
+
+	get_video_subtitles: function (file)
+	{
+		subs.os_auth().then(function (token)
+		{
+			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
+			{
+				if (srts.length > 0)
+				{
+					background.get_video_data('tt' + srts[0].IDMovieImdb).then(function (data)
+					{
+						app.trakt_info = data;
+						cast.set_sender_poster(); //calling here in case the data returns after the user started to casting
+					});
+
+					app.video_name = srts[0].MovieName;
+					document.title = app.video_name + ' - Bit Player';
+					$('#window_title').html(document.title);
+					controls.controls_fill_sub(srts);
+				}
+				else
+					app.error('Subtitiles were not found.');
+			}, app.error)
+		}, app.error);
+	},
 
 	//the original opensubtitles lib works only on regular files
 	copyBuffer: function (e)
@@ -36,24 +62,29 @@ var subs = {
 			e.on("error", reject);
 		})
 	},
-	computeFileHash: function (torrent_file)
+	computeTorrentFileHash: function (torrent_file)
 	{
 		var stream_start = torrent_file.createReadStream({start: 0, end: 65535});
-		var steam_end = torrent_file.createReadStream({start: torrent_file.length - 65536, end: torrent_file.length - 1});
+		var steam_end = torrent_file.createReadStream({
+			start: torrent_file.length - 65536,
+			end: torrent_file.length - 1
+		});
 
 		return Promise.all([subs.getStreamBuffer(stream_start), subs.getStreamBuffer(steam_end)]).then(function (t)
 		{
 			return subs.computeHash(torrent_file.length, t[0], t[1]);
 		})
 	},
-	computeLocalFileHash: function(file)
+	computeLocalFileHash: function (file)
 	{
 		var getBuffer = function (file, start, end)
 		{
-			var toBuffer = function (ab) {
+			var toBuffer = function (ab)
+			{
 				var buffer = new torrent.buffer.Buffer(ab.byteLength);
 				var view = new Uint8Array(ab);
-				for (var i = 0; i < buffer.length; ++i) {
+				for (var i = 0; i < buffer.length; ++i)
+				{
 					buffer[i] = view[i];
 				}
 				return buffer;
@@ -112,27 +143,45 @@ var subs = {
 		});
 	},
 
-	os_available_subs: function (auth_token, torrent_file, lng)
+	os_available_subs: function (auth_token, torrent_file)
 	{
 		return new Promise(function (resolve, reject)
 		{
-			var comp_func = torrent_file instanceof File ? subs.computeLocalFileHash : subs.computeFileHash;
-			comp_func(torrent_file).then(function (hash)
+			subs.users_languages().then(function (users_languages)
 			{
-				console.log('video hash: ' + hash);
-				os.api.SearchSubtitles(function (err, data)
+				var comp_func;
+				if (subs.video_hash)
 				{
-					if (err)
-						return reject(err);
-
-					var srts = data.data && data.data.filter(function (e)
-						{
-							return "srt" == e.SubFormat
+					comp_func = function()
+					{
+						return new Promise(function (resolve, reject){
+							resolve(subs.video_hash);
 						});
+					}
+				}
+				else if (torrent_file instanceof File)
+					comp_func = subs.computeLocalFileHash;
+				else
+					comp_func = subs.computeTorrentFileHash;
 
-					resolve(srts);
-				}, auth_token, [{moviehash: hash, sublanguageid: lng}]);
-			}, reject);
+				comp_func(torrent_file).then(function (hash)
+				{
+					subs.video_hash = hash;
+					console.log('video hash: ' + hash);
+					os.api.SearchSubtitles(function (err, data)
+					{
+						if (err)
+							return reject(err);
+
+						var srts = data.data && data.data.filter(function (e)
+							{
+								return "srt" == e.SubFormat
+							});
+
+						resolve(srts);
+					}, auth_token, [{moviehash: hash, sublanguageid: users_languages.join()}]);
+				}, reject);
+			});
 		});
 	},
 
@@ -179,7 +228,7 @@ var subs = {
 				var t = output.toString();
 				if (org_encoding && org_encoding != 'UTF-8')
 					t = torrent.encoding.convert(output, "utf8", org_encoding).toString();
-				
+
 				resolve(t);
 			});
 			i.on("error", reject);
@@ -200,7 +249,8 @@ var subs = {
 
 				var fileReader = new FileReader();
 				var secRead = false; //second read flag
-				fileReader.onload = function (event) {
+				fileReader.onload = function (event)
+				{
 					var srt = event.target.result;
 
 					if (!secRead)
@@ -232,7 +282,7 @@ var subs = {
 		}
 
 		http.sub = null;
-		$.each(subs.tracks, function(i, track)
+		$.each(subs.tracks, function (i, track)
 		{
 			track.mode = i == sub_id ? 'showing' : 'hidden';
 			if (i == sub_id)
@@ -241,7 +291,7 @@ var subs = {
 		cast.load_media();
 	},
 
-	srt_to_track: function(srt, track)
+	srt_to_track: function (srt, track)
 	{
 		var cues = subs.parse_srt(srt, true);
 		var punctuation = /^[.,!?:]*/;
@@ -250,7 +300,8 @@ var subs = {
 			var cue = cues[ci];
 
 			//fix rtl common rtl problem, where the punctuations marks are at the beginning instead at the end.
-			cue.text = cue.text.split("\n").map(function(l){
+			cue.text = cue.text.split("\n").map(function (l)
+			{
 				var p = punctuation.exec(l)[0];
 				if (p)
 					l = l.replace(punctuation, '') + p;
@@ -334,6 +385,92 @@ var subs = {
 		result += ":" + (minutes < 10 ? "0" + minutes : minutes);
 		result += ":" + (seconds < 10 ? "0" + seconds : seconds);
 		return result;
+	},
+
+	//get/set subtitles size
+	subtitles_size: function (size)
+	{
+		if (undefined !== size) //set
+		{
+			chrome.storage.local.set({subtitles_size: size});
+		}
+		else //get
+		{
+			return new Promise(function (resolve, reject)
+			{
+				chrome.storage.local.get('subtitles_size', function (data)
+				{
+					if ('subtitles_size' in data)
+						resolve(data['subtitles_size']);
+					else
+						reject();
+				});
+			})
+		}
+	},
+
+	subtitles_size_cast: function (size)
+	{
+		if (undefined !== size) //set
+		{
+			chrome.storage.local.set({subtitles_size_cast: size});
+		}
+		else //get
+		{
+			return new Promise(function (resolve, reject)
+			{
+				chrome.storage.local.get('subtitles_size_cast', function (data)
+				{
+					if ('subtitles_size_cast' in data)
+						resolve(data['subtitles_size_cast']);
+					else
+						reject();
+				});
+			})
+		}
+	},
+
+
+	//get/set user's last used language
+	prefered_sub_lang: function (language)
+	{
+		if (undefined !== language) //set
+		{
+			chrome.storage.local.set({prefered_sub_lang: language});
+		}
+		else //get
+		{
+			return new Promise(function (resolve, reject)
+			{
+				chrome.storage.local.get('prefered_sub_lang', function (data)
+				{
+					resolve(data['prefered_sub_lang']);
+				});
+			})
+		}
+	},
+
+	//get/set the languages the user can read :)
+	users_languages: function (lng_ids)
+	{
+		if ($.isArray(lng_ids)) //set
+		{
+			chrome.storage.sync.set({users_lng_ids: lng_ids});
+			if (subs.video_hash) //if false, then the original call is already busy and will use the updated list
+				subs.get_video_subtitles();
+		}
+		else //get
+		{
+			return new Promise(function (resolve, reject)
+			{
+				chrome.storage.sync.get(['users_lng_ids'], function (data)
+				{
+					data = data['users_lng_ids'] || [];
+					data.push('eng');
+					resolve(data);
+				});
+			})
+		}
 	},
 
 	// cached results for torrent.opensubs.get_lang_ids()

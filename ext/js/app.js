@@ -46,7 +46,7 @@ app = {
 
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
 
-		app.subs_search(file);
+		subs.get_video_subtitles(file);
 	},
 	start_video: function (torrent_url)
 	{
@@ -115,7 +115,7 @@ app = {
 				$('.download_status').text(status_text);
 			}, 500);
 
-			app.subs_search(torrent_file);
+			subs.get_video_subtitles(torrent_file);
 
 			http.file = torrent_file;
 			var src = "http://localhost:" + http.server.address().port + "/" + torrent_file.name;
@@ -138,30 +138,6 @@ app = {
 			}
 		});
 		return best_match_index;
-	},
-	subs_search: function (file)
-	{
-		subs.os_auth().then(function (token)
-		{
-			subs.os_available_subs(token, file, 'heb,eng').then(function (srts)
-			{
-				if (srts.length > 0)
-				{
-					background.get_video_data('tt' + srts[0].IDMovieImdb).then(function (data)
-					{
-						app.trakt_info = data;
-						cast.set_sender_poster(); //calling here in case the data returns after the user started to casting
-					});
-
-					app.video_name = srts[0].MovieName;
-					document.title = app.video_name + ' - Bit Player';
-					$('#window_title').html(document.title);
-					controls.controls_fill_sub(srts);
-				}
-				else
-					app.error('Subtitiles were not found.');
-			}, app.error)
-		}, app.error);
 	},
 	formatBytes: function (bytes)
 	{

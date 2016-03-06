@@ -69,7 +69,7 @@ video::-webkit-media-controls-panel {
 			display: none;
 		}
 		#percentage {
-			background-color: #3ab797;
+			background-color: @main_color;
 			> div {
 				box-sizing: content-box;
 				position: absolute;
@@ -77,7 +77,7 @@ video::-webkit-media-controls-panel {
 				top: 1px;
 				transition: all 0.2s ease-in;
 				border-radius: 50%;
-				background-color: #3ab797;
+				background-color: @main_color;
 			}
 		}
 		&:hover {
@@ -120,20 +120,31 @@ video::-webkit-media-controls-panel {
 			border-radius: 5px 5px 0 5px;
 			font-weight: 300;
 			white-space: nowrap;
-			li {
+			li, label {
+				display: block;
 				padding: 5px;
 				cursor: pointer;
 				&:hover, &.active {
 					background-color: #434343;
 				}
-				+ li {
-					border-top: 1px solid #555555;
+				> .context_menu {
+					right: 100%;
+					bottom: -1px;
 				}
 			}
 		}
-		&:hover .context_menu {
-			display: block;
-		}
+	}
+
+	#available_subs {
+		max-height: 416px;
+		overflow-x: visible;
+		overflow-y: auto;
+	}
+
+	#lang_select_table {
+		transition-property: margin;
+		transition-duration: 300ms;
+		transition-timing-function: linear;
 	}
 
 	input[type='range'] {
@@ -144,21 +155,11 @@ video::-webkit-media-controls-panel {
 		width: 100px;
 		background: transparent;
 		&::-webkit-slider-runnable-track {
-			box-sizing: border-box;
-			border: solid 1em transparent;
-			border-width: 1em 5px;
-			height: 1em;
-			box-shadow: 0 1.1875em 0.25em -1.25em #000;
-			&:before {
-				position: absolute;
-				top: 0;
-				width: 90px;
-				height: 0.5em;
-				content: '';
-				border-radius: 0.625em;
-				box-shadow: inset 1px 1px 0.125em #206654;
-				background: -webkit-linear-gradient(#3ab797, #3ab797) padding-box;
-			}
+			position: relative;
+			top: -5px;
+			height: 7px;
+			background: @main_color;
+			border-radius: 0.625em;
 		}
 		&::-webkit-slider-thumb {
 			box-sizing: border-box;
@@ -166,7 +167,7 @@ video::-webkit-media-controls-panel {
 			border-radius: 50%;
 			cursor: ew-resize;
 			position: relative;
-			margin-top: -0.1875em;
+			margin-top: -3px;
 			width: 1em;
 			height: 1em;
 			padding: 0.33333em;

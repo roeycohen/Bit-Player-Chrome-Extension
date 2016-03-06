@@ -114,6 +114,9 @@ body {
 #frame #caption #window_buttons .button:hover {
   background-color: #3461ad;
 }
+#frame #caption #window_buttons .button.active {
+  color: #3ab797;
+}
 #frame #caption #window_buttons .button#btn-minimize {
   padding-top: 6px;
 }
@@ -122,6 +125,10 @@ body {
 }
 #frame #caption #window_buttons .button#btn-close:hover {
   background-color: #da4141;
+}
+#frame #caption #window_buttons .button#btn-always_on_top .icon {
+  margin-top: 2px;
+  font-size: 0.9em;
 }
 #frame #main_area {
   position: relative;
@@ -348,19 +355,32 @@ video::-webkit-media-controls-panel {
   font-weight: 300;
   white-space: nowrap;
 }
-#controls .button .context_menu li {
+#controls .button .context_menu li,
+#controls .button .context_menu label {
+  display: block;
   padding: 5px;
   cursor: pointer;
 }
 #controls .button .context_menu li:hover,
-#controls .button .context_menu li.active {
+#controls .button .context_menu label:hover,
+#controls .button .context_menu li.active,
+#controls .button .context_menu label.active {
   background-color: #434343;
 }
-#controls .button .context_menu li + li {
-  border-top: 1px solid #555555;
+#controls .button .context_menu li > .context_menu,
+#controls .button .context_menu label > .context_menu {
+  right: 100%;
+  bottom: -1px;
 }
-#controls .button:hover .context_menu {
-  display: block;
+#controls #available_subs {
+  max-height: 416px;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+#controls #lang_select_table {
+  transition-property: margin;
+  transition-duration: 300ms;
+  transition-timing-function: linear;
 }
 #controls input[type='range'] {
   width: 100px;
@@ -373,21 +393,11 @@ video::-webkit-media-controls-panel {
   position: relative;
 }
 #controls input[type='range']::-webkit-slider-runnable-track {
-  box-sizing: border-box;
-  border: solid 1em transparent;
-  border-width: 1em 5px;
-  height: 1em;
-  box-shadow: 0 1.1875em 0.25em -1.25em #000;
-}
-#controls input[type='range']::-webkit-slider-runnable-track:before {
-  position: absolute;
-  top: 0;
-  width: 90px;
-  height: 0.5em;
-  content: '';
+  position: relative;
+  top: -5px;
+  height: 7px;
+  background: #3ab797;
   border-radius: 0.625em;
-  box-shadow: inset 1px 1px 0.125em #206654;
-  background: -webkit-linear-gradient(#3ab797, #3ab797) padding-box;
 }
 #controls input[type='range']::-webkit-slider-thumb {
   box-sizing: border-box;
@@ -395,7 +405,7 @@ video::-webkit-media-controls-panel {
   border-radius: 50%;
   cursor: ew-resize;
   position: relative;
-  margin-top: -0.1875em;
+  margin-top: -3px;
   width: 1em;
   height: 1em;
   padding: 0.33333em;
