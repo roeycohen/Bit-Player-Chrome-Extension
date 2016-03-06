@@ -59,15 +59,6 @@ background = {
 	{
 		return new Promise(function (resolve, reject)
 		{
-			//var posters = [
-			//	'https://walter.trakt.us/images/movies/000/012/222/posters/thumb/fff3efe902.jpg',
-			//	'https://walter.trakt.us/images/movies/000/053/002/posters/thumb/25cbe651e1.jpg',
-			//	'https://walter.trakt.us/images/movies/000/050/139/posters/thumb/1b36047aab.jpg',
-			//	'https://walter.trakt.us/images/movies/000/034/507/posters/thumb/b884486f9e.jpg',
-			//	'https://walter.trakt.us/images/movies/000/127/828/posters/thumb/0fb0ce2879.jpg',
-			//	'https://walter.trakt.us/images/movies/000/072/719/posters/thumb/fc3ae9e451.jpg'
-			//];
-
 			var shuffle = function (o)
 			{
 				for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
