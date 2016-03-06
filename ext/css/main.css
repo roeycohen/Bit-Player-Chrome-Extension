@@ -359,15 +359,10 @@ video::-webkit-media-controls-panel {
   overflow-x: visible;
   overflow-y: auto;
 }
-@media (max-width: 1300px) {
-  #controls #lang_select_menu {
-    transition-property: right;
-    transition-duration: 300ms;
-    transition-timing-function: linear;
-  }
-  #controls #lang_select_menu:hover {
-    right: 40%;
-  }
+#controls #lang_select_table {
+  transition-property: margin;
+  transition-duration: 300ms;
+  transition-timing-function: linear;
 }
 #controls input[type='range'] {
   width: 100px;

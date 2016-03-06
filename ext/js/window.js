@@ -50,6 +50,18 @@ window.onload = function ()
 		}, 1000);
 	});
 
+	//language table positioning
+	$('#lang_select_table').hover(function ()
+	{
+		var $lsm = $(this);
+		var left = $lsm.offset().left;
+		if (left < 0)
+			$lsm.css({'margin-right': -Math.min($('.lang_select_menu').outerWidth() - 40, Math.abs(left)) + 'px'});
+	}, function ()
+	{
+		$(this).css({'margin-right': ''});
+	});
+
 	var options = {};
 	(location.href.split("?")[1] || "").split("&").map(function (t)
 	{

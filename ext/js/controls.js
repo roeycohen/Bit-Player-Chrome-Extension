@@ -305,7 +305,7 @@ controls = {
 	{
 		subs.users_languages().then(function(users_languages)
 		{
-			var $lsm = $('#lang_select_menu');
+			var $lsm = $('#lang_select_table');
 			var $tr;
 			$.each(subs.lang_ids, function (i, l)
 			{
