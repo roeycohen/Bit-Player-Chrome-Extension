@@ -357,10 +357,7 @@ var subs = {
 			{
 				chrome.storage.local.get('subtitles_size', function (data)
 				{
-					if ('subtitles_size' in data)
-						resolve(data['subtitles_size']);
-					else
-						reject();
+					resolve(data['subtitles_size'] || 1);
 				});
 			})
 		}
