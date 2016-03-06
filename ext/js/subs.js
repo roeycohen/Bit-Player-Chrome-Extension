@@ -400,10 +400,7 @@ var subs = {
 			{
 				chrome.storage.local.get('subtitles_size', function (data)
 				{
-					if ('subtitles_size' in data)
-						resolve(data['subtitles_size']);
-					else
-						reject();
+					resolve(data['subtitles_size'] || 1);
 				});
 			})
 		}
@@ -421,10 +418,7 @@ var subs = {
 			{
 				chrome.storage.local.get('subtitles_size_cast', function (data)
 				{
-					if ('subtitles_size_cast' in data)
-						resolve(data['subtitles_size_cast']);
-					else
-						reject();
+					resolve(data['subtitles_size_cast'] || 1);
 				});
 			})
 		}
