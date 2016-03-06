@@ -223,7 +223,7 @@ controls = {
 			}
 			else
 			{
-				$li.siblings().removeClass('active');
+				$('#btn_sub_select li').removeClass('active');
 				$li.addClass('active');
 
 				var sub_data = $li.data();

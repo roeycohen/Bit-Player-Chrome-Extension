@@ -6,18 +6,19 @@ background = {
 		this.get_posters().then(function (posters)
 		{
 			background.set_posters(posters);
-			background.timer = setInterval(function(){
+			background.timer = setInterval(function ()
+			{
 				background.set_posters(posters);
 			}, 10000)
 		});
 	},
-	stop: function()
+	stop: function ()
 	{
 		$('#background > table').hide();
 		if (background.timer)
 			clearInterval(background.timer);
 	},
-	set_posters: function(posters)
+	set_posters: function (posters)
 	{
 		for (var i = 0; i < 6; i++)
 		{
