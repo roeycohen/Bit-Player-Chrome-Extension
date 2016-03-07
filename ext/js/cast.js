@@ -7,7 +7,6 @@ var cast = {
 	poster_set: false,
 	cast_available: false,
 	devices: {},
-	extension_notification_already_shown: false,
 	entry: function ()
 	{
 		cast.scan_devices();
@@ -27,29 +26,30 @@ var cast = {
 				//sessionListener
 			}, function (e)
 			{
-				var supported_cast_extensions = [
-					'fjhoaacokmgbjemoflkofnenfaiekifl', //v48
-					'pkedcjkdefgpdelpbcmbmeomcjbeemfm' //v49
-				];
-				if (0 > supported_cast_extensions.indexOf(chrome.cast.extensionId) && e === chrome.cast.ReceiverAvailability.AVAILABLE)
-				{
-					if (cast.extension_notification_already_shown)
-						return;
-					cast.extension_notification_already_shown = true;
-					return app.error('Seems like you have chrome cast.\nIn order to use it with this app, you must enable the "Media router" flag in your browser.', 'wrong_extension', [{title: 'Click HERE for more details.'}]);
-				}
-
-				cast.cast_available = e === chrome.cast.ReceiverAvailability.AVAILABLE;
-				controls.cast_available(cast.cast_available && Object.keys(cast.devices).length > 0);
+				//cast.cast_available = e === chrome.cast.ReceiverAvailability.AVAILABLE;
 			});
 		chrome.cast.initialize(apiConfig, function ()
 		{
-		}, function ()
+			cast.cast_available = true;
+			controls.cast_available(Object.keys(cast.devices).length > 0);
+		}, function (cc_error)
 		{
+			console.log('cc_error', cc_error);
 		});
 	},
 	start: function ()
 	{
+		var supported_cast_extensions = [
+			'fjhoaacokmgbjemoflkofnenfaiekifl', //v48
+			'pkedcjkdefgpdelpbcmbmeomcjbeemfm' //v49
+		];
+		if (supported_cast_extensions.indexOf(chrome.cast.extensionId) < 0)
+			return app.error('Seems like you have chrome cast.\nIn order to use it with this app, you must enable the "Media router" flag in your browser.', 'wrong_extension', [{title: 'Click HERE for more details.'}]);
+
+		var port = http.server.address().port;
+		if (port != 5556)
+			app.error('Port 5556 is already in use, cast will probably fail.\nPort ' + port + ' is in use instead.');
+
 		chrome.cast.requestSession(function (session)
 		{
 			chrome.power.requestKeepAwake('system');

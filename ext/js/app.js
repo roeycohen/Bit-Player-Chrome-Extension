@@ -154,7 +154,7 @@ app = {
 
 		chrome.notifications.create(id || "bit-player", {
 				type: "basic",
-				title: "Subtitles",
+				title: "Bit Player",
 				iconUrl: "../images/icon64.png",
 				message: $.type(error) === "string" ? error : JSON.stringify(error),
 				buttons: buttons || []
