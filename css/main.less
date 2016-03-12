@@ -21,12 +21,11 @@ body {
 	display: none;
 	.full_size();
 	z-index: 2147483647;
-	background-image: url('../images/tv_noise.gif');
-	background-size: 110%;
+	background: @main_color url('../images/logo_hi_res.png') no-repeat center center;
 	&:after {
 		.full_size();
 		content: '';
-		background-color: rgba(0, 0, 0, 0.6);
+		background-color: rgba(0, 0, 0, 0.3);
 	}
 }
 
@@ -120,7 +119,7 @@ body {
 				}
 				&#btn-always_on_top {
 					.icon {
-						margin-top:2px;
+						margin-top: 2px;
 						font-size: 0.9em;
 					}
 				}
@@ -168,6 +167,14 @@ body {
 			}
 			&:hover img {
 				display: inline-block;
+			}
+		}
+		p {
+			color: white;
+			text-align: center;
+			.note {
+				font-style: italic;
+				font-size: 0.9em;
 			}
 		}
 	}

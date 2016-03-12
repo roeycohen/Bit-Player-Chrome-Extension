@@ -4,10 +4,11 @@ var http = {
 	server: null,
 	file: null,
 	sub: null,
+	DEFAULT_PORT: 43245,
 	start: function (port)
 	{
 		if (undefined === port)
-			port = 5556; //5558
+			port = http.DEFAULT_PORT; //5556, 5558
 
 		//console.log(torrent);
 		http.server = torrent.http.createServer(http.request);

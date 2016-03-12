@@ -47,8 +47,8 @@ var cast = {
 			return app.error('Seems like you have chrome cast.\nIn order to use it with this app, you must enable the "Media router" flag in your browser.', 'wrong_extension', [{title: 'Click HERE for more details.'}]);
 
 		var port = http.server.address().port;
-		if (port != 5556)
-			app.error('Port 5556 is already in use, cast will probably fail.\nPort ' + port + ' is in use instead.');
+		if (port != http.DEFAULT_PORT)
+			app.error('Port ' + http.DEFAULT_PORT + ' is already in use, cast will probably fail.\nPort ' + port + ' is in use instead.');
 
 		chrome.cast.requestSession(function (session)
 		{

@@ -18,8 +18,7 @@ body {
   top: 0;
   bottom: 0;
   z-index: 2147483647;
-  background-image: url('../images/tv_noise.gif');
-  background-size: 110%;
+  background: #3ab797 url('../images/logo_hi_res.png') no-repeat center center;
 }
 #casting_bg:after {
   position: absolute;
@@ -27,7 +26,7 @@ body {
   top: 0;
   bottom: 0;
   content: '';
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 #background {
   position: absolute;
@@ -173,6 +172,14 @@ body {
 }
 #frame #welcome #launcher_link:hover img {
   display: inline-block;
+}
+#frame #welcome p {
+  color: white;
+  text-align: center;
+}
+#frame #welcome p .note {
+  font-style: italic;
+  font-size: 0.9em;
 }
 #frame #loader {
   position: absolute;
