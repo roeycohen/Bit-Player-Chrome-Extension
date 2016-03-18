@@ -18,7 +18,7 @@ function open_app(options)
 }
 chrome.app.runtime.onLaunched.addListener(function ()
 {
-	open_app()
+	open_app();
 });
 chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResponse)
 {

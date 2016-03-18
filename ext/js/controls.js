@@ -33,8 +33,17 @@ controls = {
 		{
 			if (e.target.files[0])
 			{
-				$('#status').hide();
-				app.start_video_local(e.target.files[0]);
+				if (e.target.files[0].type === "application/x-bittorrent")
+				{
+					var fileReader = new FileReader();
+					fileReader.onload = function (e)
+					{
+						app.start_video(app.toBuffer(e.target.result));
+					};
+					fileReader.readAsArrayBuffer(e.target.files[0]);
+				}
+				else
+					app.start_video_local(e.target.files[0]);
 			}
 		});
 		$('#welcome #manual_video_file_button').click(function (e)

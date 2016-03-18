@@ -44,6 +44,7 @@ app = {
 	{
 		http.file = file;
 
+		$('#status').hide();
 		$('#video').attr('type', 'video/mp4').attr('src', window.URL.createObjectURL(file));
 
 		subs.get_video_subtitles(file);
@@ -177,5 +178,16 @@ app = {
 			callback(false);
 		};
 		img.src = "chrome-extension://andfnelfgfdifognepabogfledhdijhn/images/icon16.png";
+	},
+	//converts ArrayBuffer to NodeJS buffer
+	toBuffer: function (ab)
+	{
+		var buffer = new torrent.buffer.Buffer(ab.byteLength);
+		var view = new Uint8Array(ab);
+		for (var i = 0; i < buffer.length; ++i)
+		{
+			buffer[i] = view[i];
+		}
+		return buffer;
 	}
 };
