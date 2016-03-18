@@ -7,6 +7,10 @@ var cast = {
 	poster_set: false,
 	cast_available: false,
 	devices: {},
+	supported_cast_extensions: [
+		'fjhoaacokmgbjemoflkofnenfaiekifl', //v48
+		'pkedcjkdefgpdelpbcmbmeomcjbeemfm' //v49
+	],
 	entry: function ()
 	{
 		cast.scan_devices();
@@ -19,6 +23,13 @@ var cast = {
 	},
 	initialize_cast_api: function ()
 	{
+		//enable cast only for users who enabled the new cast extension
+		//todo: remove this in the final version
+		if (cast.supported_cast_extensions.indexOf(chrome.cast.extensionId) < 0)
+			return;
+
+		$('#cast_beta_text').show();
+
 		var sessionRequest = new chrome.cast.SessionRequest(chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID);
 		var apiConfig = new chrome.cast.ApiConfig(sessionRequest,
 			function (e)
@@ -39,11 +50,7 @@ var cast = {
 	},
 	start: function ()
 	{
-		var supported_cast_extensions = [
-			'fjhoaacokmgbjemoflkofnenfaiekifl', //v48
-			'pkedcjkdefgpdelpbcmbmeomcjbeemfm' //v49
-		];
-		if (supported_cast_extensions.indexOf(chrome.cast.extensionId) < 0)
+		if (cast.supported_cast_extensions.indexOf(chrome.cast.extensionId) < 0)
 			return app.error('Seems like you have chrome cast.\nIn order to use it with this app, you must enable the "Media router" flag in your browser.', 'wrong_extension', [{title: 'Click HERE for more details.'}]);
 
 		var port = http.server.address().port;
