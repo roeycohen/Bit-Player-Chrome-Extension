@@ -7,6 +7,7 @@ var cast = {
 	poster_set: false,
 	cast_available: false,
 	devices: {},
+	only_ip: null,
 	supported_cast_extensions: [
 		'fjhoaacokmgbjemoflkofnenfaiekifl', //v48
 		'pkedcjkdefgpdelpbcmbmeomcjbeemfm' //v49
@@ -42,7 +43,7 @@ var cast = {
 		chrome.cast.initialize(apiConfig, function ()
 		{
 			cast.cast_available = true;
-			controls.cast_available(Object.keys(cast.devices).length > 0);
+			controls.cast_available(cast.only_ip || Object.keys(cast.devices).length > 0);
 		}, function (cc_error)
 		{
 			console.log('cc_error', cc_error);
@@ -78,9 +79,16 @@ var cast = {
 		if (!cast.session)
 			return;
 
-		var selected_device = cast.devices[cast.session.receiver.friendlyName];
-		if (!selected_device)
-			return app.error('selected device was not found by app.');
+		var ip;
+		if (cast.only_ip)
+			ip = cast.only_ip;
+		else
+		{
+			var selected_device = cast.devices[cast.session.receiver.friendlyName];
+			if (!selected_device)
+				return app.error('selected device was not found by app.');
+			ip = selected_device.reachable_machine_ips[0];
+		}
 
 		var start_time = controls.video.currentTime;
 		if (cast.media)
@@ -91,7 +99,7 @@ var cast = {
 			cast.media = null;
 		}
 
-		var url = "http://" + selected_device.reachable_machine_ips[0] + ":" + http.server.address().port + "/" + http.file.name;
+		var url = "http://" + ip + ":" + http.server.address().port + "/" + http.file.name;
 		console.log(url);
 
 		//media info
@@ -122,7 +130,7 @@ var cast = {
 		if (http.sub)
 		{
 			var cTrack = new chrome.cast.media.Track(1, chrome.cast.media.TrackType.TEXT);
-			cTrack.trackContentId = "http://192.168.3.102:" + http.server.address().port + "/sub.vtt";
+			cTrack.trackContentId = "http://" + ip + ":" + http.server.address().port + "/sub.vtt";
 			cTrack.trackContentType = 'text/vtt';
 			cTrack.subtype = chrome.cast.media.TextTrackType.SUBTITLES;
 			cTrack.name = 'Subtitles';
@@ -231,6 +239,13 @@ var cast = {
 					return intf;
 				}
 			});
+
+			if (self_ips.length == 1)
+			{
+				cast.only_ip = self_ips[0].address;
+				controls.cast_available(cast.cast_available);
+				return;
+			}
 
 			chrome.mdns.onServiceList.addListener(
 				function (services)

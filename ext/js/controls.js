@@ -348,6 +348,7 @@ controls = {
 	cast_available: function(is_available)
 	{
 		controls.$ctrls.find('#btn_cast').toggle(is_available);
+		$('#welcome .icon-google127').css('color', is_available ? '#3ab797' : '');
 	},
 	controls_fill_sub: function (srts)
 	{
