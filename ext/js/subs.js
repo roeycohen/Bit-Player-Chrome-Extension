@@ -101,7 +101,7 @@ var subs = {
 			});
 		};
 
-		return Promise.all([getBuffer(file, 0, 65535), getBuffer(file, file.size - 65536, file.size - 1)]).then(function (t)
+		return Promise.all([getBuffer(file, 0, 65536), getBuffer(file, file.size - 65536, file.size)]).then(function (t)
 		{
 			return subs.computeHash(file.size, t[0], t[1]);
 		});
