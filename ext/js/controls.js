@@ -31,10 +31,24 @@ controls = {
 
 		$('#welcome [name="manual_video_file"]:file').change(function (e)
 		{
-			if (e.target.files[0])
+			var f = e.target.files[0];
+			if (f)
 			{
-				$('#status').hide();
-				app.start_video_local(e.target.files[0]);
+				if (f.type === 'application/x-bittorrent' || app.file_extension(f.name).toLowerCase() === 'torrent')
+				{
+					var fileReader = new FileReader();
+					fileReader.onload = function (e)
+					{
+						var buf = torrent.typedarrayToBuffer(new Uint8Array(e.target.result));
+						app.start_video(buf);
+					};
+					fileReader.readAsArrayBuffer(f);
+				}
+				else
+				{
+					$('#status').hide();
+					app.start_video_local(f);
+				}
 			}
 		});
 		$('#welcome #manual_video_file_button').click(function (e)

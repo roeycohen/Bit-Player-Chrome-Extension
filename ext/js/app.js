@@ -64,54 +64,52 @@ app = {
 			tracker: true
 		};
 
-		app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
-		app.torrent.on("ready", app.on_torrent_ready);
-		//app.torrent.listen(6666); //not sure why was it good for...
+		var ts = torrent.TorrentStream(torrent_url, torrent_options, app.on_torrent_ready);
+		//ts.listen(6666); //not sure why was it good for...
 
 		// for some reason, sometimes when a torrent fails to start a restart help.
 		var retry_timer = window.setInterval(function ()
 		{
 			if (!app.torrent_fetch_success)
 			{
-				app.torrent.remove(function ()
+				ts.remove(function ()
 				{
-					app.torrent.destroy(function ()
+					ts.destroy(function ()
 					{
 						retry_count++;
 						$('#load_status').text('Fetching torrent data... (retry #' + retry_count + ')');
 						$('.download_status').text('When everything fails... a restart may help.');
 
-						app.torrent = torrent.TorrentStream(torrent_url, torrent_options);
-						app.torrent.on("ready", app.on_torrent_ready);
+						ts = torrent.TorrentStream(torrent_url, torrent_options, app.on_torrent_ready);
 					});
 				});
 			}
 			else
 				clearInterval(retry_timer);
-		}, 15000); //15 secs
+		}, 150000); //15 secs
 
 	},
-	on_torrent_ready: function ()
+	on_torrent_ready: function (ts)
 	{
-		if (app.torrent.files.length === 0)
+		if (ts.files.length === 0)
 			return; //looks like there's a bug that sometimes calls on ready event more than once when the first time returns an empty files array.
 
 		app.torrent_fetch_success = true;
 
-		var video_index = app.best_file(app.torrent.files);
+		var video_index = app.best_file(ts.files);
 		if (0 > video_index)
 			$('#load_status').text('No video file found :(');
 		else
 		{
 			$('#load_status').text('Downloading...');
 
-			var torrent_file = app.torrent.files[video_index];
+			var torrent_file = ts.files[video_index];
 			console.log('torrent_file', torrent_file);
 			setInterval(function ()
 			{
-				var status_text = app.formatBytes(app.torrent.swarm.downloadSpeed()) + 'ps, ' +
-					app.formatBytes(app.torrent.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.min(100, Math.round(100 * app.torrent.swarm.downloaded * 100 / torrent_file.length) / 100) ) + '%), ' +
-					app.torrent.swarm.connections.length + ' peers';
+				var status_text = app.formatBytes(ts.swarm.downloadSpeed()) + 'ps, ' +
+					app.formatBytes(ts.swarm.downloaded) + '/' + app.formatBytes(torrent_file.length) + ' (' + (torrent_file.length == 0 ? 0 : Math.min(100, Math.round(100 * ts.swarm.downloaded * 100 / torrent_file.length) / 100) ) + '%), ' +
+					ts.swarm.connections.length + ' peers';
 				$('.download_status').text(status_text);
 			}, 500);
 
@@ -130,8 +128,7 @@ app = {
 		var best_match_index = -1;
 		$.each(files, function (i, f)
 		{
-			var extension = f.path.substr((~-f.path.lastIndexOf(".") >>> 0) + 2);
-			if ($.inArray(extension, ['mp4', 'mkv']) > -1 && f.length > biggest_file)
+			if ($.inArray(app.file_extension(f.path).toLowerCase(), ['mp4', 'mkv']) > -1 && f.length > biggest_file)
 			{
 				biggest_file = f.length;
 				best_match_index = i;
@@ -177,5 +174,9 @@ app = {
 			callback(false);
 		};
 		img.src = "chrome-extension://andfnelfgfdifognepabogfledhdijhn/images/icon16.png";
+	},
+	file_extension: function(name)
+	{
+		return name.substr((~-name.lastIndexOf(".") >>> 0) + 2)
 	}
 };

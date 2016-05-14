@@ -52,7 +52,8 @@
 			t.exports.zlib = e("zlib"),
 			t.exports.http = e("http"),
 			t.exports.mime = e("mime"),
-			t.exports.rangeParser = e("range-parser")
+			t.exports.rangeParser = e("range-parser"),
+			t.exports.typedarrayToBuffer = e("typedarray-to-buffer")
 		},
 			{
 				"./opensubs": 439,
@@ -67,7 +68,8 @@
 				"zlib": 127,
 				"http": 315,
 				"mime": 111,
-				"range-parser": 336
+				"range-parser": 336,
+				"typedarray-to-buffer": 78
 			}
 		],
 		//=============================================================================================
