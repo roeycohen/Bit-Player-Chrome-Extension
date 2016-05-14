@@ -64,7 +64,7 @@ app = {
 			tracker: true
 		};
 
-		var ts = torrent.TorrentStream(torrent_url, torrent_options, app.on_torrent_ready);
+		var ts = torrent.TorrentStream(torrent_url, torrent_options, app.on_torrent_ready); //registering ready event after this call didn't work as the event was called earlier
 		//ts.listen(6666); //not sure why was it good for...
 
 		// for some reason, sometimes when a torrent fails to start a restart help.
