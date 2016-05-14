@@ -144,9 +144,9 @@ app = {
 		if (isNaN(bytes) || bytes == 0)
 			return '0 B';
 
-		var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-		var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-		return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+		var sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+		var i = Math.floor(Math.log(bytes) / Math.log(1024));
+		return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
 	},
 	error: function (error, id, buttons)
 	{
