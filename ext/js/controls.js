@@ -42,11 +42,25 @@ controls = {
 			$('#welcome [name="manual_video_file"]:file').trigger('click');
 		});
 
+		//auto start
+		var $cb_autostart = $('#loader [name="auto_start"]:checkbox');
+		$cb_autostart.change(function()
+		{
+			chrome.storage.local.set({auto_start: $(this).is(':checked')});
+		});
+		chrome.storage.local.get('auto_start', function (data)
+		{
+			$cb_autostart.prop('checked', data['auto_start']);
+		});
+
 		controls.video.oncanplay = function ()
 		{
 			background.stop();
 			$('#loader, #welcome, #help_link, #logo').slideUp();
 			$('#player').slideDown();
+
+			if (app.torrent_fetch_success && $cb_autostart.is(':checked'))
+				controls.$ctrls.find('#btn_play_pause').trigger('click');
 		};
 
 		controls.$video.on('playing play waiting pause mousemove', function ()
