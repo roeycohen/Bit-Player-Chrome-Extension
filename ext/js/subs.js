@@ -79,23 +79,12 @@ var subs = {
 	{
 		var getBuffer = function (file, start, end)
 		{
-			var toBuffer = function (ab)
-			{
-				var buffer = new torrent.buffer.Buffer(ab.byteLength);
-				var view = new Uint8Array(ab);
-				for (var i = 0; i < buffer.length; ++i)
-				{
-					buffer[i] = view[i];
-				}
-				return buffer;
-			};
-
 			return new Promise(function (resolve, reject)
 			{
 				var fileReader = new FileReader();
 				fileReader.onload = function (e)
 				{
-					resolve(toBuffer(e.target.result));
+					resolve(torrent.typedarrayToBuffer(new Uint8Array(e.target.result)));
 				};
 				fileReader.readAsArrayBuffer(file.slice(start, end));
 			});
