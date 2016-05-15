@@ -39,8 +39,7 @@ controls = {
 					var fileReader = new FileReader();
 					fileReader.onload = function (e)
 					{
-						var buf = torrent.typedarrayToBuffer(new Uint8Array(e.target.result));
-						app.start_video(buf);
+						app.start_video(torrent.typedarrayToBuffer(new Uint8Array(e.target.result)));
 					};
 					fileReader.readAsArrayBuffer(f);
 				}

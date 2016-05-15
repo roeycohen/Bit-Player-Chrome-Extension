@@ -12,6 +12,7 @@ var test_torrent;
 //test_torrent = 'magnet:?xt=urn:btih:UXSMUUXKIQKZEVFOZ7J6GAMUDMTW3VLO&dn=Tarzan+(1999)+720p+BrRip+x264+YIFY&tr=udp://tracker.openbittorrent.com:80/announce&tr=udp://tracker.coppersurfer.tk:6969/announce&tr=udp://tracker.blackunicorn.xyz:6969/announce&tr=udp://glotorrents.pw:6969/announce';
 //avi sample: streaming does work with it...
 //test_torrent = 'magnet:?xt=urn:btih:b662dbf7f84740b9fa1a332ce42c3f2859727134&dn=Marvels.Jessica.Jones.S01E05.WEBRip.XviD-FUM%5Bettv%5D&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969';
+// test_torrent = 'https://yifymovie.re/torrents/deadpool-2016-1080p.torrent';
 //console.log(torrent);
 
 app = {
@@ -50,6 +51,31 @@ app = {
 	},
 	start_video: function (torrent_url)
 	{
+		if (typeof torrent_url === 'string')
+		{
+			//handling url to a torrent file
+			var parser = document.createElement('a');
+			parser.href = torrent_url;
+			if (['http:', 'https:'].indexOf(parser.protocol) >= 0 &&
+				app.file_extension(parser.pathname).toLowerCase() === 'torrent')
+			{
+				$('#welcome').hide();
+				$('#loader').show();
+				$('#load_status').text('Downloading torrent file...');
+
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', torrent_url);
+				xhr.responseType = 'arraybuffer';
+				xhr.onload = function ()
+				{
+					if (this.status == 200)
+						app.start_video(torrent.typedarrayToBuffer(new Uint8Array(xhr.response)));
+				};
+				xhr.send();
+				return;
+			}
+		}
+
 		$('#welcome').hide();
 		$('#loader').show();
 		$('#load_status').text('Fetching torrent data...');
@@ -175,7 +201,7 @@ app = {
 		};
 		img.src = "chrome-extension://andfnelfgfdifognepabogfledhdijhn/images/icon16.png";
 	},
-	file_extension: function(name)
+	file_extension: function (name)
 	{
 		return name.substr((~-name.lastIndexOf(".") >>> 0) + 2)
 	}
